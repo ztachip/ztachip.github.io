@@ -1,0 +1,3464 @@
+diff --git a/.github/workflows/pages.yml b/.github/workflows/pages.yml
+index 321afce..00641ed 100644
+--- a/.github/workflows/pages.yml
++++ b/.github/workflows/pages.yml
+@@ -22,8 +22,15 @@ jobs:
+       - uses: actions/setup-python@v5
+         with:
+           python-version: "3.12"
+-      - run: pip install -r requirements.txt
+-      - run: sphinx-build -b html docs _build/html
++      - name: Install documentation tools
++        run: |
++          sudo apt-get update
++          sudo apt-get install -y pandoc
++          pip install -r requirements.txt
++      - name: Synchronize documentation from ztachip source repository
++        run: python3 tools/sync_source_docs.py
++      - name: Build Sphinx site
++        run: sphinx-build --keep-going -b html docs _build/html
+       - uses: actions/upload-pages-artifact@v3
+         with:
+           path: _build/html
+diff --git a/DEPLOY.md b/DEPLOY.md
+index cc06607..a4df90f 100644
+--- a/DEPLOY.md
++++ b/DEPLOY.md
+@@ -1,43 +1,16 @@
+ # Deployment
+ 
+-## If this is a new `ztachip.github.io` repository
++The repository is deployed automatically by `.github/workflows/pages.yml`.
++GitHub Pages must be configured with **Source: GitHub Actions**.
+ 
+-Extract **the contents of the archive directly into the repository root**.
+-After extraction the repository root should contain:
+-
+-```text
+-.github/
+-docs/
+-requirements.txt
+-Makefile
+-README.md
+-DEPLOY.md
+-```
+-
+-Do **not** create an extra `ztachip.github.io/ztachip.github.io/` directory.
+-
+-Commit and push:
++After applying a documentation patch:
+ 
+ ```bash
+ git add .
+-git commit -m "Add ztachip documentation website"
++git commit -m "Reorganize ztachip documentation"
+ git push
+ ```
+ 
+-Then in GitHub:
+-
+-1. Open **Settings -> Pages**.
+-2. Under **Build and deployment**, choose **GitHub Actions**.
+-3. Open the **Actions** tab and wait for the documentation workflow to finish.
+-4. The site will be published at `https://ztachip.github.io/`.
+-
+-## If you already cloned the repo locally
+-
+-From the repository root:
+-
+-```bash
+-tar -xzf ztachip-documentation-site.tar.gz
+-```
+-
+-The archive is intentionally created without a wrapping top-level directory,
+-so it expands directly into the repository root.
++The workflow will synchronize the five canonical guides from
++`ztachip/ztachip`, convert the office-document guides with Pandoc, build the
++Sphinx site, and deploy it to `https://ztachip.github.io/`.
+diff --git a/Makefile b/Makefile
+index 8bbdf19..ede663f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -3,7 +3,10 @@ SPHINXBUILD ?= sphinx-build
+ SOURCEDIR = docs
+ BUILDDIR = _build
+ 
+-html:
++sync:
++	python3 tools/sync_source_docs.py
++
++html: sync
+ 	$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS)
+ 
+ clean:
+diff --git a/README.md b/README.md
+index 0ae1cf3..16fdf63 100644
+--- a/README.md
++++ b/README.md
+@@ -1,14 +1,26 @@
+ # ztachip Documentation Website
+ 
+-This repository contains the source for the ztachip documentation website.
++This repository publishes the programmer documentation at
++`https://ztachip.github.io/`.
+ 
+-The documentation is built with **Sphinx**, **MyST Markdown**, and the
+-**Read the Docs theme** to provide the same class of navigation, search,
+-chapter hierarchy, and responsive presentation used by mature hardware and
+-software projects.
++The site follows the same five-document order as the main ztachip README:
++
++1. Technical Overview
++2. Hardware Architecture
++3. Programmer Guide
++4. Vision AI Stack Programmer Guide
++5. MicroPython Programmer Guide
++
++The main `ztachip/ztachip` repository remains the source of truth. During each
++GitHub Pages build, `tools/sync_source_docs.py` downloads the canonical source
++material. Markdown documents are cleaned up for web presentation, while the two
++ODT/PDF-backed programmer guides are converted with Pandoc and their embedded
++images are extracted automatically.
+ 
+ ## Local preview
+ 
++Install Pandoc, then:
++
+ ```bash
+ python3 -m venv .venv
+ source .venv/bin/activate
+@@ -18,11 +30,3 @@ python3 -m http.server 8000 -d _build/html
+ ```
+ 
+ Open `http://localhost:8000`.
+-
+-## GitHub Pages
+-
+-The included GitHub Actions workflow automatically builds and deploys the
+-documentation whenever the `master` branch is updated.
+-
+-For an organization/user Pages repository named `ztachip.github.io`, place
+-the contents of this archive at the **repository root**.
+diff --git a/docs/_static/custom.css b/docs/_static/custom.css
+index d39524b..e3a3518 100644
+--- a/docs/_static/custom.css
++++ b/docs/_static/custom.css
+@@ -1,27 +1,116 @@
+ :root {
+-  --ztachip-accent: #2f6f9f;
+-}
+-.wy-side-nav-search {
+-  background: #18364d;
++  --zt-navy: #17324a;
++  --zt-blue: #2b6f9f;
++  --zt-light: #f4f8fb;
++  --zt-border: #d9e4ec;
++  --zt-text: #26343d;
+ }
++
++.wy-side-nav-search,
+ .wy-nav-top {
+-  background: #18364d;
+-}
+-.rst-content code.literal,
+-.rst-content tt.literal {
+-  color: #a23;
++  background: var(--zt-navy);
+ }
+-.rst-content .admonition-title {
++
++.wy-side-nav-search > a,
++.wy-side-nav-search .wy-dropdown > a {
++  font-size: 1.25rem;
+   font-weight: 600;
+ }
++
++.wy-nav-content {
++  max-width: 1120px;
++}
++
++.rst-content {
++  color: var(--zt-text);
++}
++
++.rst-content h1 {
++  border-bottom: 1px solid var(--zt-border);
++  padding-bottom: .55rem;
++}
++
++.rst-content h2 {
++  margin-top: 2.2rem;
++}
++
++.rst-content img {
++  height: auto;
++  max-width: 100%;
++}
++
++.rst-content .document img:not(.zt-main-image) {
++  display: block;
++  margin: 1.25rem auto;
++  padding: .35rem;
++  border: 1px solid var(--zt-border);
++  border-radius: 6px;
++  background: #fff;
++}
++
++.rst-content table.docutils {
++  width: 100%;
++  border-collapse: collapse;
++}
++
++.rst-content div[class^="highlight"] pre {
++  border-radius: 5px;
++  border: 1px solid #e3e8ec;
++}
++
+ .zt-hero {
+-  margin: 1.5rem 0 2rem;
+-  padding: 1.4rem 1.6rem;
+-  border-left: 5px solid var(--ztachip-accent);
+-  background: #f5f8fb;
+-}
+-.zt-path {
+-  font-family: monospace;
+-  background: #f3f3f3;
+-  padding: .1rem .35rem;
++  margin: 1rem 0 1.8rem;
++  padding: 1.6rem 1.8rem;
++  border-left: 5px solid var(--zt-blue);
++  border-radius: 4px;
++  background: var(--zt-light);
++}
++
++.zt-hero h2 {
++  margin: .25rem 0 .55rem;
++  color: var(--zt-navy);
++  font-size: 1.75rem;
++}
++
++.zt-hero p {
++  margin-bottom: 0;
++  font-size: 1.05rem;
++}
++
++.zt-kicker {
++  color: var(--zt-blue);
++  font-size: .78rem;
++  font-weight: 700;
++  letter-spacing: .08em;
++}
++
++.zt-main-image {
++  display: block;
++  margin: 1.25rem auto 2rem;
++}
++
++.sd-card {
++  border: 1px solid var(--zt-border) !important;
++  box-shadow: none !important;
++  transition: border-color .15s ease, transform .15s ease;
++}
++
++.sd-card:hover {
++  border-color: var(--zt-blue) !important;
++  transform: translateY(-1px);
++}
++
++.sd-card-title {
++  color: var(--zt-navy);
++  font-weight: 600;
++}
++
++@media screen and (max-width: 768px) {
++  .wy-nav-content {
++    padding: 1.25rem;
++  }
++
++  .zt-hero {
++    padding: 1.25rem;
++  }
+ }
+diff --git a/docs/conf.py b/docs/conf.py
+index 57f16fa..0857794 100644
+--- a/docs/conf.py
++++ b/docs/conf.py
+@@ -19,12 +19,11 @@ html_theme = "sphinx_rtd_theme"
+ html_static_path = ["_static"]
+ html_css_files = ["custom.css"]
+ html_title = "ztachip Documentation"
+-html_logo = None
+ html_show_sphinx = False
+-html_show_sourcelink = True
++html_show_sourcelink = False
+ 
+ html_theme_options = {
+-    "navigation_depth": 4,
++    "navigation_depth": 5,
+     "collapse_navigation": False,
+     "sticky_navigation": True,
+     "includehidden": True,
+@@ -39,4 +38,4 @@ myst_enable_extensions = [
+     "tasklist",
+ ]
+ 
+-myst_heading_anchors = 4
++myst_heading_anchors = 5
+diff --git a/docs/getting-started/index.md b/docs/getting-started/index.md
+deleted file mode 100644
+index df8fea4..0000000
+--- a/docs/getting-started/index.md
++++ /dev/null
+@@ -1,22 +0,0 @@
+-# Getting Started
+-
+-This section takes a new developer from a clean Ubuntu installation to a
+-running ztachip application.
+-
+-## Prerequisites
+-
+-You will need:
+-
+-- an Ubuntu development environment;
+-- the RISC-V GNU toolchain;
+-- the ztachip source tree;
+-- Xilinx Vivado when building the Arty A7 FPGA image;
+-- OpenOCD and GDB for JTAG loading/debug;
+-- optionally MicroPython, which is the recommended high-level environment.
+-
+-The reference hardware uses the Digilent Arty A7 platform together with a VGA
+-Pmod and camera module for vision demonstrations.
+-
+-## Next
+-
+-Continue with [Quick Start](quick-start.md).
+diff --git a/docs/getting-started/quick-start.md b/docs/getting-started/quick-start.md
+deleted file mode 100644
+index dc83e49..0000000
+--- a/docs/getting-started/quick-start.md
++++ /dev/null
+@@ -1,79 +0,0 @@
+-# Quick Start
+-
+-## 1. Install Ubuntu packages
+-
+-```bash
+-sudo apt-get update
+-sudo apt-get install autoconf automake autotools-dev curl python3 \
+-    libmpc-dev libmpfr-dev libgmp-dev gawk build-essential \
+-    bison flex texinfo gperf libtool patchutils bc \
+-    zlib1g-dev libexpat-dev python3-pip
+-pip3 install numpy
+-```
+-
+-## 2. Install the RISC-V toolchain
+-
+-A prebuilt toolchain is available from the ztachip GitHub releases. Install it
+-under `/opt/riscv`, then add it to your shell path:
+-
+-```bash
+-export PATH=/opt/riscv/bin:$PATH
+-```
+-
+-You may also build `riscv-gnu-toolchain` from source using the `rv32im`
+-architecture and `ilp32` ABI.
+-
+-## 3. Clone and build ztachip
+-
+-```bash
+-git clone https://github.com/ztachip/ztachip.git
+-cd ztachip
+-
+-cd SW/compiler
+-make clean all
+-
+-cd ../fs
+-python3 bin2c.py
+-
+-cd ..
+-make clean all -f makefile.kernels
+-make clean all
+-```
+-
+-## 4. Recommended: build the MicroPython port
+-
+-```bash
+-git clone https://github.com/micropython/micropython.git
+-cd micropython/ports
+-cp -avr <ztachip-folder>/micropython/ztachip_port .
+-cd ztachip_port
+-
+-export PATH=/opt/riscv/bin:$PATH
+-export ZTACHIP=<ztachip-folder>
+-
+-make clean
+-make
+-```
+-
+-## 5. Program and debug the board
+-
+-ztachip uses OpenOCD plus RISC-V GDB for the reference JTAG flow. Start
+-OpenOCD in one terminal and GDB in another.
+-
+-From GDB:
+-
+-```text
+-set pagination off
+-target remote localhost:3333
+-set remotetimeout 60
+-set arch riscv:rv32
+-monitor reset halt
+-load
+-continue
+-```
+-
+-```{note}
+-The first goal should be to run an existing example unchanged. Once the
+-hardware, serial console, JTAG link, and software image are known to work,
+-modify one component at a time.
+-```
+diff --git a/docs/getting-started/repository-layout.md b/docs/getting-started/repository-layout.md
+deleted file mode 100644
+index cf24a04..0000000
+--- a/docs/getting-started/repository-layout.md
++++ /dev/null
+@@ -1,16 +0,0 @@
+-# Repository Layout
+-
+-The main ztachip repository is divided into hardware, software, MicroPython,
+-documentation, and development-tool areas.
+-
+-| Path | Purpose |
+-|---|---|
+-| `HW/` | Synthesizable RTL, platform wrappers, simulation hardware, and configuration |
+-| `SW/` | RISC-V software, compiler, runtime, kernels, applications, and filesystem |
+-| `micropython/` | ztachip MicroPython port, bindings, and examples |
+-| `tools/` | OpenOCD and other development support files |
+-| `Documentation/` | Original project documentation and diagrams |
+-
+-For application development, most programmers spend their time under `SW/`
+-and `micropython/`. Hardware developers and porting work primarily under
+-`HW/`.
+diff --git a/docs/hardware-architecture.md b/docs/hardware-architecture.md
+new file mode 100644
+index 0000000..6c65886
+--- /dev/null
++++ b/docs/hardware-architecture.md
+@@ -0,0 +1,6 @@
++# Hardware Architecture
++
++```{note}
++This page is synchronized from `Documentation/HardwareDesign.md` in the main
++ztachip repository when the documentation site is built.
++```
+diff --git a/docs/hardware/architecture.md b/docs/hardware/architecture.md
+deleted file mode 100644
+index f131dca..0000000
+--- a/docs/hardware/architecture.md
++++ /dev/null
+@@ -1,35 +0,0 @@
+-# Hardware Architecture
+-
+-The accelerator is organized around a RISC-V host, tensor-engine control
+-logic, memory-movement engines, scratch memory, an FPU path, and an array of
+-P-core processors.
+-
+-```{image} ../_static/images/ztachip_arch.png
+-:alt: High-level ztachip architecture
+-:width: 100%
+-```
+-
+-## Major blocks
+-
+-**RISC-V host**
+-: Runs application and tensor-program control code.
+-
+-**Tensor engine / dataplane**
+-: Receives tensor instructions, coordinates memory movement, and dispatches
+-  operators to the P-core array.
+-
+-**P-core array**
+-: Executes parallel VLIW vector kernels from local memory.
+-
+-**Scratch-pad SRAM**
+-: Provides temporary high-bandwidth storage and feeds the FPU path.
+-
+-**FPU**
+-: Handles floating-point vector and reduction-oriented operations used by
+-  transformer/LLM workloads.
+-
+-**DDR interfaces**
+-: Stream data between external memory and accelerator-local memory.
+-
+-The detailed RTL block-by-block description is available in
+-[Hardware Detail](../reference/hardware_detail.md).
+diff --git a/docs/hardware/memory-and-execution.md b/docs/hardware/memory-and-execution.md
+deleted file mode 100644
+index 5737052..0000000
+--- a/docs/hardware/memory-and-execution.md
++++ /dev/null
+@@ -1,29 +0,0 @@
+-# Memory and Execution
+-
+-The central performance idea in ztachip is that **external-memory traffic and
+-operator execution are separate operations**.
+-
+-P-core compute operates from internal memory. Tensor instructions move the
+-working set between DDR, scratch memory, and P-core memory.
+-
+-## Double-context operation
+-
+-The tensor engine provides two contexts. P-core memory is correspondingly
+-partitioned so one context can be used for compute while the other is being
+-filled or drained.
+-
+-Conceptually:
+-
+-```text
+-Context A: [transfer input] -> [execute] -> [transfer output]
+-Context B:          [transfer input] -> [execute] -> [transfer output]
+-```
+-
+-Staggering the two contexts lets memory traffic overlap useful computation.
+-
+-## Why this matters
+-
+-A conventional processor often discovers a missing cache line only after an
+-instruction requests it. ztachip's tensor program describes the required data
+-movement explicitly, enabling streaming and prefetch behavior with fewer
+-round-trip stalls.
+diff --git a/docs/hardware/porting.md b/docs/hardware/porting.md
+deleted file mode 100644
+index 61ae5b8..0000000
+--- a/docs/hardware/porting.md
++++ /dev/null
+@@ -1,25 +0,0 @@
+-# Porting ztachip
+-
+-ztachip is structured so the accelerator core can be moved to another FPGA
+-family, SoC, or ASIC while keeping the programming model intact.
+-
+-## Porting checklist
+-
+-A new platform typically requires work in these areas:
+-
+-1. **Clock and reset** - provide stable accelerator and peripheral clocks.
+-2. **External memory** - replace the platform-specific DDR controller and
+-   validate the AXI path and achievable bandwidth.
+-3. **Interconnect** - connect the RISC-V host, ztachip control interface,
+-   external memory, and required peripherals.
+-4. **JTAG/debug** - provide a working RISC-V debug path for GDB/OpenOCD.
+-5. **Board I/O** - adapt camera, video, UART, Ethernet, or other peripherals.
+-6. **Configuration constants** - scale P-core count, local memories, FPU width,
+-   and related hardware parameters to the target device.
+-7. **Timing closure** - pipeline or floorplan platform-specific bottlenecks.
+-8. **Validation** - start with simulation, then a small deterministic kernel,
+-   then full AI/vision applications.
+-
+-The most important portability boundary is the external-memory and platform
+-wrapper. Keep algorithm code independent of vendor-specific FPGA IP whenever
+-possible.
+diff --git a/docs/hardware/simulation.md b/docs/hardware/simulation.md
+deleted file mode 100644
+index 7cc3aad..0000000
+--- a/docs/hardware/simulation.md
++++ /dev/null
+@@ -1,34 +0,0 @@
+-# RTL Simulation
+-
+-Build the simulation software image first:
+-
+-```bash
+-export PATH=/opt/riscv/bin:$PATH
+-cd ztachip
+-
+-cd SW/compiler
+-make clean all
+-
+-cd ..
+-make clean all -f makefile.kernels
+-make clean all -f makefile.sim
+-```
+-
+-The generated memory image is:
+-
+-```text
+-SW/build/ztachip_sim.hex
+-```
+-
+-Compile RTL from the project simulation and hardware source directories. The
+-top-level simulation component is:
+-
+-```text
+-HW/simulation/main.vhd
+-```
+-
+-Drive `main:clk`. The `main:led_out` output toggles as tests pass.
+-
+-Simulation is the preferred place to validate a new platform wrapper, tensor
+-instruction sequence, or RTL modification before debugging the same problem
+-through FPGA JTAG.
+diff --git a/docs/hardware/vivado.md b/docs/hardware/vivado.md
+deleted file mode 100644
+index 1c563d0..0000000
+--- a/docs/hardware/vivado.md
++++ /dev/null
+@@ -1,24 +0,0 @@
+-# Vivado FPGA Build
+-
+-The reference FPGA target uses Xilinx Vivado and the Digilent Arty A7.
+-
+-## Recommended build sequence
+-
+-1. Install the Vivado edition that supports the target Artix-7 device.
+-2. Clone the ztachip repository.
+-3. Open or create the project using the scripts and project files supplied
+-   under the hardware/platform directories.
+-4. Generate required vendor IP, including the memory subsystem.
+-5. Synthesize and implement the design.
+-6. Generate the bitstream.
+-7. Program the FPGA and, when desired, the configuration flash.
+-8. Confirm the FPGA configuration LED is active before starting OpenOCD.
+-
+-```{note}
+-Treat the FPGA build and software build as separate milestones. First verify
+-that the bitstream configures correctly; then verify JTAG/OpenOCD; then load
+-the software image.
+-```
+-
+-The original repository's `Documentation/Vivado.md` remains the source of
+-target-specific project details and screenshots.
+diff --git a/docs/index.md b/docs/index.md
+index 80aa946..3be855b 100644
+--- a/docs/index.md
++++ b/docs/index.md
+@@ -1,109 +1,80 @@
+ # ztachip Documentation
+ 
+ <div class="zt-hero">
+-
+-**ztachip** is an open-source, multicore, data-aware RISC-V accelerator for
+-edge AI, computer vision, and other tensor-oriented workloads. It is designed
+-to run on cost-sensitive FPGA devices and can also be implemented as a custom
+-ASIC.
+-
+-This documentation is organized around the tasks a developer performs:
+-understand the architecture, build the toolchain, run the first application,
+-learn the tensor programming model, write P-core kernels, integrate AI and
+-vision workloads, and finally port the design to a new FPGA or ASIC.
+-
++  <div class="zt-kicker">OPEN-SOURCE EDGE AI ACCELERATOR</div>
++  <h2>ztachip Developer Documentation</h2>
++  <p>
++    Complete programmer-facing documentation for ztachip, presented on the web
++    in the same order as the main ztachip project page.
++  </p>
+ </div>
+ 
+ ```{image} _static/images/ztachip_arch.png
+-:alt: ztachip architecture showing the RISC-V host, tensor engine, P-core array, memory hierarchy, and processing threads
++:alt: ztachip architecture
++:class: zt-main-image
+ :width: 100%
+ ```
+ 
+-## Where should I start?
++## Documentation
++
++The documentation below mirrors the five guides listed on the
++[ztachip project home page](https://github.com/ztachip/ztachip). The source
++content is synchronized from the main repository during every documentation
++build. Formatting, spelling, and grammar are cleaned up for the web, while the
++technical content and examples are preserved.
+ 
+-::::{grid} 2
++::::{grid} 1 1 2 2
+ :gutter: 3
+ 
+-:::{grid-item-card} New to ztachip?
+-Read **Introduction** and then follow **Quick Start** to build and run the
+-reference platform.
+-:link: getting-started/quick-start
++:::{grid-item-card} 1. Technical Overview
++:link: technical-overview
+ :link-type: doc
+-:::
+ 
+-:::{grid-item-card} Writing accelerated code?
+-Start with the **Programming Model**, then continue with the Tensor Language
+-and P-core Kernel guides.
+-:link: programming/model
+-:link-type: doc
++Why ztachip uses a domain-specific architecture, the problems it addresses,
++and the design goals behind its tensor-oriented execution model.
+ :::
+ 
+-:::{grid-item-card} Building AI or vision applications?
+-Use the **Vision & AI** section for the software stack, model flow, examples,
+-and quantization process.
+-:link: vision-ai/index
++:::{grid-item-card} 2. Hardware Architecture
++:link: hardware-architecture
+ :link-type: doc
++
++The complete ztachip hardware architecture, including interfaces,
++subcomponents, tensor dataplane, P-core array, FPU, and memory movement.
+ :::
+ 
+-:::{grid-item-card} Porting the hardware?
+-Read **Hardware Architecture**, **Vivado Build**, and **Porting Guide**.
+-:link: hardware/architecture
++:::{grid-item-card} 3. Programmer Guide
++:link: programmer-guide/index
+ :link-type: doc
+-:::
+ 
+-::::
++The complete ztachip programmer guide converted from the original document to
++searchable, navigable web documentation with its figures and tables preserved.
++:::
+ 
+-```{toctree}
+-:maxdepth: 2
+-:caption: Start Here
++:::{grid-item-card} 4. Vision AI Stack Programmer Guide
++:link: vision-ai-stack-programmer-guide/index
++:link-type: doc
+ 
+-introduction
+-getting-started/index
+-getting-started/quick-start
+-getting-started/repository-layout
+-```
++The complete Vision AI Stack programmer guide converted to web documentation,
++including the original figures and examples.
++:::
+ 
+-```{toctree}
+-:maxdepth: 3
+-:caption: Programming
+-
+-programming/model
+-programming/tensor-programming
+-programming/pcore-programming
+-programming/software-architecture
+-programming/tensor_language_reference
+-programming/pcore_language_reference
+-programming/software_architecture_detail
+-```
++:::{grid-item-card} 5. MicroPython Programmer Guide
++:link: micropython-programmer-guide
++:link-type: doc
+ 
+-```{toctree}
+-:maxdepth: 3
+-:caption: Vision, AI & Agents
++How to build and use the ztachip MicroPython port and its accelerator-facing
++APIs and examples.
++:::
+ 
+-vision-ai/index
+-vision-ai/vision-stack
+-vision-ai/llm-agents
+-vision-ai/model-quantization
+-micropython/index
+-```
++::::
+ 
+ ```{toctree}
+ :maxdepth: 3
+-:caption: Hardware & FPGA
+-
+-hardware/architecture
+-hardware/memory-and-execution
+-hardware/vivado
+-hardware/porting
+-hardware/simulation
+-reference/hardware_detail
+-```
+-
+-```{toctree}
+-:maxdepth: 2
+-:caption: Reference
++:caption: ztachip Documentation
+ 
+-reference/glossary
+-reference/troubleshooting
+-reference/source-map
++technical-overview
++hardware-architecture
++programmer-guide/index
++vision-ai-stack-programmer-guide/index
++micropython-programmer-guide
+ ```
+diff --git a/docs/introduction.md b/docs/introduction.md
+deleted file mode 100644
+index a0bcaec..0000000
+--- a/docs/introduction.md
++++ /dev/null
+@@ -1,54 +0,0 @@
+-# Introduction
+-
+-ztachip is a **domain-specific accelerator architecture** for workloads that
+-can be expressed as a sequence of tensor data operations and tensor compute
+-operations. The project combines open RTL, a RISC-V host processor, a tensor
+-engine, an array of lightweight P-core processors, software libraries, a
+-compiler, and MicroPython integration.
+-
+-## Why the architecture is different
+-
+-Many accelerators are optimized primarily for a single operation such as
+-matrix multiplication or convolution. That approach can deliver very high
+-throughput, but it often leaves image preprocessing, data movement, control
+-logic, and non-neural-network workloads to a separate CPU or GPU.
+-
+-ztachip instead separates the problem into two coordinated activities:
+-
+-1. **Data movement** - tensor instructions move, reshape, transpose, resize,
+-   and remap data between external memory and on-chip memory.
+-2. **Computation** - tensor operators execute from local memory across many
+-   P-cores and hardware threads.
+-
+-This separation makes data access predictable and allows memory transfers to
+-overlap with computation. It also lets the programming model describe
+-parallelism explicitly without exposing most of the low-level RTL details.
+-
+-## Complete stack
+-
+-ztachip provides:
+-
+-- synthesizable hardware source for FPGA and ASIC targets;
+-- a RISC-V host and hardware control path;
+-- a tensor-program compiler and P-core kernel compiler;
+-- reusable vision and AI software;
+-- TensorFlow-oriented inference support;
+-- an FPU path used by transformer and LLM workloads;
+-- MicroPython integration for scripting and edge-agent applications.
+-
+-```{image} _static/images/ztachip_ai_agent.png
+-:alt: AI harness using ztachip to run LLM, CNN, vision, and system tasks concurrently
+-:width: 100%
+-```
+-
+-## Recommended learning path
+-
+-A programmer does **not** need to understand the entire RTL before using
+-ztachip. The recommended sequence is:
+-
+-1. Build and run an existing example.
+-2. Learn how tensors are represented and moved.
+-3. Learn how a tensor operator is dispatched.
+-4. Modify or write a P-core kernel.
+-5. Move to the detailed hardware documentation only when optimizing,
+-   debugging, or porting the accelerator.
+diff --git a/docs/micropython-programmer-guide.md b/docs/micropython-programmer-guide.md
+new file mode 100644
+index 0000000..d4bcf31
+--- /dev/null
++++ b/docs/micropython-programmer-guide.md
+@@ -0,0 +1,6 @@
++# MicroPython Programmer Guide
++
++```{note}
++This page is synchronized from `micropython/MicropythonUserGuide.md` in the
++main ztachip repository when the documentation site is built.
++```
+diff --git a/docs/micropython/index.md b/docs/micropython/index.md
+deleted file mode 100644
+index 97a917f..0000000
+--- a/docs/micropython/index.md
++++ /dev/null
+@@ -1,35 +0,0 @@
+-# MicroPython Integration
+-
+-MicroPython is the recommended high-level environment for ztachip application
+-development when rapid iteration and scripting are more important than a
+-fully bare-metal C application.
+-
+-The ztachip MicroPython port integrates the RISC-V firmware with accelerator
+-functions and makes it possible to build applications that combine:
+-
+-- accelerator-backed AI and vision functions;
+-- local LLM inference;
+-- function calling;
+-- serial and device I/O;
+-- application logic written in Python.
+-
+-## Build
+-
+-```bash
+-git clone https://github.com/micropython/micropython.git
+-cd micropython/ports
+-cp -avr <ztachip-folder>/micropython/ztachip_port .
+-cd ztachip_port
+-
+-export PATH=/opt/riscv/bin:$PATH
+-export ZTACHIP=<ztachip-folder>
+-
+-make clean
+-make
+-```
+-
+-## Examples
+-
+-The main ztachip repository contains MicroPython examples under
+-`micropython/examples/`. Start with an existing example and verify it on the
+-reference hardware before adding your own functions or models.
+diff --git a/docs/programmer-guide/index.md b/docs/programmer-guide/index.md
+new file mode 100644
+index 0000000..bfe2be2
+--- /dev/null
++++ b/docs/programmer-guide/index.md
+@@ -0,0 +1,5 @@
++# Programmer Guide
++
++The complete programmer guide is generated from the original
++`Documentation/ztachip_programmer_guide.odt` document during the documentation
++build. Embedded figures and tables are extracted and published with the guide.
+diff --git a/docs/programming/model.md b/docs/programming/model.md
+deleted file mode 100644
+index a231f18..0000000
+--- a/docs/programming/model.md
++++ /dev/null
+@@ -1,37 +0,0 @@
+-# Programming Model
+-
+-ztachip uses a two-level programming model.
+-
+-## Tensor program
+-
+-A **tensor program** runs on the RISC-V host. It describes the application as
+-a sequence of high-level tensor operations:
+-
+-- move tensors between DDR, scratch memory, and P-core memory;
+-- reshape, resize, transpose, or remap data;
+-- launch a tensor operator on the P-core array;
+-- coordinate two tensor-engine contexts so data transfer can overlap compute.
+-
+-Tensor-program source uses C with ztachip extensions. Tensor-extension
+-statements begin with `>`.
+-
+-## P-core program
+-
+-A **P-core program** defines the implementation of tensor operators. P-core
+-source uses a C-like language compiled into the accelerator's VLIW
+-instruction stream.
+-
+-P-cores execute in parallel and use hardware multithreading to keep the deep
+-execution pipeline occupied.
+-
+-## Key design principle: separate movement from compute
+-
+-On a conventional processor, loads and arithmetic are interleaved. When data
+-is not in cache, the processor can stall while waiting for memory.
+-
+-ztachip moves the required working set into local accelerator memory first.
+-The tensor operator then runs against that local memory. A second tensor
+-context can prepare the next working set while the first one is executing.
+-
+-This explicit separation is central to both ztachip performance and its
+-programming model.
+diff --git a/docs/programming/pcore-programming.md b/docs/programming/pcore-programming.md
+deleted file mode 100644
+index 7f8c260..0000000
+--- a/docs/programming/pcore-programming.md
++++ /dev/null
+@@ -1,47 +0,0 @@
+-# P-core Kernel Programming
+-
+-P-core kernels implement the tensor operators launched by tensor programs.
+-
+-## Execution model
+-
+-Each P-core is a lightweight VLIW vector processor. The architecture combines:
+-
+-- vector arithmetic;
+-- scalar integer operations for indexing and loop control;
+-- control operations;
+-- local memory;
+-- hardware multithreading.
+-
+-P-cores execute the same instruction stream in lockstep. Within each P-core,
+-hardware threads are interleaved through the pipeline.
+-
+-## Kernel example
+-
+-```cpp
+-_NT16_ class matrix;
+-
+-_kernel_ void matrix::add(float8 x, float8 y, float8 z)
+-{
+-    z = x + y;
+-}
+-```
+-
+-This compact expression describes vector work that is distributed across the
+-accelerator's P-cores and threads.
+-
+-## Memory scope
+-
+-P-core data may be:
+-
+-- **private** - one instance for each hardware thread;
+-- **shared** - one instance shared by the threads in a P-core;
+-- **global** - read-only scalar parameters supplied by the tensor program.
+-
+-## Vector masking
+-
+-`_VMASK` selects which vector lanes are written. Comparison helpers such as
+-`GE`, `GT`, `LE`, `LT`, `EQ`, and `NE` can produce masks for conditional
+-vector execution without requiring divergent thread branches.
+-
+-For the full language description, see the
+-[P-core Language Reference](pcore_language_reference.md).
+diff --git a/docs/programming/pcore_language_reference.md b/docs/programming/pcore_language_reference.md
+deleted file mode 100644
+index 29fa052..0000000
+--- a/docs/programming/pcore_language_reference.md
++++ /dev/null
+@@ -1,265 +0,0 @@
+-# P-core Programmer Guide.
+-
+-## 1. Prerequisites
+-To proceed with this document. Please familiar yourself with the software and hardware architecture of ztachip
+-
+-[ztachip Hardware Architecture](https://github.com/ztachip/ztachip/blob/master/Documentation/HardwareArchitecture.md)
+-
+-[ztachip Software Architecture](https://github.com/ztachip/ztachip/blob/master/Documentation/SoftwareArchitecture.md)
+-
+-## 2. Overview
+-
+-P-core programs are codes that are executed on the P-core array of processors.
+-
+-These programs have a C-like syntax, but not all C features are supported.
+-
+-P-core program files have suffix *.p
+-
+-There can be multiple *.p files and they are dynamically loaded to P-core processors on demand.
+-
+-There can only be one active P-core program running at a time. 
+-
+-At a high-level view, they implement TENSOR operators that can then be invoked by MCORE programs. TENSOR operators can be viewed as functions with TENSORs as inputs and outputs.
+-
+-P-core processors all execute the same instructions in lock-step.
+-P-core execution is then further scheduled into thread block. There are 16 threads per P-core processor. Threads scheduling are hardware based with zero-overhead.
+-P-core thread executions are pipelined and interleaved between different threads. This allows for 1 instruction to be executed per clock. 
+-
+-P-core also has a VLIW architecture. Meaning each VLIW instructions contain multiple operations. 
+-
+-## 3. VLIW instructions
+-
+-P-core processor has a VLIW architecture. Each instructions can perform up to 3 operations:
+-
+-### 3.1 Vector operations
+-Vector operations are executed in the vector ALU units.
+-Implement operations such as FMA,ADD,SUBTRACT,MULTIPLY,SHIFT. These operations are the ones that carry out most of the computing.
+-For more expressive capabilities, operands to vector operations can be direct address, direct address with offset, pointer, pointer with offset.
+-
+-### 3.2 Scalar operations
+-Scalar operations are executed in the scalar ALU units.
+-Implement integer operations such as ADD,SUB,MUL,SHIFT. These operations are normally used for array indexing, address calculation, loop counter...
+-
+-### 3.3 Control operations
+-Perform conditional branching 
+-
+-## 4. P-core program syntax.
+-
+-### 4.1 General description
+-
+-P-core programs define TENSOR operators as objects with their own attributes and operations.
+-
+-All objects are defined as single instance objects. Meaning you don't have to allocate the objects and the objects are automatically created and destroyed.
+-
+-Example below is a P-core program which defines matrix addition operation.
+-
+-```
+-   // Declare object matrix
+-   _NT16_ class matrix;
+-
+-   // Tensor operator for matrix addition
+-   _kernel_ void matrix::add(float8 x,float8 y,float8 z) 
+-   {
+-      z=x+y;
+-   }
+-
+-```
+-
+-### 4.2 Memory layout
+-
+-Different classes defined within the same *.p file are overlaid in the same memory region.
+-
+-Which means when you switch to using a different class, the current class variable values will be overwritten. 
+-
+-Memory region used for classes allocation can be private or shared P-core memory space.
+-
+-### 4.2 Class declaration
+-
+-Each class must be declared with the following syntax
+-```
+-[_NT16_|_NT8_|_NT4_] class [class_name]
+-```
+-Where
+-
+-`_NT16_` means this object is allocated among all 16 threads.
+-
+-`_NT8_` means this object is allocated among 8 threads.
+-
+-`_NT4_` means this object is allocated among 4 threads.
+-
+-Example:
+-```
+-_NT16_ class matrix; // Defines object class matrix. This object is allocated among all 16 threads;
+-
+-```
+-
+-### 4.3 Data types 
+-
+-#### 4.3.1 float
+-scalar of 12 bit integer. This data type is used with vector ALU. Variables of this type are used to hold computing values. Note that this is not actually a float type but rather it is a 12 bit integer type.
+-
+-Example:
+-```
+-   float myclass::myvar; // myvar is variable of type float and belonged to class myclass.
+-```
+-
+-#### 4.3.2 float8
+-vector of 8x12 bit integers. This data type is used with vector ALU. Variables of this type are used to hold computing values. Note that this is not actually a vector of float type but rather it is a vector of 12-bit integers.
+-
+-Example:
+-```
+-   float8 myclass::myvar; // myvar is variable of type float8 and belonged to class myclass.
+-```
+-
+-#### 4.3.3 double
+-32 bit integer type. It can be used as 8x32bit vector or as 32 bit integer. Variables of this type are used to hold accumulator computing values. Note that this is not actually a double type but rather it is a 32 bit integer type. 
+-
+-Example:
+-```
+-   double myclass::_A; // _A is a 32bit accumulator. It can be used as 8x32bit vector or as 32bit integer.
+-```
+-
+-#### 4.3.4 int
+-scalar 12 bit integer. This data type is used with scalar ALU. Variable of this type is normally used for loop index, array index...
+-
+-Example:
+-```
+-   int myclass::myvar; // myvar is variable of type int and belonged to class myclass.
+-```
+-
+-#### 4.3.5 float *
+-pointer to a float variable or array of float variables.
+-
+-Example:
+-```
+-   float *myclass::myvar; // myvar is variable of type float * and belonged to class myclass.
+-```
+-
+-
+-#### 4.3.6 float8 *
+-pointer to a float8 variable or array of float8 variables.
+-
+-Example:
+-```
+-   float8 *myclass::myvar; // myvar is variable of type float8 * and belonged to class myclass.
+-```
+-
+-
+-### 4.4 Data scope
+-
+-#### 4.4.1 Private scope
+-
+-There is an instance of the variable allocated for each thread.
+-
+-For example:
+-
+-```
+-   float myclass::my_private_variable;  // separate instance of my_private_variable are allocated for each thread
+-```
+-
+-#### 4.4.2 Shared scope
+-
+-There is only one instance of the variable shared among all the threads within the same P-core processor.
+-
+-Shared variables are preceded with keyword `_share`
+-
+-For example:
+-
+-```
+-   _share myclass::my_shared_variable; // my_shared_variable is shared among all the threads in the same P-core.
+-```
+-
+-#### 4.4.3 Global scope
+-
+-Variables of global scope are defined as function parameters with prefix _global.
+-
+-All P-cores and threads shared the same global variables.
+-
+-Global variables are read-only by P-core functions.
+-
+-Global variables can only be set by mcore programs.
+-
+-Global variables can only be of integer type.
+-
+-Below is an example of global variables from [conv.p](https://github.com/ztachip/ztachip/blob/master/software/target/apps/nn/kernels/conv.p)
+-```
+-// idx and idx2 are integers with global scope
+-_kernel_ void convolution1x1::exe8(_global int idx,_global int idx2) {
+-   :
+-   :
+-}
+-```
+-
+-### 4.5 Class operations
+-
+-These are functions that can be invoked by MCORE programs.
+-
+-They have void return type and preceded with keyword `_kernel_`
+-
+-They may optionally have an input parameter list. Parameter list are temporary variables that have a lifetime of the function call only.
+-
+-When another function being called, the parameter list of the new functions may override that parameter variables of the previous function call.
+-
+-For example:
+-
+-```
+-   _kernel_ void matrix::my_function(float8 x,float8 y,float8 z)
+-   {
+-      z=x+y;
+-   }
+-```
+-
+-### 4.6 Special syntax
+-
+-#### 4.6.1 _VMASK
+-
+-This is a special integer variable where each bit controls a vector ALU lane.
+-
+-For example:
+-
+-_VMASK=1 enables only the first lane of the vector ALU. 
+-
+-_VMASK=3 enables the first and second lane of vector ALU.
+-
+-To enable all the lanes, set _VMASK=-1
+-
+-#### 4.6.2 GE(v1,v2)
+-Test for v1 >= v2. Result is an integer where each bit corresponds to condition being true for the vector lane.
+-
+-You would normally assigned the result to _VMASK.
+-
+-#### 4.6.2 GT(v1,v2)
+-Test for v1 > v2. Result is an integer where each bit corresponds to condition being true for the vector lane.
+-
+-You would normally assigned the result to _VMASK.
+-
+-#### 4.6.2 LE(v1,v2)
+-Test for v1 <= v2. Result is an integer where each bit corresponds to condition being true for the vector lane.
+-
+-You would normally assigned the result to _VMASK.
+-
+-#### 4.6.2 LT(v1,v2)
+-Test for v1 < v2. Result is an integer where each bit corresponds to condition being true for the vector lane.
+-
+-You would normally assigned the result to _VMASK.
+-
+-#### 4.6.2 EQ(v1,v2)
+-Test for v1 == v2. Result is an integer where each bit corresponds to condition being true for the vector lane.
+-
+-You would normally assigned the result to _VMASK.
+-
+-#### 4.6.2 NE(v1,v2)
+-Test for v1 != v2. Result is an integer where each bit corresponds to condition being true for the vector lane.
+-
+-You would normally assigned the result to _VMASK.
+-
+-## 5. Examples
+-
+-[Example of a P-core program implementing convolution operator](https://github.com/ztachip/ztachip/blob/master/software/target/apps/nn/kernels/conv.p)
+-
+-[Example of a P-core program implementing Canny edge detection](https://github.com/ztachip/ztachip/blob/master/software/target/apps/canny/kernels/canny.p)
+-
+-[Example of a P-core program implementing image resize](https://github.com/ztachip/ztachip/blob/master/software/target/apps/resize/kernels/resize.p)
+-
+-
+-
+diff --git a/docs/programming/software-architecture.md b/docs/programming/software-architecture.md
+deleted file mode 100644
+index 94398a2..0000000
+--- a/docs/programming/software-architecture.md
++++ /dev/null
+@@ -1,20 +0,0 @@
+-# Software Architecture
+-
+-The ztachip software stack hides most hardware-specific scheduling details
+-behind a domain-specific programming model.
+-
+-At a high level:
+-
+-1. application code runs on the RISC-V host;
+-2. tensor extensions describe memory movement and operator launches;
+-3. the ztachip compiler translates those extensions into tensor-engine
+-   commands;
+-4. P-core source implements the operators;
+-5. the P-core compiler produces the VLIW program loaded into the accelerator;
+-6. vision, AI, and MicroPython libraries build on top of these layers.
+-
+-This arrangement allows an application to remain largely independent of the
+-number of P-cores or the exact FPGA implementation. Porting to a device with a
+-different accelerator capacity should therefore require much less application
+-rewriting than a design in which scheduling and hardware topology are embedded
+-directly into the algorithm.
+diff --git a/docs/programming/software_architecture_detail.md b/docs/programming/software_architecture_detail.md
+deleted file mode 100644
+index 0929ab9..0000000
+--- a/docs/programming/software_architecture_detail.md
++++ /dev/null
+@@ -1,121 +0,0 @@
+-# Domain Specific Language Architecture.
+-
+-## Overview
+-
+-Domain-Specific_Architecture (DSA) is a general trend in 
+-computing community to keep up with the future computing demand fueled by the 
+-exponential growth of AI.
+-
+-With DSA, the first goal is to define a domain of applications where 
+-the DSA can be applied to efficiently compared to a more general purpose computing
+-architecture.
+-
+-ztachip domain are applications that can be expressed as a sequence of steps of tensor
+-operations. There are 2 primary types of tensor operations defined:
+-
+-- Tensor data operations: Involving operations such as tensor data copy, 
+-tensor transpose, dimension resize, data remapping...
+-
+-- Tensor operator operations: Performing computational tasks on a set of tensors.
+-
+-But to be effective, DSA would require a Special-Domain-Language (DSL) to abstract away the
+-complexities of DSA. 
+-
+-The goal for DSL is to provide a programming language that is:
+-
+-- Easy to use and learn.
+-
+-- Hide the complexity of hardware implementation from software users.
+-
+-- Flexible enough to cover as wide range of applications as possible.
+-
+-ztachip's DSL is composed of 2 elements: 
+-
+-- tensor-core programs
+-
+-- p-core programs
+-
+-## tensor-core programs
+-
+-Tensor-core programs are codes that run on RISC-V
+-
+-Tensor-core programs have suffix *.m
+-
+-Tensor-core programs are C-program but with some special extensions. There is a compiler
+-provided with ztachip that converts these special extension to tensor instructions before
+-the program can then be compiled with standard RISC-V C compiler.
+-With tensor-core programs, programmers express the problem as a sequence of high level 
+-tensor instructions. Computational tasks are presented as tensor operators that will be 
+-defined later by p-core programs.
+-
+-Below is an example of what a tensor-core program would look like.
+-
+-```
+-// vector_add.m
+-// Vector addition of 2 vectors 4096 words long
+-
+->DTYPE(INT16)P-core[0:7].THREAD[0:15].example::x[0:3][0:7] <= DTYPE(INT16)MEM(x_p)[0:4095];
+->DTYPE(INT16)P-core[0:7].THREAD[0:15].example::y[0:3][0:7] <= DTYPE(INT16)MEM(y_p)[0:4095];
+->EXE_LOCKSTEP(example:vector_add);
+->DTYPE(INT16)MEM(z_p)[0:4095] <= DTYPE(INT16)P-core[0:7].THREAD[0:15].example::z[0:3][0:7];
+-
+-```
+-In example above, x,y and z are array of dimension 4x8 allocated in p-core private memory space. 
+-
+-Since there are 8 P-cores with 16 threads per P-core, x,y,z are tensors of dimension 8x16x4x8
+-
+-Then tensor-program copies 4096 words from external memory to tensor x.
+-
+-Similarly, it copies 4096 words from external memory to tensor y
+-
+-Then it invokes a tensor operator example::vector_add to add x+y to produce tensor z
+-
+-Finally, it copies result in tensor z to external memory.
+-
+-
+-## p-core programs
+-
+-p-core program implements the tensor operators that are referenced by tensor-core programs.
+-
+-p-core program are files with suffix *.p
+-
+-Tensor operators are implemented as operations of a C++ object.
+-
+-Due to limited memory, all tensor operator objects are singleton and overlapped in memory.
+-
+-Users must partition these objects in such a way that they are not in use at the same time.
+-
+-Below is an example for the tensor operator example::vector_add referenced by tensor-core
+-program shown in previous example.
+-
+-
+-```
+-// vector_add.p
+-
+-vint16 example::x[4];
+-vint16 example::y[4];
+-vint16 example::z[4];
+-
+-_kernel void examle::vector_add()
+-{
+-   int i;
+-   for(i=0;i < 3;i++)
+-      z[i]=x[i]+y[i];
+-}
+-```
+-
+-# Compare ztachip DSL with traditional programming
+-
+-With traditional programming, data and execution steps are interleaved.
+-With vector addition example above, traditional architecture requires each vector elements (or a small number of them 
+-for the case of vector extension) to be 
+-loaded first to memory one at a time and then followed by addition. But this would create a lot of 
+-memory round trip delay and stall cycles when data is not readily available in L1 cache.
+-
+-But with ztachip, data is loaded from external memory into internal memory in a streaming fashion with 
+-prefetching and no round-trip delay. This results in huge gain in memory bandwidth
+-usage efficiencies.
+-
+-Also in the example above, each vector element additions are carried out by
+-separate threads and P-cores, enable huge processing parallelism.
+-
+diff --git a/docs/programming/tensor-programming.md b/docs/programming/tensor-programming.md
+deleted file mode 100644
+index 0365b7b..0000000
+--- a/docs/programming/tensor-programming.md
++++ /dev/null
+@@ -1,51 +0,0 @@
+-# Tensor Programming
+-
+-Tensor programs run on the host RISC-V processor and emit commands to the
+-tensor engine.
+-
+-## Memory spaces
+-
+-A tensor can reside in:
+-
+-- external DDR memory;
+-- scratch-pad SRAM;
+-- P-core private memory;
+-- P-core shared memory.
+-
+-P-core memory is split into independent process pages so tensor-engine memory
+-operations can use one page while the P-core array executes from the other.
+-
+-## Tensor slicing
+-
+-A DDR tensor reference describes both shape and a selected range:
+-
+-```text
+-DDR(pointer, dim0, dim1, ...)[begin:stride:end][begin:stride:end]...
+-```
+-
+-For example:
+-
+-```text
+-DDR(p,100,200)[0:1:19][20:1:29]
+-```
+-
+-When stride is omitted, it defaults to one. Omitting the beginning selects
+-from index zero; omitting the end selects through the end of that dimension.
+-
+-## Typical application sequence
+-
+-A simple accelerated operator generally follows this pattern:
+-
+-```text
+-> move input tensor A from DDR to P-core memory
+-> move input tensor B from DDR to P-core memory
+-> execute operator on the P-core array
+-> move result tensor back to DDR
+-```
+-
+-Real applications can overlap the transfers for one tensor context with the
+-execution of another.
+-
+-For complete syntax, data types, memory spaces, execution forms, FPU
+-operations, and examples, see the
+-[Tensor Language Reference](tensor_language_reference.md).
+diff --git a/docs/programming/tensor_language_reference.md b/docs/programming/tensor_language_reference.md
+deleted file mode 100644
+index a901b78..0000000
+--- a/docs/programming/tensor_language_reference.md
++++ /dev/null
+@@ -1,634 +0,0 @@
+-# Tensor Programmer guide
+-
+-## Overview
+-
+-Tensor programs are codes that are executed on host RISC-V processor. 
+-
+-The program emits tensor instructions to the Tensor Engine. Tensor instructions perform functions such as tensor data movement,resize,reshape and tensor operator dispatching.
+-
+-Tensor programs are C programs with embedded tensor syntax extensions. Tensor extensions are lines that begin with '>'.
+-
+-There can be up to 2 threads running in the tensor processor. The 2 threads are useful in interleaving memory operation cycle from one thread to tensor operator execution cycle from the other thread. This greatly reduces memory access delay.
+-
+-## Tensor data objects 
+-
+-Tensor data objects are objects defined in tensor programs.
+-
+-They can be viewed as data variables in tensor programming paradigm.
+-
+-Tensors can be resided in P-core private memory space, P-core shared memory space, scratch-pad memory space or external DDR memory space.
+-
+-P-core memory space is further partitioned into 2 independent process space. This allows for memory operation from TensorEngine to be carried out while tensor operator execution from P-core arrays can still access memory from the other process space.
+-
+-### Tensor data objects in DDR memory space
+-External DDR tensor has the syntax below. It specifies a tensor as a subset of another tensor by specifying a dimension index range.
+-```
+-   DDR(pointer,dimension,dimension,...)[begin:stride:end][begin:stride:end]...
+-```
+-Where:
+-
+-   - pointer: memory address where TENSOR is stored in DDR memory
+-
+-   - dimension: TENSOR dimensions
+-
+-   - begin: starting index of dimension range.
+-
+-   - stride: stride of the dimension range.
+-
+-   - end:  ending index of dimension range.
+-
+-
+-Example:
+-
+-```
+-   DDR(p,100,200)[0:1:19][20:1:29]
+-```
+-If stride of index range is ignored, then 1 is assumed
+-```
+-   DDR(p,100,200)[0:19][20:29]
+-```
+-If begin of index range is ignored, then 0 is assumed
+-```
+-   DDR(p,100,200)[:19][:29]
+-```
+-If end of index range is ignored, then end of dimension range is assumed.
+-```
+-   DDR(p,100,200)[0:][20:]
+-```
+-
+-### Tensor data objects in scratch-pad memory space 
+-Tensor that is allocated in scratch-pad memory space.
+-
+-It has similar syntax to DDR tensor syntax except the keyword is SCRATCH
+-
+-Example:
+-```
+-   SCRATCH(p,100,200)[0:19][20:29]
+-
+-   SCRATCH(p,dy,dx)[y:dy-1][x:dx-1]
+-```
+-
+-### Tensor data objects in P-core private memory space
+-
+-Each P-core threads have its own private memory space.
+-P-core private memory space is further partitioned into 2 independent process space. This allows for memory operation from TensorEngine to be carried out while tensor operator execution from P-core arrays can still access memory from the other process space.
+-
+-Tensors that are allocated in P-core private memory space have the following syntax
+-
+-```
+-P-core(dimension,...)[begin:stride:end][begin:stride:end].thread[begin:stride:end].class::variable
+-```
+-
+-Where:
+-
+-   - dimension: P-core array can be laid out as an 1D array or 2D array. Dimension must be in power of 2.
+-
+-   - begin: starting index of dimension range.
+-
+-   - stride: stride of the dimension range.
+-
+-   - end: ending index of dimension range.
+-
+-   - thread: thread block
+-
+-   - class: class name that variable associated with as defined in associated P-core programs.
+-
+-   - variable: class variable holding tensor data elements as defined in associated P-core programs.
+-   
+-Example
+-```
+-P-core(8)[0:7].thread[0:15].class::private_variable[:]
+-
+-P-core(4,2)[0:3][0:1].thread[0:15].class::private_variable[:]
+-
+-P-core(dy,dx)[0:dy-1][0:dx-1].thread[0:15].class::private_variable[:]
+-
+-```
+-
+-### Tensor data objects in P-core shared memory space
+-
+-P-core threads in the same P-core share the same shared memory space. Data allocated in the shared memory can be accessed by any threads in the same P-core.
+-P-core shared memory space is further partitioned into 2 independent process space. This allows for memory operation from TensorEngine to be carried out while tensor operator execution from P-core arrays can still access memory from the other process space.
+-
+-Tensors that are allocated in P-core shared memory space have the following syntax
+-
+-```
+-P-core(dimension,...)[begin:stride:end][begin:stride:end].class::variable
+-```
+-
+-Where:
+-
+-   - dimension: P-core array can be laid out as an 1D array or 2D array. Dimension must be in power of 2.
+-
+-   - begin: starting index of dimension range.
+-
+-   - stride: stride of the dimension range.
+-
+-   - end: ending index of dimension range.
+-
+-   - class: class name that variable associated with as defined in associated P-core program.
+-
+-   - variable: class variable holding tensor data elements as defined in associated P-core program.
+-    
+-Example
+-
+-```
+-P-core(8)[0:7].class::shared_variable[:]
+-
+-P-core(4,2)[0:3][0:1].class::shared_variable[:]
+-
+-P-core(4,2)[0:dy-1][0:dx-1].class::shared_variable[:]
+-
+-```
+-
+-## Tensor variables.
+-
+-Tensor variables are tensor alias. Tensor variables are normally used in fast and tight loop of tensor programs.
+-
+-Example below is an example of a tensor variable
+-
+-```
+-   > $coef_pcore := (weightfmt)P-core(group,groupsz)[:][*].convolution::coef[0:kz-1][:];
+-```
+-
+-Whenever $coef_pcore being invoked in a tensor transfer statement, the expression on the right will be substituted in its place.
+-
+-Tensor variables can also have an optional argument. The argument is being specified at later point whenever tensor variables are used. '$' is tensor variable's argument place holder.
+-
+-Example below is an example of a tensor variable with argument. The place holder for argument is '$' in the example.
+-
+-```
+-   > $coef_ddr := (weightfmt)MEM(coef,botcnt2,topcnt3)[$][rowi:rowi+gkz-1];
+-```
+-  
+-Example below is when the tensor variables above are being used in a tensor transfer instruction. Note that jj substitutes '$' found in tensor variable coef_ddr definition.
+-
+-```
+-   > $coef_pcore <= $coef_ddr[jj];
+-```
+-
+-## Tensor data memory transfer instructions
+-
+-tensor program emits these instructions to TensorEngine.
+-
+-They are inserted to tensor C-programs with special syntax line begins with '>'
+-
+-These instructions move data from one memory space to another.
+-
+-The way data is read/written to tensors is like a nested FOR loop. The order starts with index from right to left.
+-
+-In addition to memory transfer, it can also perform tensor reshape,dimension resize,stream processing...
+-
+-### Tensor data transfer from DDR to P-core private memory space
+-
+-```
+->P-core[0:1].THREAD[0:1].myclass::myfunc.var[0:1] <= DDR(p)[0:2*2*2-1];
+-```
+-
+-Example above transfers data from DDR tensor data object to P-core tensor data object resided in P-core private memory space.
+-
+-The result of the transfer is listed below
+-```
+-P-core   THREAD  private_var      <=  DDR
+------------------------------------------
+-0       0       private_var[0]       p[0]
+-0       0       private_var[1]       p[1]
+-0       1       private_var[0]       p[2]
+-0       1       private_var[1]       p[3]
+-1       0       private_var[0]       p[4]
+-1       0       private_var[1]       p[5]
+-1       1       private_var[0]       p[6]
+-1       1       private_var[1]       p[7]
+-```
+-### Tensor data transfer from DDR to P-core shared memory space.
+-
+-```
+->P-core[0:1].myclass::myfunc.shared_var[0:1] <= DDR(p)[0:2*2-1];
+-```
+-
+-Example above transfers data from DDR tensor data object to P-core tensor data object resided in P-core shared memory space. 
+-
+-The result of the transfer is listed below
+-```
+-P-core   shared_var    <=   DDR
+--------------------------------
+-0       shared_var[0]      p[0]
+-0       shared_var[1]      p[1]
+-1       shared_var[0]      p[2]
+-1       shared_var[1]      p[3]
+-```
+-### Tensor data transfer from DDR to SCRATCH-PAD memory space.
+-
+-```
+-int len=4;
+->SCRATCH(0,100)[0:len-1] <= DDR(p,100)[0:len-1];
+-```
+-
+-Example above transfers data from DDR tensor data object to scratch-pad tensor data object.
+-
+-SCRATCH-PAD tensor is a 1 dimensional tensor of dimension 100.
+-
+-DDR tensor is a 1 dimensional tensor of dimention 100
+-
+-The result of the transfer is listed below
+-```
+-SCRATCH-PAD      DDR
+-------------------------
+-SCRATCH[0]  <=   p[0]
+-SCRATCH[1]  <=   p[1]
+-SCRATCH[2]  <=   p[2]
+-SCRATCH[3]  <=   p[3]
+-```
+-### Tensor data transfer from DDR to SCRATCH-PAD memory space. Multi-dimensional case.
+-
+-```
+-int dx=2;
+-int dy=4;
+->SCRATCH(0,100,200)[0:dy-1][0:dx-1] <= DDR(p,1000,2000)[0:dy-1][0:dx-1];
+-```
+-
+-Example above transfers data from DDR tensor data object to scratch-pad tensor data object.
+-
+-DDR tensor is a 2 dimensional tensor of dimension 1000x2000
+-
+-Scratch-pad tensor is a 2 dimensional tensor of dimension 100x200
+-
+-The result of the transfer is listed below
+-```
+-SCRATCH-PAD      DDR
+-------------------------
+-SCRATCH[0][0] <= p[0][0]
+-SCRATCH[0][1] <= p[0][1]
+-SCRATCH[1][0] <= p[1][0]
+-SCRATCH[1][1] <= p[1][1]
+-SCRATCH[2][0] <= p[2][0]
+-SCRATCH[2][1] <= p[2][1]
+-SCRATCH[3][0] <= p[3][0]
+-SCRATCH[3][1] <= p[3][1]
+-```
+-
+-### Tensor reshape
+-
+-```
+->P-core[0].THREAD[0:2].myclass::myfunc.var[0:3] <= DDR(p,100,2,2)[0][0:2][0:3];
+-```
+-
+-Example above transfers data from DDR tensor data object but the DDR dimension indexes are going out-of-bound in some cases.
+-
+-Tensor data associated with out-of-bound dimension index are padded with zero for read operation and skipped for write operation.
+-
+-The result of the transfer is listed below
+-```
+-P-core   THREAD    var   <=   DDR
+----------------------------------------------------------------------------
+-0          0        0        p[0][0][0]
+-0          0        1        p[0][0][1]
+-0          0        2        p[0][0][2] <- (Out of bound-Replace with zero)
+-0          0        3        p[0][0][3] <- (Out of bound-Replace with zero)
+-0          1        0        p[0][1][0]
+-0          1        1        p[0][1][1]
+-0          1        2        p[0][1][2] <- (Out of bound-Replace with zero)
+-0          1        3        p[0][1][3] <- (Out of bound-Replace with zero)
+-0          2        0        p[0][2][0] <- (Out of bound-Replace with zero)
+-0          2        1        p[0][2][1] <- (Out of bound-Replace with zero)
+-0          2        2        p[0][2][2] <- (Out of bound-Replace with zero)
+-0          2        3        p[0][2][3] <- (Out of bound-Replace with zero)
+-```
+-
+-### Tensor dimenstion casting
+-
+-You can cast the dimension of the components of P-core tensor to different dimension.
+-
+-Example:
+-
+-```
+->P-core(8)[:].THREAD[0:15].myclass::myvar[0:15] <= DDR(p)[0:8*16*16-1];
+-```
+-recast THREAD component dimension from 16 to 4x4. And recast component myvar dimension from 16 to 4x4
+-```
+->P-core(8)[:].THREAD(4,4)[0:3][0:3].myclass::myvar(4,4)[0:3][0:3] <= DDR(p)[0:8*16*16-1];
+-```
+-
+-### Tensor data reordering
+-
+-The way data is read/written to tensors is like a nested FOR loop.
+-
+-The order starts with index from right to left.
+-
+-However, the order can be changed by using FOR directive below. The order starts with index without FOR loop from right to left and then the order continues 
+-with index associated with FOR directive going from right to left. 
+-
+-For example:
+-
+-```
+->FOR(K=0:3) FOR(I=0:1) P-core[0:2].THREAD[I].myclass::myvar[K] <= DDR(p)[0:2*3*4-1];
+-```
+-
+-The result of the transfer above is listed below
+-
+-```
+-myvar     THREAD        P-core       <=  DDR
+--------------------------------------------- 
+-  0          0            0             p[0]
+-  0          0            1             p[1]
+-  0          0            2             p[2]
+-  0          1            0             p[3]
+-  0          1            1             p[4]
+-  0          1            2             p[5]
+-  1          0            0             p[6]
+-  1          0            1             p[7]
+-  1          0            2             p[8]
+-  1          1            0             p[9]
+-  1          1            1             p[10]
+-  1          1            2             p[11]
+-  2          0            0             p[12]
+-  2          0            1             p[13]
+-  2          0            2             p[14]
+-  2          1            0             p[15]
+-  2          1            1             p[16]
+-  2          1            2             p[17]
+-  3          0            0             p[18]
+-  3          0            1             p[19]
+-  3          0            2             p[20]
+-  3          1            0             p[21]
+-  3          1            1             p[22]
+-  3          1            2             p[23]
+-```
+-
+-### Tensor scatter transfer
+-
+-This is one of the key and unique capabilities of ztachip.
+-
+-SIMD in general is very economical to implement in hardware. But to work efficiently, it requires data to be formatted in vector format.
+-
+-However this restriction may not match application data format. And also transfering non-vector formatted data is not efficient since transfer cannot be done in vector mode.
+-
+-Scatter transfer is the solution to this problem by transfering/transforming non-vector formatted data to vector formatted data in an efficient way.
+-
+-This method is used extensively in the provided vision and AI stack.
+-
+-#### Tensor scatter transfer illustration - DDR to P-core
+-
+-Animation below illustrates a transfer from DDR to P-core when it is not possible to do in vector mode since the consecutive data elements are scattered between different words.
+-
+-![scatter](/_static/images/write_non_scatter.gif)
+-
+-But now with the same transfer but with Tensor scatter option enabled. P-cores now save the vector word into temporary storage before moving each data elements into corresponding words.  We can see now that transfer from DDR to P-cores can now be done in vector mode.
+-
+-Scatter operation is performed automatically by TensorEngine and application does not have to be aware of it.
+-
+-![scatter](/_static/images/write_scatter.gif)
+-
+-#### Tensor scatter transfer illustration - P-core to DDR
+-
+-Animation below illustrates a transfer from P-core to DDR when it is not possible to do in vector mode since the consecutive data elements to be read are scattered between different words.
+-
+-![scatter](/_static/images/single_read.gif)
+-
+-But now with the same transfer but with Tensor scatter option enabled. P-cores now gather all scattered read into a temporary storage before sending the whole vector to DDR.  We can see now that transfer from P-cores to DDR can now be done in vector mode.
+-
+-Scatter operation is performed automatically by TensorEngine and application does not have to be aware of it.
+-
+-![scatter](/_static/images/vector_read.gif)
+-
+-#### Tensor scatter transfer by vector word.
+-
+-```
+->FOR(I=0:7) P-core(8)[0:7].THREAD[0:15].myclass::myvar(8,8)[:][I] <= DDR(p)[0:8*16*8*8-1];
+-```
+-
+-In example above, transfer units of innermost loop is a vector word (float8) but scattered among consecutive vector words.
+-
+-This is not efficient since the innerloop takes 8 clocks to complete each float8 vector transfer.
+-
+-By adding SCATTER(0) directive, the transfer is rearranged and interleaved among all the P-cores so that the 8-clock cycles required for each unit transfers are overlapped between all the P-cores. 
+-
+-This way transfer can still occur in vector mode at rate of 1 vector per clock.
+-
+-The transfer now becomes...
+-
+-```
+->SCATTER(0) FOR(I=0:7) P-core(8)[0:7].THREAD[0:15].myclass::myvar(8,8)[:][I] <= DDR(p)[0:8*16*8*8-1];
+-```
+-
+-#### Tensor scatter transfer by thread.
+-
+-```
+->FOR(I=0:7) FOR(J=0:7) P-core(8)[0:7].THREAD(2,8)[:][:].myclass::myvar[J] <= DDR(p)[0:8*16*8*8-1];
+-```
+-
+-In example above, transfer units of innermost loop is a vector word (float8) but scattered among different threads.
+-
+-This is not efficient since the innerloop takes 8 clocks to complete each float8 vector.
+-
+-By adding SCATTER(0) directive, the transfer is rearranged and interleaved among all the P-cores so that the 8-clock cycles required for each unit transfers are overlapped between all the P-cores. 
+-
+-This way transfer can still occur in vector mode at rate of 1 vector per clock.
+-
+-The transfer now becomes...
+-
+-```
+->SCATTER(0) FOR(I=0:7) FOR(J=0:7) P-core(8)[0:7].THREAD(2,8)[:][:].myclass::myvar[J] <= DDR(p)[0:8*16*8*8-1];
+-```
+-
+-### Tensor transfer with boundary check disabled.
+-
+-Normally the dimension index are bounded by the tensor dimension. If index is out-of-bound, then a read operation is padded with zero and a write operation is skipped.
+-
+-However, you can disable this behaviour by adding '+' after tensor dimension.
+-
+-Repeat example in 4.5, but now we add '+' after the last 2 dimension of DDR tensor.
+- 
+-```
+->P-core[0].THREAD[0:2].myclass::myfunc.var[0:3] <= DDR(p,100,2+,2+)[0][0:2][0:3];
+-```
+-
+-Now, indexes of the last 2 dimensions of DDR tensor are no longer used for dimension boundary check. Read/Write access to out-of-bound index are carried out as if the index is valid.
+-
+-This capability is commonly used to transfer tensors that are partially overlaped.
+-
+-### Tensor transfer with overlapped dimension
+-
+-Tensor can be defined to have 2 overlapped dimension definitions.
+-
+-This is useful in-order to add additional boundary checks on the tensor read/write access.
+-
+-#### Tensor transfer with overlapped dimension - Usecase 1
+-
+-```
+-DDR(p,1000(100,200))[:][:]
+-```
+-Tensor above is defined as dimension 100x200 but also as single dimension 1000.
+-
+-Boundary check is performed on both dimension definitions.
+- 
+-In addition to the index boundary check for dimension 100x200, any access beyond the 1000th word are padded with zero for read access and skipped for write access.
+-
+-This syntax is useful in mapping arbitrary dimensioned tensor in DDR to a tensor in P-core memory space where tensor dimensions are regular.
+-
+-#### Tensor transfer with overlapped dimension - Usecase 2
+-
+-```
+-DDR(p,100,32,152(10,16))[:][:][:]
+-```
+-Tensor above is defined as dimension 32x10x16 but also as dimension 32x152
+-
+-Boundary check is performed on both dimension definitions.
+-
+-For tensor 32x10x16, each element of first index should have size=10x16=160. But because 10x16 sub-tensor is also constrained by 152 in size, therefore, 
+-the elements of the second index are having size=16 except for the last element which has size=152-(10-1)*16=8.
+-
+-This syntax is useful in mapping arbitrary dimensioned tensor in DDR to a tensor in P-core memory space where tensor dimensions are regular.
+-
+-### Tensor padding values
+-
+-Tensor read/write accesses are checked against dimension boundary. 
+-
+-Any out-of-bound read accesses are padded with zero by default.
+-
+-Any out-of-bound write accesses are skipped.
+-
+-But you can set different padding values for out-of-bound read accesses with PAD keyword.
+-
+-In example below, any out-of-bound read accesses from DDR tensor are padded with 0xff.
+-
+-```
+->P-core[0].THREAD[0:2].myclass::myfunc.var[0:3] <= PAD(0xff) DDR(p,100,2,2)[0][0:2][0:3];
+-```
+-
+-### Tensor data types
+-
+-Tensors can have the following data types
+-
+-   - DP_DATA_TYPE_UINT8 : unsigned 8 bit integer
+-
+-   - DP_DATA_TYPE_INT8  : signed 8 bit integer
+-
+-   - DP_DATA_TYPE_INT16 : signed 16 bit integer
+-
+-Data types are specified as first qualifier of the tensor.
+-
+-Below is an example of tensor transfer in UINT8 format.
+-
+-```
+-int fmt=DP_DATA_TYPE_UINT8;
+->(fmt)P-core[0].THREAD[0:2].myclass::myfunc.var[0:3] <= (fmt)PAD(0xff) DDR(p,100,2,2)[0][0:2][0:3];
+-```
+-
+-## Tensor operator execution
+-
+-Tensor operators are functions defined in P-core programs.
+-
+-These functions operate on tensors allocated within P-core memory space.
+-
+-Input and results associated with tensor operators are then transferred to/from P-core memory space to/from external DDR or sratch-pad memory space by TensorEngine under the instructions of tensor program.
+-
+-### Syntax
+-
+-Example below invokes a tensor operator exe of class convolution defined in corresponding P-core program
+-
+-```
+-> EXE_LOCKSTEP(convolution::exe); 
+-```
+-
+-Example below invokes the tensor operator but the execution is limited only to np number of P-cores.
+-
+-```
+-> EXE_LOCKSTEP(convolution::exe,np); 
+-```
+-
+-Example below invokes tensor operator but the execution is limited only to np number of P-cores and nt number of threads per P-core.
+-
+-```
+-> EXE_LOCKSTEP(convolution::exe,np,nt); 
+-```
+-
+-Example below invokes tensor operator in 2 steps. First a function pointer (pointer to function as defined in P-core program) is assigned to a 32-bit integer variable 
+-and then tensor operator is invoked via this function pointer.
+-
+-```
+-uint32_t func;
+-func=ztamBuildKernelFunc($convolution::exe,np,nt); // Assign function pointer
+-> EXE_LOCKSTEP(func);
+-```
+-
+-## Stream processing
+-
+-Transfer to/from P-core memory space can be streamed through a stream processor for processing.
+-
+-Stream processor performs lookup/interpolation translation from input values to output values. 
+-
+-The stream processor lookup/interpolation table is constructed by host as described in [Application Programmer Guide](https://github.com/ztachip/ztachip/blob/master/Documentation/app_programmer_guide.md)
+-
+-There can be 4 stream programs loaded at same time.
+-
+-Example:
+-```
+-> SPU <= (int)MEM(stream,SPU_LOOKUP_SIZE*2)[:];
+-
+-> P-core(NP)[0:NP-1].THREAD[0:NT-1].convolution.input[0:7] <= PROC(0) <= DDR(pin)[0:NP*NT*8-1];
+-
+-> DDR(pout)[0:NP*NT*8-1] <= PROC(1) <= P-core(NP)[0:NP-1].THREAD[0:NT-1].convolution.output[0:7];
+-```
+-
+-Example above loads 2 stream programs from DDR memory. The stream programs are lookup/interpolation tables between input and output values.
+-
+-In the example, as data being transferred from DDR to P-core, data is also being processed by stream processor's program #0
+-
+-And as data being transferred from P-core to DDR, data is also being processed by stream processor's program #1
+-
+-## CALLBACK
+-
+-Tensor instructions to TensorEngine are queued for processing.
+-
+-CALLBACK construct is used to trigger a function callback whenever tensor executions have reached a check point.
+-
+-This is normally used to send back responses to host applications at completion of TensorEngine executions.
+-
+-### Syntax
+-```
+->CALLBACK(callback_function,int parm);
+-```
+-Where:
+-
+-   - callback_function: function to be called whenever TensorEngine execution has reached this point.
+-
+-   - parm: integer to be passed to callback_function.
+-
+-
+-## Thread management API
+-
+-Tensor processor can have 2 processing threads: a main thread and a child thread.
+-
+-Thread switching is not automatic but manual by calling to ztamTaskYield function below.
+-
+-Normally, each thread will manage a separate P-core process space. 
+-
+-This way you can interleave between memory cycle and execution cycle of the 2 P-core processes. That means TensorEngine is setting up/retrieving results from one P-core memory space 
+-while P-cores are executing tensor operators on the other P-core memory space.
+-
+-
+-### ztamTaskSpawn(void (*func)(void*,int),void *parm,int pid)
+-
+-To spawn a child thread
+-
+-Where:
+-
+-   - func: task entry point function
+-
+-   - parm: pointer to be passed to task entry point function.
+-
+-   - pid: 0 for main thread,1 for child thread. 
+-
+-### ztamTaskStatus(int pid)
+-
+-To check if task has been terminated.
+-
+-Where:
+-
+-   - pid: 0 for main main thread, 1 for child thread
+-
+-### ztamTaskYield() 
+-
+-Yield execution to the other thread.
+-
+diff --git a/docs/reference/glossary.md b/docs/reference/glossary.md
+deleted file mode 100644
+index 3f2b8f3..0000000
+--- a/docs/reference/glossary.md
++++ /dev/null
+@@ -1,33 +0,0 @@
+-# Glossary
+-
+-**DDR**
+-: External dynamic memory used to hold application data and model weights.
+-
+-**DSA**
+-: Domain-Specific Architecture. Hardware optimized for a defined class of
+-  applications rather than arbitrary general-purpose workloads.
+-
+-**FPU**
+-: Floating-Point Unit. In ztachip, a vector/dataflow path used for FP32,
+-  BFLOAT, and aggregate operations.
+-
+-**P-core**
+-: Lightweight VLIW vector processor used in the parallel accelerator array.
+-
+-**RISC-V host**
+-: Embedded processor that runs control software and tensor programs.
+-
+-**Scratch-pad**
+-: Explicitly managed on-chip SRAM used for temporary data and FPU operations.
+-
+-**Tensor engine**
+-: Hardware controller that decodes tensor instructions, performs data
+-  operations, and dispatches tensor operators.
+-
+-**Tensor operator**
+-: Compute operation implemented by a P-core program and launched by a tensor
+-  program.
+-
+-**VLIW**
+-: Very Long Instruction Word; an instruction format that encodes multiple
+-  operations that can execute together.
+diff --git a/docs/reference/hardware_detail.md b/docs/reference/hardware_detail.md
+deleted file mode 100644
+index d7ce781..0000000
+--- a/docs/reference/hardware_detail.md
++++ /dev/null
+@@ -1,572 +0,0 @@
+-# Hardware architecture
+-
+-## ztachip (top)
+-
+-![hw_ztachip](/_static/images/hw_ztachip.png)
+-
+-### Interfaces:
+-
+-- axilite_* : AXILite bus for RISC-V to push tensor instructions to ztachip
+-
+-- axi_* : AXI bus for ztachip to initiate DMA memory transfer to/from external memory
+-
+-### Subcomponents:
+-
+-- [axilite](https://github.com/ztachip/ztachip/tree/master/HW/src/top/axilite.vhd): bridge to connect dp_core with RISC-V via axiLite bus protocol.
+-
+-- [sram_core](https://github.com/ztachip/ztachip/tree/master/HW/src/top/sram_core.vhd): scratch memory block to hold temporary
+-data is sometimes required during tensor data transfer
+-
+-- [ddr_rx](https://github.com/ztachip/ztachip/tree/master/HW/src/top/ddr_rx.vhd): Handling DMA transfer from external DDR memory to
+-core's internal memory.
+-
+-- [ddr_tx](https://github.com/ztachip/ztachip/tree/master/HW/src/top/ddr_tx.vhd): Handling DMA transfer from core's internal memory to
+-external DDR memory
+-
+-- [core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd): This is the tensor arithmetic execution unit which is composed of
+-an array of lightweight VLIW processors.
+-
+-- [dp_core](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_core.vhd): This is the central tensor processor unit that coordinates
+-all activities within ztachip including memory transfer and launching execution on
+-the VLIW processor array.
+-
+-- [fpu](https://github.com/ztachip/ztachip/tree/master/HW/src/fpu/fpu.vhd): Handling tensor floating point arithmetics (FLOAT32/BFLOAT) and aggregate arithmetics such as MAX,SUM,DOT-PRODUCT-SUM.
+-
+-### Functions:
+-
+-This is the top-level component of ztachip.
+-
+-The central tensor processor unit is [dp_core](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_core.vhd)
+-
+-[dp_core](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_core.vhd) receives tensor instructions from RISC-V via axilite_* interface.
+-
+-[dp_core](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_core.vhd) then executes the tensor instructions by performing the following:
+-
+-- Coordinating tensor data operations which transfer tensor data between [sram_core](https://github.com/ztachip/ztachip/tree/master/HW/src/top/sram_core.vhd),
+-[core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd)'s internal memory and
+-external DDR memory. Tensor data operations may also include other complex functions such as
+-transpose, dimension resize, data-remap...
+-
+-- Dispatching tensor operator execution requests to [core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd) which then in turn dispatch the execution to an array of VLIW processors. 
+-
+-- Dispatching tensor floating point and aggregate arithmetic executions to [fpu](https://github.com/ztachip/ztachip/tree/master/HW/src/fpu/fpu.vhd) 
+-
+-## ztachip.dp_core
+-
+-![hw_dp_core](/_static/images/hw_dp_core.png)
+-
+-### Interfaces:
+-
+-bus_* : bus for [dp_core](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_core.vhd) to receive tensor instructions from RISC-V.
+-
+-task_*: bus to send tensor operator execution instructions to [core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd)
+-
+-readmaster1* : bus to receive DMA data transfer from [core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd)'s internal memory.
+-
+-readmaster2* : bus to receive DMA data transfer from [sram_core](https://github.com/ztachip/ztachip/tree/master/HW/src/top/sram_core.vhd)'s scratch-pad memory
+-
+-readmaster3* : bus to receive DMA data transfer from external DDR memory through [ddr_rx](https://github.com/ztachip/ztachip/tree/master/HW/src/top/ddr_rx.vhd)
+-
+-writemaster1* : bus to send DMA data transfer to [core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd)'s internal memory.
+-
+-writemaster2* : bus to send DMA data transfer to [sram_core](https://github.com/ztachip/ztachip/tree/master/HW/src/top/sram_core.vhd)'s scratch-pad memory.
+-
+-writemaster3* : bus to send DMA data transfer to external DDR memory through [ddr_tx](https://github.com/ztachip/ztachip/tree/master/HW/src/top/ddr_tx.vhd)
+-
+-### Subcomponents
+-
+-- [dp_fetch](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_fetch.vhd): This component receives tensor instructions from RISC-V and then
+-dispatch them at the right time. Tensor data operations are dispatched to [dp_gen_core](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_gen_core.vhd). Tensor operator execution is dispatched to [core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd) via task* interface signals.
+-    
+-- [dp_gen_core](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_gen_core.vhd): This component receives tensor data operation instructions from [dp_fetch](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_fetch.vhd). It then generates the memory addresses for the transfer. There can be 2 tensor data operations executing at the same time with each assigned to one of the two [dp_gen](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_gen.vhd) subcomponents.
+-
+-- [dp_source](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_source.vhd): This component is responsible for generating the DMA transfer read requests to the source of the tensor data operations. It then forwards the received data to the appropriate 
+-[dp_sink](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_sink.vhd) components which are then responsible for the DMA transfer of the received data to the destination point.
+-
+-- [dp_sink](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_sink.vhd): This component is responsible for generating DMA transfer write request to the destination point of the tensor data operations. It receives the data and addresses information for the transfer from
+-the appropriate [dp_source](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_source.vhd) above.
+-
+-### Functions
+-
+-This component is the main tensor processor of ztachip. It performs the following functions:
+-
+-- [dp_fetch](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_fetch.vhd) receives tensor instructions from RISC-V. Each tensor instruction are associated 
+-with a hardware thread.
+-There are 2 hardware threads available. Hardware threads are useful to provide the ability to overlay
+-the tensor operator execution phase of one thread with the data transfer phase of the other threads.
+-
+-- Decodes the tensor instructions. 
+-
+-- Tensor instructions may be executed out-of-order but applications can enforce the order. 
+-
+-- Data operations are then processed by [dp_gen_core](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_gen_core.vhd),
+-[dp_source](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_source.vhd) and 
+-[dp_sink](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_sink.vhd). 
+-There can be up to 2 data operations executing at the same time. For example, data transfer from the 
+-[core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd)'s internal memory
+-to DDR external memory can occur at the same time as data transfer from the scratch-pad to 
+-[core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd)'s internal memory.
+-
+-- Tensor operator execution is forwarded to [core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd) via interface signal task*
+-
+-- Before tensor operator execution can be issued, all memory transfer with [core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd)'s internal memory must be completed. Since there is a separate [core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd)'s internal memory for each hardware thread, for example, memory transfer to [core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd)'s internal memory belonging to thread#1 can still be running at the same time while [core](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/core.vhd) is busy performing tensor operator execution but on thread#2.
+-
+-
+-## ztachip.fpu
+-
+-![hw_fpu](/_static/images/hw_fpu.png)
+-
+-### Interfaces:
+-
+-- bus* : AXI interface for RISC-V to push FPU instructions to FPU.
+-
+-- fpu_read*: Read interface to [sram_core](https://github.com/ztachip/ztachip/tree/master/HW/src/top/sram_core.vhd). FPU operates only from SRAM memory. Data input for FPU must first be transferred from DDR or P-core memory space to SRAM space by DP instructions.
+-
+-- fpu_write*: Write interface to [sram_core](https://github.com/ztachip/ztachip/tree/master/HW/src/top/sram_core.vhd). FPU results are written only to SRAM memory. Results must then be transferred to DDR or P-core memory space from SRAM space by DP instructions.
+-
+-### Subcomponents:
+-
+-- [cmd_fifo](https://github.com/ztachip/ztachip/tree/master/HW/src/util/fifo.vhd) holds FPU instructions issued from RISC-V. Each FPU instruction is associated with a HART context. There are 2 cmd_fifo for each of the HART context.
+-
+-- [B_fifo_i](https://github.com/ztachip/ztachip/tree/master/HW/src/util/fifo.vhd) used to store B parameters associated with B+C*X*Y opcode. FPU executions are pipelined with all data input being prefetched and pipelined.
+-
+-- [X_fifo_i](https://github.com/ztachip/ztachip/tree/master/HW/src/util/fifo.vhd) used to store X parameters associated with B+C*X*Y opcode. FPU executions are pipelined with all data input being prefetched and pipelined.
+-
+-- [Y_fifo_i](https://github.com/ztachip/ztachip/tree/master/HW/src/util/fifo.vhd) used to store Y parameters associated with B+C*X*Y opcode. FPU executions are pipelined with all data input being prefetched and pipelined.
+-
+-- [falu_vector](https://github.com/ztachip/ztachip/tree/master/HW/src/fpu/falu_vector.vhd) Perform FPU operations in vector mode by instantiating an array of falu_core. 
+-
+-- [falu_core](https://github.com/ztachip/ztachip/tree/master/HW/src/fpu/falu_core.vhd) Perform FPU operations for each vector elements 
+-
+-- [falu](https://github.com/ztachip/ztachip/tree/master/HW/src/fpu/falu.vhd) performs all falu_core functions except for the SUM opcode which is executed by falu2 instead.
+-
+-- [falu2](https://github.com/ztachip/ztachip/tree/master/HW/src/fpu/falu.vhd) performs the SUM part after the MAC operations from falu. For example with the operation SUM(X*Y*C), the X*Y*C is performed by falu and results from falu are summed together by falu2
+-
+-### Functions:
+-
+-FPU supports floating point arithmetic with different precision below
+-
+-- FP32: Many transformer intermediate calculations should stay in FP32
+-
+-- BFLOAT: Transformer activations are normally stored in BFLOAT
+-
+-Aggregate functions are also better supported by FPU. Aggregate functions are inherently serial operations and better supported with FPU's data flow architecture instead. The following aggregate functions are supported
+-
+-- MAX
+-
+-- SUM
+-
+-- DOT-PRODUCT-SUM
+-
+-FPU operates in vector mode. FPU input/output are vectors of float numbers. FPU vector width is configured in [config.vhd](https://github.com/ztachip/ztachip/tree/master/HW/src/config.vhd) as fpu_gen_max_c.
+-
+-FPU execution is fully pipelined. For example, for the all important FMA operations found in LLM attention stage, it can execute up to 2*fpu_gen_max_c float operations (FMA=1ADD+1MUL) per clock cycle.
+-
+-Data fetching is streamed to FPU from SRAM. Data fetching are overlapped with execution, therefore adding no delay to FPU execution.
+-
+-FPU operates from SRAM memory space only
+-
+-- FPU data input must first be transferred from P-core or DDR space to SRAM space by DP instructions
+-
+-- FPU results must be transferred to P-core or DDR space from SRAM space by DP instructions
+-
+-For highest performance, FPU should be used under both HART context. There is 1 FPU hardware instance but it can operate under different HART context. One can use one HART context to transfer data between SRAM and DDR/P-core while the other HART context is still busy executing FPU instructions. This way, all memory overhead are overlapped with FPU execution.
+-
+-## ztachip.core
+-
+-![hw_core](/_static/images/hw_core.png)
+-
+-### Interfaces:
+-
+-- dp_write*: bus to receive DMA data transfer to its internal memory
+-
+-- dp_read*: bus to send DMA data transfer from its internal memory
+-
+-- task* : bus to receive tensor operator execution commands from [dp_core](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_core.vhd)
+-
+-### Subcomponents:
+-
+-- [stream](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/stream.vhd): this is a stream processor that performs data mapping between input and output.  
+-One stream processor is used to perform data mapping before data is written to core's internal memory
+-And a second stream processor performs data mapping on data as it is just retrieved from core's internal memory.
+-
+-- [cell](https://github.com/ztachip/ztachip/tree/master/HW/src/top/cell.vhd): 4 P-core are grouped in a cell. The purpose is to improve the fan-out performance of bus signals.
+-
+-- [cell.P-core](https://github.com/ztachip/ztachip/tree/master/HW/src/P-core/pcore.vhd): Implements the VLIW processor array. All tensor operator execution are performed by many ot these P-cores.
+-
+-- [instr](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/instr.vhd): This is the master processor for all P-core's VLIW processor cores that are just simply ALUs running in locked step mode with each other.
+-
+-- [instr.instr_fetch](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/instr_fetch.vhd): This component performs thread scheduling of execution. P-core
+-are multi-threaded processors with 16 hardware threads executing in a round-robin fashion. 
+-VLIW instructions are complex and require a very deep pipeline, hardware multi-threading is a commonly used technique to hide
+-the impact of instruction latency. Performance of 1 VLIW instruction per clock per P-core can then be achieved.
+-
+-- [instr.rom](https://github.com/ztachip/ztachip/tree/master/HW/src/P-core/rom.vhd): Holding VLIW instruction code. All VLIW cores are sharing the same instruction code. Since VLIW processors are all running in lock-step, only 1 instruction is fetched for all the VLIW processors at every clock.
+-
+-### Functions:
+-
+-- This component is responsible for all tensor operator execution tasks.
+-
+-- It is composed of an array of [P-cores](https://github.com/ztachip/ztachip/tree/master/HW/src/P-core/pcore.vhd). And each P-core is a VLIW vector processor.
+-
+-- Requests for tensor operator execution are coming from [dp_core](https://github.com/ztachip/ztachip/tree/master/HW/src/dp/dp_core.vhd) via task* interface signal.
+-
+-- The component [instr](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/instr.vhd) is controlling the execution of all P-core's VLIW processors.
+-VLIW processors are very lightweight processors that are mostly just ALU with memory running in lock-step mode with each other.  
+-
+-## ztachip.core.stream
+-
+-![hw_stream](/_static/images/hw_stream.png)
+-
+-This module provides an arbitrary data mapping between input value and output.
+-
+-[stream](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/stream.vhd) performs data mapping on data just before it is written to P-core's memory space.
+-
+-[stream](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/stream.vhd) also performs data mapping on data just after it is read from P-core's memory space.
+-
+-The data mapping is realized using the formula below
+-
+-```
+-y = lookup_quotient[x[11:5]] + x[4:0]* lookup_remainder[x[4:0]] 
+-```
+-
+-Effectively, the formula above provides a multi-point linear-interpolation between
+-input and output.
+-
+-stream provides up to 4 different data-mapping functions at the same time. The 
+-parameter stream_id_in selects which data mapping to be performed.
+-
+-stream is very commonly used in AI applications to perform activation functions as
+-data being written back to memory. 
+-
+-
+-## ztachip.core.P-core
+-
+-![hw_pcore](/_static/images/hw_pcore.png) 
+-
+-### Interfaces:
+-
+-- dp_read* : bus to send DMA data transfer from P-core's internal memory
+-
+-- dp_write*: bus to send DMA data transfer to P-core's internal memory
+-
+-- instruction*: bus to receive VLIW instructions to be executed.
+-
+-### Subcomponents:
+-
+-- [alu](https://github.com/ztachip/ztachip/tree/master/HW/src/alu/alu.vhd) : This is the unit that performs the bulk of arithmetic
+-vector calculation. There are 8 ALUs for each of the 8 elements in a vector word.
+-
+-- [xregister_file](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/xregister_file.vhd) : Register banks holding int32 accumulators used by FMA operations.
+-
+-- [register_bank](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/register_bank.vhd): Holding internal memory. All computations are operated directly
+-from this internal memory without intermediate register load/store operations like more traditional processor
+-design.
+-
+-- [register_bank.register_file](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/register_file.vhd): There are 2 pages of internal memory with each
+-page associated with one of the two tensor processor's hardware threads. The two register_file implement the
+-two internal memory pages.
+-
+-- [instr_decoder2](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/instr_decoder2.vhd): Main decoder for VLIW instructions.
+-
+-- [instr_dispatch2](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/instr_dispatch2.vhd): Component that interfaces between 
+-[instr_decoder2](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/instr_decoder2.vhd) and bank of
+-[alu](https://github.com/ztachip/ztachip/tree/master/HW/src/alu/alu.vhd). It forwards execution instructions from instr_decoder2 to [alu](https://github.com/ztachip/ztachip/tree/master/HW/src/alu/alu.vhd). 
+-It is also responsible for moving data from [register_bank](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/register_bank.vhd)
+-to [alu](https://github.com/ztachip/ztachip/tree/master/HW/src/alu/alu.vhd). It is responsible for saving results from [alu](https://github.com/ztachip/ztachip/tree/master/HW/src/alu/alu.vhd) back to [register_bank](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/register_bank.vhd).
+-
+-- [ialu](https://github.com/ztachip/ztachip/tree/master/HW/src/ialu/ialu.vhd): VLIW may also contain integer arithmetic operation for tasks such as loop counter, 
+-array indexing calculation, address calculation. This component is responsible for such calculation.
+-
+-- [iregister_file](https://github.com/ztachip/ztachip/tree/master/HW/src/ialu/iregister_file.vhd): Register banks holding integer values used by ialu.
+-
+-### Functions
+-
+-This component performs tensor operator execution.
+-
+-There are many instances of P-core running in parallel.
+-
+-P-core has a VLIW architecture. 
+-
+-P-core execution is multi-threaded. There are 16 hardware threads of execution running
+-in round-robin fashion.
+-
+-The VLIW instruction is very wide that contains many sub-functions
+-that perform the following tasks simultaneously within a single VLIW instruction.
+-
+-- Address calculation for 2 input parameters and 1 output parameter.
+-
+-- Fetching input parameter vectors from [register_bank](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/register_bank.vhd).
+-
+-- Fetching 32-bit accumulator from [xregister_file](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/xregister_file.vhd). These accumulator values are then used by alu performing FMA (Fused-multiply-add) operations.
+-
+-- Performing integer calculations on [ialu](https://github.com/ztachip/ztachip/tree/master/HW/src/ialu/ialu.vhd).
+-
+-- Perform vector calculation on the bank of [alu](https://github.com/ztachip/ztachip/tree/master/HW/src/alu/alu.vhd).
+-
+-- [alu](https://github.com/ztachip/ztachip/tree/master/HW/src/alu/alu.vhd) may produce results as 32-bit accumulator, save these values to [xregister_file](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/xregister_file.vhd).
+-
+-- [alu](https://github.com/ztachip/ztachip/tree/master/HW/src/alu/alu.vhd) may produce results as 12-bit word vector. Save these results back to 
+-[register_bank](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/register_bank.vhd). 
+-
+-Since all the functions above are simultaneously performed in one single VLIW instruction, the
+-instruction pipeline is as long as 14 clocks. However, with hardware multi-threading execution, each
+-stage of the execution pipeline is occupied by different threads. Therefore we have an effective
+-execution rate of one VLIW instruction per clock per P-core.
+-
+-For example, the code below is compiled into one single VLIW instruction. All data operations and
+-arithmetic calculation together take just one clock of execution and also without any memory stall cycles. 
+-This same code using traditional RISC-V instructions would take up to 10 RISC-V instructions that may also incur memory stall cycles in addition.
+-
+-`z[i++] = x[i+2]+y[i+3];`
+-
+-## ztachip.core.P-core.register_bank
+-
+-This component implements P-core internal memory
+-
+-P-core's internal memory is partitioned into 2 pages with each page assigned to one of the two
+-tensor processor's threads. This is an important concept for ztachip since it allows
+-for one thread to access its internal memory while the other thread is performing 
+-tensor operator execution using the other internal memory's page. This allows for
+-a memory operation to be overlapped with tensor operator execution.
+-
+-It is important to note that tensor operator execution operates only on internal memory without any reference to external memory.
+-This is an important concept since with ztachip, data operations are decoupled
+-from execution operations by having separate tensor instructions for data operations and execution operations.
+-Reference [here](../introduction.md) for further explanation of this concept.
+-
+-Internal memory holds 2 types of data
+-
+-- Private data: Data is private to each of the 16 threads. Private memory words are interleaved between different threads as shown in the picture below.
+-
+-- Shared data: Data is shared among all 16 threads but within the same P-core. Shared memory words are allocated from the bottom up as shown in the picture below.
+-
+-```
+-+-------------------------+
+-+ Thread1.Private word#0  |
+-+-------------------------+ 
+-+ Thread2.Private word#0  |
+-+-------------------------+ 
+-           :
+-           :
+-+-------------------------+ 
+-+ Thread16.Private word#0 |
+-+-------------------------+ 
+-+ Thread1.Private word#1  |
+-+-------------------------+ 
+-+ Thread2.Private word#1  |
+-+-------------------------+ 
+-           :
+-           :
+-+-------------------------+ 
+-+ Thread16.Private word#1 |
+-+-------------------------+ 
+-           :
+-           :
+-+-------------------------+ 
+-+ Shared           word#3 |
+-+-------------------------+ 
+-+ Shared           word#2 |
+-+-------------------------+ 
+-+ Shared           word#1 |
+-+-------------------------+ 
+-+ Shared           word#0 |
+-+-------------------------+ 
+-```
+-
+-
+-## ztachip.core.P-core.instr_decoder2
+-
+-This is the main component that decodes the computing components of VLIW instructions
+-
+-There are 3 main operations to each VLIW instruction:
+-
+-- operation on [P-core.alu](https://github.com/ztachip/ztachip/tree/master/HW/src/alu/alu.vhd): To perform math operations on vector data
+-
+-- operation on [P-core.ialu](https://github.com/ztachip/ztachip/tree/master/HW/src/ialu/ialu.vhd): To perform simple scalar integer operation.
+-
+-- branching operation. But this is performed by master processor [core.instr](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/instr.vhd) since
+-all VLIW processors are running in lockstep therefore sharing the same 
+-branching operation. ztachip currently does not support yet thread branching/divergence as commonly implemented in GPU, 
+-therefore all threads must have the same branching condition. 
+-However you can still perform the equivalent of branching with conditional execution using
+-VMASK register as described in next section. Most AI/Vision processing tasks however are mostly predictable
+-computing with minimum or no branching.
+-
+-VLIW instructions are 128 bit long and have the following format
+-
+-```
+-MU                 -- P-core.alu instruction 
+-   oc         5    -- opcode
+-   save       1    -- Save alu.y_out=>xregister_file
+-   x3              -- x3 parameter;map to alu.xscalar_in
+-      vector  1    -- 1 if parameter is vector,0 if scalar
+-      addr    12   -- Internal memory address of x3
+-      attr    4    -- Attribute
+-   x1              -- x1 parameter;map to alu.x1_in
+-      vector  1    -- 1 if parameter is vector,0 if scalar
+-      addr    12   -- Internal memory address of x1
+-      attr    4    -- Attribute
+-   x2              -- x2 parameter;map to alu.x2_in
+-      vector  1    -- 1 if parameter is vector,0 if scalar
+-      addr    12   -- Internal memory address of x2
+-      attr    4    -- Attribute
+-   y               -- y parameter;map to alu.y*_out
+-      vector  1    -- 1 if parameter is vector,0 if scalar
+-      addr    12   -- Internal memory address of y
+-      attr    4    -- Attribute
+-IMU                -- P-core.ialu instruction
+-   oc         5    -- opcode 
+-   x1         4    -- x1 parameter; map to ialu.x1_in
+-   x2         4    -- x2 parameter; map to ialu.x2_in
+-   y          4    -- y parameter; map to ialu.y_out
+-   const      13   -- Constant field
+-CTRL
+-   oc         5    -- Branching opcode based on IMU.y value
+-   addr       11   -- Code address to jump to
+-```
+-
+-MU.attr field above provides many ways for parameters to reference memory.
+-
+-Table below shows different addressing options for parameters.
+-
+-where IREG is ialu's register file and MEM is P-core's internal memory.
+-
+-```
+-ATTR  DESCRIPTION                  MEMORY ACCESS PATTERN
+-===========================================================
+-11RR  Access via pointer+index     MEM[IREG[addr]+IREG[RR]] 
+-1011  Access via pointer           MEM[IREG[addr]]
+-1000  Access shared memory         MEM[addr]
+-1001  Access private memory        MEM[addr]
+-00RR  Access shared memory+index   MEM[addr+IREG[RR]]
+-01RR  Access private memory+index  MEM[addr+IREG[RR]]
+-
+-```
+-
+-## ztachip.core.P-core.ialu
+-
+-This component is responsible for the scalar integer calculation of VLIW instruction described
+-above.
+-
+-ialu operates using the following registers
+-- R0-R7  : General purpose integer registers.
+-- VMASK  : Register with each bit is used to enable/disable a vector lane.
+-
+-The integer calculations provided by ialu are typically used for tasks such as
+-
+-- Loop counter/control
+-
+-- Index to an array
+-
+-- Memory reference by pointer
+-
+-- Address calculation
+-
+-- Enable/disable vector lanes.
+-
+-For example
+-
+-```
+-// i is an integer operation used for loop counter
+-for(i=0;i < 10;i++) {
+-   :
+-   :
+-}
+-```
+-
+-```
+-// i is an integer used for array indexing and address calculation
+-z[i]=x[i]+y[i];
+-```
+-
+-```
+-// p is an integer used for pointer reference to memory
+-// Both integers p and i are used for memory reference and
+-// address calculation below
+-p=&mem[0];
+-p[i]=10;
+-```
+-
+-```
+-// VMASK=3 means only element#0 and element#1 of vector z are 
+-// being updated after the vector calculation
+-VMASK=3;
+-z=x+2; // Only the first 2 elements of z are written back to memory.
+-```
+-
+-## ztachip.core.P-core.alu
+-
+-![hw_alu](/_static/images/hw_alu.png) 
+-
+-### Interfaces
+-
+-x1_in: This is a 12 bit input value. This parameter is fetched from
+-P-core internal memory stored in [register_file](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/register_file.vhd).
+-
+-x2_in: This is 12 bit input value. This parameter is fetched from
+-P-core internal memory stored in [register_file](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/register_file.vhd)
+-
+-xreg_in: 32-bit accumulator input. This is fetched from [xregister_file](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/xregister_file.vhd).
+-
+-xscalar_in: constant used to specify the distance for shifting operation.
+-
+-y_out: Results as a full 32-bit value. This is then be stored in [xregister_file](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/xregister_file.vhd).
+-
+-y3_out: Results after being clipped to 12 bit. Value is properly clipped if exceeding range.
+-This is then be stored in [register_file](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/register_file.vhd).
+-
+-y2_out: Result of comparator against y_out value. The comparator tests y_out for
+-various boolean conditions. This is then be stored in [xregister_file](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/xregister_file.vhd).
+-
+-### Functions:
+-
+-ALU has a fairly simple set of operations. We want the ALU to be as simple as 
+-possible to reduce resource requirements. They are meant to perform linear
+-arithmetic operations occurring normally during AI and vision processing tasks.
+-
+-Other non-linear operations are taken care of by [stream](https://github.com/ztachip/ztachip/tree/master/HW/src/pcore/stream.vhd).
+-
+-ALU and stream together were shown to be able to cover a wide range of AI and 
+-vision processing.
+-
+-ALU has the following arithmetic blocks:
+-
+-- Multiplication of two 12 bit values.
+-
+-- Adding the result of multiplication to a 32-bit accumulator value.
+-
+-- Perform shift operation
+-
+-- Perform boolean comparison of the result. Comparison against zero include GT,GE,LT,LE,EQ,NE
+-
+-- Casting the 32-bit result to 12 bit result. Value is clipped if it is overflowed or underflowed after casting.
+-
+-With the above blocks, the following opcodes are supported
+-
+-```
+-  COMPARE_LT       : y2_out=(y_out < 0)?1:0
+-  COMPARE_LE       : y2_out=(y_out <= 0)?1:0
+-  COMPARE_GT       : y2_out=(y_out > 0)?1:0
+-  COMPARE_GE       : y2_out=(y_out >= 0)?1:0
+-  COMPARE_EQ       : y2_out=(y_out==0)?1:0
+-  COMPARE_NE       : y2_out=(y_out!=0)?1:0
+-  MULTIPLY         : y_out=x1*x2
+-  ADD              : y_out=x1+x2
+-  SUBTRACT         : y_out=x1-x2
+-  FMA              : xreg_in += x1_in*x2_in
+-  FMS              : xreg_in -= x1_in*x2_in
+-  ASSIGN           : y_out=x1_in
+-  ACCUMULATOR_SHL  : y_out=(xreg_in << x_scalar_in)
+-  ACCUMULATOR_SHR  : y_out=(xreg_in >> x_scalar_in)
+-  INT12 SHR        : y_out=(x1_in >> x_scalar_in)
+-  INT12 SHL        : y_out=(x1_in << x_scalar_in)
+-```
+-
+-
+-
+-
+-
+-
+-
+-
+diff --git a/docs/reference/source-map.md b/docs/reference/source-map.md
+deleted file mode 100644
+index 49f8d42..0000000
+--- a/docs/reference/source-map.md
++++ /dev/null
+@@ -1,21 +0,0 @@
+-# Original Documentation Map
+-
+-The new website reorganizes the existing project material without discarding
+-the original technical references.
+-
+-| Original material | Website location |
+-|---|---|
+-| `Documentation/Overview.md` | Introduction and architecture sections |
+-| `Documentation/SoftwareDesign.md` | Programming Model / Software Architecture |
+-| `Documentation/tensor_programmer_guide.md` | Tensor Programming + Tensor Language Reference |
+-| `Documentation/pcore_programmer_guide.md` | P-core Programming + P-core Language Reference |
+-| `Documentation/HardwareDesign.md` | Hardware Architecture + Hardware Detail |
+-| `Documentation/Vivado.md` | Vivado FPGA Build |
+-| `Documentation/PortProcedure.md` | Porting ztachip |
+-| `Documentation/QuantizeProcedure.md` | Model Quantization |
+-| `micropython/MicropythonUserGuide.md` | MicroPython Integration |
+-| PDF programmer guides | Content is integrated into the topic-oriented web chapters rather than exposed as the primary reading format |
+-
+-The original repository remains the authoritative source for RTL and software
+-file paths. This documentation site is the programmer-facing explanation and
+-navigation layer.
+diff --git a/docs/reference/troubleshooting.md b/docs/reference/troubleshooting.md
+deleted file mode 100644
+index 8d61cb3..0000000
+--- a/docs/reference/troubleshooting.md
++++ /dev/null
+@@ -1,39 +0,0 @@
+-# Troubleshooting
+-
+-## GDB cannot connect
+-
+-Verify that OpenOCD is still running and listening on port `3333`. Confirm the
+-USB/JTAG device permissions and that the FPGA is already configured.
+-
+-## FPGA configures but software does not run
+-
+-Check, in this order:
+-
+-1. FPGA configuration LED;
+-2. OpenOCD connection;
+-3. GDB target connection;
+-4. successful `load`;
+-5. serial-port device and baud/configuration;
+-6. board reset sequence.
+-
+-## Build cannot find RISC-V tools
+-
+-```bash
+-export PATH=/opt/riscv/bin:$PATH
+-which riscv32-unknown-elf-gcc
+-```
+-
+-If the second command returns nothing, fix the toolchain installation before
+-debugging the ztachip build.
+-
+-## Accelerator output is incorrect
+-
+-Start with the smallest deterministic kernel. Verify tensor dimensions,
+-strides, memory space, data type, and active tensor context. Then verify the
+-P-core kernel and `_VMASK` behavior.
+-
+-## Performance is lower than expected
+-
+-Measure memory movement and compute separately. Check whether transfers overlap
+-execution and whether the application is repeatedly moving data that could
+-remain in accelerator-local memory.
+diff --git a/docs/technical-overview.md b/docs/technical-overview.md
+new file mode 100644
+index 0000000..0fa7b0e
+--- /dev/null
++++ b/docs/technical-overview.md
+@@ -0,0 +1,6 @@
++# Technical Overview
++
++```{note}
++This page is synchronized from `Documentation/Overview.md` in the main ztachip
++repository when the documentation site is built.
++```
+diff --git a/docs/vision-ai-stack-programmer-guide/index.md b/docs/vision-ai-stack-programmer-guide/index.md
+new file mode 100644
+index 0000000..bc61d7a
+--- /dev/null
++++ b/docs/vision-ai-stack-programmer-guide/index.md
+@@ -0,0 +1,5 @@
++# Vision AI Stack Programmer Guide
++
++The complete Vision AI Stack programmer guide is generated from the original
++`Documentation/visionai_programmer_guide.odt` document during the documentation
++build. Embedded figures and tables are extracted and published with the guide.
+diff --git a/docs/vision-ai/index.md b/docs/vision-ai/index.md
+deleted file mode 100644
+index 8a4a74c..0000000
+--- a/docs/vision-ai/index.md
++++ /dev/null
+@@ -1,19 +0,0 @@
+-# Vision & AI
+-
+-ztachip is designed to accelerate both neural-network inference and the image
+-processing that commonly surrounds it.
+-
+-Supported project examples include:
+-
+-- image classification;
+-- SSD/MobileNet object detection;
+-- Canny edge detection;
+-- Harris corner detection;
+-- optical flow and motion processing;
+-- image resizing and color conversion;
+-- contrast/equalization and filtering;
+-- transformer/LLM inference.
+-
+-This breadth is important at the edge, where a useful application often needs
+-camera preprocessing, AI inference, control logic, and post-processing in the
+-same low-power device.
+diff --git a/docs/vision-ai/llm-agents.md b/docs/vision-ai/llm-agents.md
+deleted file mode 100644
+index af20611..0000000
+--- a/docs/vision-ai/llm-agents.md
++++ /dev/null
+@@ -1,26 +0,0 @@
+-# LLMs and Edge Agents
+-
+-Recent ztachip software extends the platform beyond vision pipelines to
+-small-LLM inference and edge-agent workloads.
+-
+-The architecture can schedule LLM, CNN/vision, and system tasks concurrently.
+-MicroPython provides the high-level control environment, while the accelerator
+-handles compute-intensive tensor work.
+-
+-```{image} ../_static/images/ztachip_ai_agent.png
+-:alt: ztachip agent harness architecture
+-:width: 100%
+-```
+-
+-## Typical agent flow
+-
+-An embedded agent can:
+-
+-1. receive a user command or sensor event;
+-2. run a local language model;
+-3. select or call a local function;
+-4. execute the function from MicroPython;
+-5. continue running vision or sensor tasks in parallel.
+-
+-This is useful for demonstrations such as local function calling, device
+-control, robotics, and low-power multimodal edge systems.
+diff --git a/docs/vision-ai/model-quantization.md b/docs/vision-ai/model-quantization.md
+deleted file mode 100644
+index 25dd7b6..0000000
+--- a/docs/vision-ai/model-quantization.md
++++ /dev/null
+@@ -1,25 +0,0 @@
+-# Model Quantization
+-
+-Large neural-network and language-model weights generally need to be
+-quantized before they are practical on a small FPGA platform.
+-
+-The ztachip repository includes model-conversion tooling and release artifacts
+-for supported demos. The exact conversion command depends on the model family
+-and the runtime format used by the current software release.
+-
+-## Recommended workflow
+-
+-1. Start from a model already known to work in the ztachip examples.
+-2. Reproduce the reference conversion unchanged.
+-3. Verify numerical behavior on the host.
+-4. Quantize one dimension at a time: weight format, activation format, then
+-   model-specific options.
+-5. Compare accuracy and throughput after every change.
+-6. Keep the original model metadata, tokenizer files, and configuration under
+-   version control with your conversion script.
+-
+-```{warning}
+-Quantization is model-specific. Do not assume that a conversion setting that
+-works for a CNN is appropriate for an LLM, or that metadata omitted by one
+-conversion tool is safely optional for another runtime.
+-```
+diff --git a/docs/vision-ai/vision-stack.md b/docs/vision-ai/vision-stack.md
+deleted file mode 100644
+index 060fb74..0000000
+--- a/docs/vision-ai/vision-stack.md
++++ /dev/null
+@@ -1,19 +0,0 @@
+-# VisionAI Software Stack
+-
+-The VisionAI layer provides reusable building blocks so programmers do not
+-need to write every tensor operator from scratch.
+-
+-A typical camera pipeline can be divided into:
+-
+-1. **Input and formatting** - capture pixels and convert them to the required
+-   color/layout representation.
+-2. **Preprocessing** - resize, normalize, filter, or otherwise prepare data.
+-3. **Inference or vision processing** - run a neural-network model or a
+-   traditional vision algorithm.
+-4. **Post-processing** - decode detections, thresholds, geometry, or motion
+-   information.
+-5. **Output** - display, communicate, or use the result to control an
+-   application.
+-
+-ztachip is intended to accelerate multiple parts of this pipeline rather than
+-only the neural-network stage.
+diff --git a/tools/__pycache__/sync_source_docs.cpython-313.pyc b/tools/__pycache__/sync_source_docs.cpython-313.pyc
+new file mode 100644
+index 0000000000000000000000000000000000000000..db203b55ec2e58f25007385b77b2f5e579d79522
+GIT binary patch
+literal 17463
+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
+GbN)XA?&?MW
+
+literal 0
+HcmV?d00001
+
+diff --git a/tools/sync_source_docs.py b/tools/sync_source_docs.py
+new file mode 100755
+index 0000000..2be4b14
+--- /dev/null
++++ b/tools/sync_source_docs.py
+@@ -0,0 +1,307 @@
++#!/usr/bin/env python3
++"""Synchronize the five canonical ztachip guides into the Sphinx site.
++
++The main source repository remains the source of truth. Markdown guides are
++fetched directly. The two office-document guides are converted to MyST-friendly
++Markdown with Pandoc, including embedded images.
++"""
++
++from __future__ import annotations
++
++import argparse
++import re
++import shutil
++import subprocess
++import sys
++import tempfile
++import urllib.request
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++DOCS = ROOT / "docs"
++STATIC = DOCS / "_static" / "source"
++RAW = "https://raw.githubusercontent.com/ztachip/ztachip/refs/heads/master/"
++GITHUB = "https://github.com/ztachip/ztachip/blob/master/"
++
++SOURCES = {
++    "technical": "Documentation/Overview.md",
++    "hardware": "Documentation/HardwareDesign.md",
++    "micropython": "micropython/MicropythonUserGuide.md",
++    "programmer_odt": "Documentation/ztachip_programmer_guide.odt",
++    "vision_odt": "Documentation/visionai_programmer_guide.odt",
++}
++
++# Conservative editorial fixes only. These correct spelling, grammar, and
++# terminology without changing examples, algorithms, interfaces, or meaning.
++TEXT_REPLACEMENTS = [
++    (r"\bopensourse\b", "open-source"),
++    (r"\bOpensourse\b", "Open-source"),
++    (r"\bRISCV\b", "RISC-V"),
++    (r"\bRiscV\b", "RISC-V"),
++    (r"\bmicropython\b", "MicroPython"),
++    (r"\bMicropython\b", "MicroPython"),
++    (r"\bconverage\b", "coverage"),
++    (r"\bGuassian\b", "Gaussian"),
++    (r"\bMobinet\b", "MobileNet"),
++    (r"\bSSD-Mobinet\b", "SSD-MobileNet"),
++    (r"\bCorder Detection\b", "Corner Detection"),
++    (r"\bseperate\b", "separate"),
++    (r"\bSeperate\b", "Separate"),
++    (r"\bextentions\b", "extensions"),
++    (r"\bupto\b", "up to"),
++    (r"\bhighlevel\b", "high-level"),
++    (r"\boverlayed\b", "overlaid"),
++    (r"\bdont\b", "don't"),
++    (r"\barithmetics\b", "arithmetic"),
++    (r"\bsysthesis\b", "synthesis"),
++    (r"\bBistream\b", "Bitstream"),
++    (r"\bDevlopment\b", "Development"),
++    (r"\bPCORES\b", "P-cores"),
++    (r"\bPCOREs\b", "P-cores"),
++]
++
++PHRASE_REPLACEMENTS = [
++    ("used to moved data", "used to move data"),
++    ("there is no memory stall cycles", "there are no memory stall cycles"),
++    ("The 2 metrics", "The two metrics"),
++    ("a 20GOPS of hardware computing resource", "20 GOPS of hardware computing resources"),
++    ("a 8 unit wide", "an 8-unit-wide"),
++    ("a 8x8 matrix", "an 8x8 matrix"),
++    ("sequential steps of tensor operations", "sequence of tensor operations"),
++    ("applied to efficiently compared to", "applied efficiently compared with"),
++    ("ztachip domain are applications", "The ztachip domain consists of applications"),
++    ("Tensor-core programs are codes", "Tensor-core programs are code"),
++    ("PCORE programs are codes", "P-core programs are code"),
++    ("Please familiar yourself", "Please familiarize yourself"),
++    ("Each instructions can perform", "Each instruction can perform"),
++    ("you dont have to", "you don't have to"),
++    ("You would normally assigned", "You would normally assign"),
++]
++
++
++def fetch(url: str, dest: Path) -> None:
++    dest.parent.mkdir(parents=True, exist_ok=True)
++    req = urllib.request.Request(url, headers={"User-Agent": "ztachip-docs-build/1.0"})
++    with urllib.request.urlopen(req, timeout=60) as r, dest.open("wb") as f:
++        shutil.copyfileobj(r, f)
++
++
++def edit_prose(markdown: str) -> str:
++    """Apply editorial fixes outside fenced code blocks and inline code."""
++    chunks = re.split(r"(```.*?```)", markdown, flags=re.S)
++    for i in range(0, len(chunks), 2):
++        # Protect inline code from terminology replacements.
++        inline = re.split(r"(`[^`\n]+`)", chunks[i])
++        for j in range(0, len(inline), 2):
++            text = inline[j]
++            for pattern, replacement in TEXT_REPLACEMENTS:
++                text = re.sub(pattern, replacement, text)
++            for old, new in PHRASE_REPLACEMENTS:
++                text = text.replace(old, new)
++            # Web-style punctuation/spacing cleanup only.
++            text = re.sub(r"\b([0-9]+)fps\b", r"\1 FPS", text)
++            text = re.sub(r"\b([0-9]+)GOPS\b", r"\1 GOPS", text)
++            text = text.replace("etc...", "etc.")
++            inline[j] = text
++        chunks[i] = "".join(inline)
++    return "".join(chunks)
++
++
++def rewrite_repo_links(md: str, source_dir: str, image_prefix: str) -> str:
++    """Make source-repository links work from the separate Pages repository."""
++    # Images in the source Markdown live under Documentation/images.
++    if source_dir == "Documentation":
++        md = re.sub(
++            r"(!\[[^\]]*\]\()images/([^\)]+)(\))",
++            lambda m: f"{m.group(1)}{image_prefix}/{m.group(2)}{m.group(3)}",
++            md,
++        )
++    # Relative links to RTL/SW files should point back to the canonical repo.
++    def link_repl(match: re.Match[str]) -> str:
++        label, target = match.group(1), match.group(2)
++        if target.startswith(("http://", "https://", "#", "/")):
++            return match.group(0)
++        if target.startswith("images/"):
++            return match.group(0)
++        base_parts = Path(source_dir).parts
++        resolved = Path(*base_parts, target)
++        # Normalize ../ components without requiring the target to exist.
++        parts: list[str] = []
++        for part in resolved.parts:
++            if part == "..":
++                if parts:
++                    parts.pop()
++            elif part != ".":
++                parts.append(part)
++        url = GITHUB + "/".join(parts)
++        return f"[{label}]({url})"
++    md = re.sub(r"(?<!!)\[([^\]]+)\]\(([^)]+)\)", link_repl, md)
++    return md
++
++
++def sync_source_images(md: str, source_subdir: str, site_subdir: str) -> str:
++    """Download source Markdown images locally and rewrite their paths."""
++    refs = sorted(set(re.findall(r"!\[[^\]]*\]\(([^)]+)\)", md)))
++    for ref in refs:
++        if not ref.startswith(source_subdir + "/"):
++            continue
++        filename = ref[len(source_subdir) + 1 :]
++        remote = RAW + "Documentation/images/" + filename
++        local = STATIC / site_subdir / filename
++        try:
++            fetch(remote, local)
++        except Exception as exc:
++            print(f"warning: could not fetch image {remote}: {exc}", file=sys.stderr)
++    return md
++
++
++def prepare_markdown(source: str, dest: Path, title: str, image_area: str) -> None:
++    with tempfile.TemporaryDirectory() as td:
++        raw = Path(td) / "source.md"
++        fetch(RAW + source, raw)
++        md = raw.read_text(encoding="utf-8")
++    md = edit_prose(md)
++    # Avoid duplicate page titles while preserving the original first heading as
++    # a section when it differs from the page title.
++    if source.endswith("Overview.md") and md.startswith("# Abstract"):
++        md = "## Abstract" + md[len("# Abstract"):]
++    elif source.endswith("HardwareDesign.md") and md.lower().startswith("# hardware architecture"):
++        md = md.split("\n", 1)[1].lstrip()
++    elif source.endswith("MicropythonUserGuide.md"):
++        first = md.splitlines()[0] if md.splitlines() else ""
++        if first.startswith("#"):
++            md = "\n".join(md.splitlines()[1:]).lstrip()
++    image_prefix = f"_static/source/{image_area}"
++    md = rewrite_repo_links(md, str(Path(source).parent), image_prefix)
++    md = sync_source_images(md, image_prefix, image_area)
++    banner = (
++        f"# {title}\n\n"
++        "```{admonition} Source of truth\n"
++        ":class: tip\n"
++        "This web page is synchronized from the corresponding document in the "
++        "main `ztachip/ztachip` repository. Technical content and examples are "
++        "preserved; only web formatting and editorial corrections are applied.\n"
++        "```\n\n"
++    )
++    dest.parent.mkdir(parents=True, exist_ok=True)
++    dest.write_text(banner + md.rstrip() + "\n", encoding="utf-8")
++
++
++def convert_odt(source: str, outdir: Path, guide_title: str, media_name: str) -> None:
++    pandoc = shutil.which("pandoc")
++    if not pandoc:
++        raise RuntimeError("pandoc is required to convert the ODT programmer guides")
++
++    outdir.mkdir(parents=True, exist_ok=True)
++    media_dir = STATIC / "media" / media_name
++    if media_dir.exists():
++        shutil.rmtree(media_dir)
++    media_dir.mkdir(parents=True, exist_ok=True)
++
++    with tempfile.TemporaryDirectory() as td:
++        td_path = Path(td)
++        odt = td_path / "guide.odt"
++        converted = td_path / "guide.md"
++        extracted = td_path / "media"
++        fetch(RAW + source, odt)
++        subprocess.run(
++            [pandoc, str(odt), "--from=odt", "--to=gfm", "--wrap=none",
++             f"--extract-media={extracted}", "-o", str(converted)],
++            check=True,
++        )
++        md = converted.read_text(encoding="utf-8")
++        # Pandoc typically extracts under media/media/...; copy all payload files.
++        for item in extracted.rglob("*"):
++            if item.is_file():
++                target = media_dir / item.name
++                # De-duplicate names conservatively.
++                if target.exists() and target.read_bytes() != item.read_bytes():
++                    stem, suffix = target.stem, target.suffix
++                    n = 2
++                    while (media_dir / f"{stem}-{n}{suffix}").exists():
++                        n += 1
++                    target = media_dir / f"{stem}-{n}{suffix}"
++                shutil.copy2(item, target)
++
++    # Normalize all Pandoc image paths to our site media folder by filename.
++    def image_repl(match: re.Match[str]) -> str:
++        alt, ref = match.group(1), match.group(2)
++        filename = Path(ref.split("#", 1)[0]).name
++        return f"![{alt}](../_static/source/media/{media_name}/{filename})"
++    md = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", image_repl, md)
++    md = edit_prose(md)
++
++    # Split a long office document into first-level chapters when possible.
++    # This changes only presentation/navigation, never the text within sections.
++    top = list(re.finditer(r"(?m)^#\s+(.+?)\s*$", md))
++    if len(top) <= 1:
++        body = md
++        index = (
++            f"# {guide_title}\n\n"
++            "```{admonition} Web edition\n:class: tip\n"
++            "Converted from the original ztachip office document. Figures, tables, "
++            "examples, and technical content are preserved; only formatting and "
++            "editorial corrections are applied.\n```\n\n" + body
++        )
++        (outdir / "index.md").write_text(index, encoding="utf-8")
++        return
++
++    def slug(text: str) -> str:
++        s = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
++        return s[:70] or "section"
++
++    chapters: list[tuple[str, str]] = []
++    intro = md[: top[0].start()].strip()
++    used: set[str] = set()
++    for i, m in enumerate(top):
++        heading = m.group(1).strip()
++        end = top[i + 1].start() if i + 1 < len(top) else len(md)
++        block = md[m.start():end].strip() + "\n"
++        name = slug(heading)
++        base = name
++        n = 2
++        while name in used or name == "index":
++            name = f"{base}-{n}"
++            n += 1
++        used.add(name)
++        (outdir / f"{name}.md").write_text(block, encoding="utf-8")
++        chapters.append((heading, name))
++
++    toc = "\n".join(name for _, name in chapters)
++    index = (
++        f"# {guide_title}\n\n"
++        "```{admonition} Web edition\n:class: tip\n"
++        "Converted from the original ztachip office document. Figures, tables, "
++        "examples, and technical content are preserved; only formatting and "
++        "editorial corrections are applied.\n```\n\n"
++        + (intro + "\n\n" if intro else "")
++        + "```{toctree}\n:maxdepth: 3\n:caption: Contents\n\n"
++        + toc + "\n```\n"
++    )
++    (outdir / "index.md").write_text(index, encoding="utf-8")
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--skip-office", action="store_true", help="skip ODT conversion")
++    args = parser.parse_args()
++
++    print("Synchronizing Technical Overview...")
++    prepare_markdown(SOURCES["technical"], DOCS / "technical-overview.md", "Technical Overview", "technical-overview")
++    print("Synchronizing Hardware Architecture...")
++    prepare_markdown(SOURCES["hardware"], DOCS / "hardware-architecture.md", "Hardware Architecture", "hardware-architecture")
++    print("Synchronizing MicroPython Programmer Guide...")
++    prepare_markdown(SOURCES["micropython"], DOCS / "micropython-programmer-guide.md", "MicroPython Programmer Guide", "micropython")
++
++    if not args.skip_office:
++        print("Converting Programmer Guide...")
++        convert_odt(SOURCES["programmer_odt"], DOCS / "programmer-guide", "Programmer Guide", "programmer-guide")
++        print("Converting Vision AI Stack Programmer Guide...")
++        convert_odt(SOURCES["vision_odt"], DOCS / "vision-ai-stack-programmer-guide", "Vision AI Stack Programmer Guide", "vision-ai-stack")
++
++    print("Documentation synchronization complete.")
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())

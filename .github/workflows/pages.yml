@@ -22,8 +22,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r requirements.txt
-      - run: sphinx-build -b html docs _build/html
+      - name: Install documentation tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc
+          pip install -r requirements.txt
+      - name: Synchronize documentation from ztachip source repository
+        run: python3 tools/sync_source_docs.py
+      - name: Build Sphinx site
+        run: sphinx-build --keep-going -b html docs _build/html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _build/html

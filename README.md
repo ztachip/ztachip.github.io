@@ -1,13 +1,25 @@
 # ztachip Documentation Website
 
-This repository contains the source for the ztachip documentation website.
+This repository publishes the programmer documentation at
+`https://ztachip.github.io/`.
 
-The documentation is built with **Sphinx**, **MyST Markdown**, and the
-**Read the Docs theme** to provide the same class of navigation, search,
-chapter hierarchy, and responsive presentation used by mature hardware and
-software projects.
+The site follows the same five-document order as the main ztachip README:
+
+1. Technical Overview
+2. Hardware Architecture
+3. Programmer Guide
+4. Vision AI Stack Programmer Guide
+5. MicroPython Programmer Guide
+
+The main `ztachip/ztachip` repository remains the source of truth. During each
+GitHub Pages build, `tools/sync_source_docs.py` downloads the canonical source
+material. Markdown documents are cleaned up for web presentation, while the two
+ODT/PDF-backed programmer guides are converted with Pandoc and their embedded
+images are extracted automatically.
 
 ## Local preview
+
+Install Pandoc, then:
 
 ```bash
 python3 -m venv .venv
@@ -18,11 +30,3 @@ python3 -m http.server 8000 -d _build/html
 ```
 
 Open `http://localhost:8000`.
-
-## GitHub Pages
-
-The included GitHub Actions workflow automatically builds and deploys the
-documentation whenever the `master` branch is updated.
-
-For an organization/user Pages repository named `ztachip.github.io`, place
-the contents of this archive at the **repository root**.
