@@ -1,0 +1,27 @@
+:root {
+  --ztachip-accent: #2f6f9f;
+}
+.wy-side-nav-search {
+  background: #18364d;
+}
+.wy-nav-top {
+  background: #18364d;
+}
+.rst-content code.literal,
+.rst-content tt.literal {
+  color: #a23;
+}
+.rst-content .admonition-title {
+  font-weight: 600;
+}
+.zt-hero {
+  margin: 1.5rem 0 2rem;
+  padding: 1.4rem 1.6rem;
+  border-left: 5px solid var(--ztachip-accent);
+  background: #f5f8fb;
+}
+.zt-path {
+  font-family: monospace;
+  background: #f3f3f3;
+  padding: .1rem .35rem;
+}
