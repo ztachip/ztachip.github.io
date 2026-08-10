@@ -11,15 +11,15 @@ The site follows the same five-document order as the main ztachip README:
 4. Vision AI Stack Programmer Guide
 5. MicroPython Programmer Guide
 
-The main `ztachip/ztachip` repository remains the source of truth. During each
-GitHub Pages build, `tools/sync_source_docs.py` downloads the canonical source
-material. Markdown documents are cleaned up for web presentation, while the two
-ODT/PDF-backed programmer guides are converted with Pandoc and their embedded
-images are extracted automatically.
+The documentation is stored directly in this repository as web-native Markdown.
+The Programmer Guide and Vision AI Stack Programmer Guide are static web
+conversions of the original PDF documents, with their technical content
+preserved and obvious spelling and grammar errors corrected.
+
+GitHub Pages does not download or convert the source PDFs during a build. The
+workflow only builds the committed Markdown and image assets with Sphinx.
 
 ## Local preview
-
-Install Pandoc, then:
 
 ```bash
 python3 -m venv .venv

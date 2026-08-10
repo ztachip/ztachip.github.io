@@ -1,0 +1,5036 @@
+diff --git a/.github/workflows/pages.yml b/.github/workflows/pages.yml
+index 00641ed..440576e 100644
+--- a/.github/workflows/pages.yml
++++ b/.github/workflows/pages.yml
+@@ -23,12 +23,7 @@ jobs:
+         with:
+           python-version: "3.12"
+       - name: Install documentation tools
+-        run: |
+-          sudo apt-get update
+-          sudo apt-get install -y pandoc
+-          pip install -r requirements.txt
+-      - name: Synchronize documentation from ztachip source repository
+-        run: python3 tools/sync_source_docs.py
++        run: pip install -r requirements.txt
+       - name: Build Sphinx site
+         run: sphinx-build --keep-going -b html docs _build/html
+       - uses: actions/upload-pages-artifact@v3
+diff --git a/README.md b/README.md
+index 16fdf63..6233b93 100644
+--- a/README.md
++++ b/README.md
+@@ -11,15 +11,15 @@ The site follows the same five-document order as the main ztachip README:
+ 4. Vision AI Stack Programmer Guide
+ 5. MicroPython Programmer Guide
+ 
+-The main `ztachip/ztachip` repository remains the source of truth. During each
+-GitHub Pages build, `tools/sync_source_docs.py` downloads the canonical source
+-material. Markdown documents are cleaned up for web presentation, while the two
+-ODT/PDF-backed programmer guides are converted with Pandoc and their embedded
+-images are extracted automatically.
++The documentation is stored directly in this repository as web-native Markdown.
++The Programmer Guide and Vision AI Stack Programmer Guide are static web
++conversions of the original PDF documents, with their technical content
++preserved and obvious spelling and grammar errors corrected.
+ 
+-## Local preview
++GitHub Pages does not download or convert the source PDFs during a build. The
++workflow only builds the committed Markdown and image assets with Sphinx.
+ 
+-Install Pandoc, then:
++## Local preview
+ 
+ ```bash
+ python3 -m venv .venv
+diff --git a/docs/_static/pdf/vision-ai-stack/graph-framework.png b/docs/_static/pdf/vision-ai-stack/graph-framework.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..e539ec245e610073a117bfd2813ca0e596b9a297
+GIT binary patch
+literal 7956
+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
+Is$K~EA5cSog8%>k
+
+literal 0
+HcmV?d00001
+
+diff --git a/docs/hardware-architecture.md b/docs/hardware-architecture.md
+index 6c65886..8126296 100644
+--- a/docs/hardware-architecture.md
++++ b/docs/hardware-architecture.md
+@@ -1,6 +1,564 @@
+ # Hardware Architecture
+ 
+-```{note}
+-This page is synchronized from `Documentation/HardwareDesign.md` in the main
+-ztachip repository when the documentation site is built.
++## ztachip (top)
++
++![hw_ztachip](https://raw.githubusercontent.com/ztachip/ztachip/master/Documentation/images/hw_ztachip.png)
++
++### Interfaces:
++
++- axilite_* : AXILite bus for RISC-V to push tensor instructions to ztachip
++
++- axi_* : AXI bus for ztachip to initiate DMA memory transfer to/from external memory
++
++### Subcomponents:
++
++- [axilite](https://github.com/ztachip/ztachip/blob/master/HW/src/top/axilite.vhd): bridge to connect dp_core with RISC-V via axiLite bus protocol.
++
++- [sram_core](https://github.com/ztachip/ztachip/blob/master/HW/src/top/sram_core.vhd): scratch memory block to hold temporary
++data is sometimes required during tensor data transfer
++
++- [ddr_rx](https://github.com/ztachip/ztachip/blob/master/HW/src/top/ddr_rx.vhd): Handling DMA transfer from external DDR memory to
++core's internal memory.
++
++- [ddr_tx](https://github.com/ztachip/ztachip/blob/master/HW/src/top/ddr_tx.vhd): Handling DMA transfer from core's internal memory to
++external DDR memory
++
++- [core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd): This is the tensor arithmetic execution unit which is composed of
++an array of lightweight VLIW processors.
++
++- [dp_core](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_core.vhd): This is the central tensor processor unit that coordinates
++all activities within ztachip including memory transfer and launching execution on
++the VLIW processor array.
++
++- [fpu](https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/fpu.vhd): Handling tensor floating point arithmetic (FLOAT32/BFLOAT) and aggregate arithmetic such as MAX,SUM,DOT-PRODUCT-SUM.
++
++### Functions:
++
++This is the top-level component of ztachip.
++
++The central tensor processor unit is [dp_core](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_core.vhd)
++
++[dp_core](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_core.vhd) receives tensor instructions from RISC-V via axilite_* interface.
++
++[dp_core](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_core.vhd) then executes the tensor instructions by performing the following:
++
++- Coordinating tensor data operations which transfer tensor data between [sram_core](https://github.com/ztachip/ztachip/blob/master/HW/src/top/sram_core.vhd),
++[core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd)'s internal memory and
++external DDR memory. Tensor data operations may also include other complex functions such as
++transpose, dimension resize, data-remap...
++
++- Dispatching tensor operator execution requests to [core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd) which then in turn dispatch the execution to an array of VLIW processors.
++
++- Dispatching tensor floating point and aggregate arithmetic executions to [fpu](https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/fpu.vhd)
++
++## ztachip.dp_core
++
++![hw_dp_core](https://raw.githubusercontent.com/ztachip/ztachip/master/Documentation/images/hw_dp_core.png)
++
++### Interfaces:
++
++bus_* : bus for [dp_core](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_core.vhd) to receive tensor instructions from RISC-V.
++
++task_*: bus to send tensor operator execution instructions to [core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd)
++
++readmaster1* : bus to receive DMA data transfer from [core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd)'s internal memory.
++
++readmaster2* : bus to receive DMA data transfer from [sram_core](https://github.com/ztachip/ztachip/blob/master/HW/src/top/sram_core.vhd)'s scratch-pad memory
++
++readmaster3* : bus to receive DMA data transfer from external DDR memory through [ddr_rx](https://github.com/ztachip/ztachip/blob/master/HW/src/top/ddr_rx.vhd)
++
++writemaster1* : bus to send DMA data transfer to [core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd)'s internal memory.
++
++writemaster2* : bus to send DMA data transfer to [sram_core](https://github.com/ztachip/ztachip/blob/master/HW/src/top/sram_core.vhd)'s scratch-pad memory.
++
++writemaster3* : bus to send DMA data transfer to external DDR memory through [ddr_tx](https://github.com/ztachip/ztachip/blob/master/HW/src/top/ddr_tx.vhd)
++
++### Subcomponents
++
++- [dp_fetch](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_fetch.vhd): This component receives tensor instructions from RISC-V and then
++dispatch them at the right time. Tensor data operations are dispatched to [dp_gen_core](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_gen_core.vhd). Tensor operator execution is dispatched to [core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd) via task* interface signals.
++
++- [dp_gen_core](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_gen_core.vhd): This component receives tensor data operation instructions from [dp_fetch](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_fetch.vhd). It then generates the memory addresses for the transfer. There can be 2 tensor data operations executing at the same time with each assigned to one of the two [dp_gen](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_gen.vhd) subcomponents.
++
++- [dp_source](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_source.vhd): This component is responsible for generating the DMA transfer read requests to the source of the tensor data operations. It then forwards the received data to the appropriate
++[dp_sink](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_sink.vhd) components which are then responsible for the DMA transfer of the received data to the destination point.
++
++- [dp_sink](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_sink.vhd): This component is responsible for generating DMA transfer write request to the destination point of the tensor data operations. It receives the data and addresses information for the transfer from
++the appropriate [dp_source](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_source.vhd) above.
++
++### Functions
++
++This component is the main tensor processor of ztachip. It performs the following functions:
++
++- [dp_fetch](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_fetch.vhd) receives tensor instructions from RISC-V. Each tensor instruction are associated
++with a hardware thread.
++There are 2 hardware threads available. Hardware threads are useful to provide the ability to overlay
++the tensor operator execution phase of one thread with the data transfer phase of the other threads.
++
++- Decodes the tensor instructions.
++
++- Tensor instructions may be executed out-of-order but applications can enforce the order.
++
++- Data operations are then processed by [dp_gen_core](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_gen_core.vhd),
++[dp_source](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_source.vhd) and
++[dp_sink](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_sink.vhd).
++There can be up to 2 data operations executing at the same time. For example, data transfer from the
++[core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd)'s internal memory
++to DDR external memory can occur at the same time as data transfer from the scratch-pad to
++[core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd)'s internal memory.
++
++- Tensor operator execution is forwarded to [core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd) via interface signal task*
++
++- Before tensor operator execution can be issued, all memory transfer with [core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd)'s internal memory must be completed. Since there is a separate [core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd)'s internal memory for each hardware thread, for example, memory transfer to [core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd)'s internal memory belonging to thread#1 can still be running at the same time while [core](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd) is busy performing tensor operator execution but on thread#2.
++
++
++## ztachip.fpu
++
++![hw_fpu](https://raw.githubusercontent.com/ztachip/ztachip/master/Documentation/images/hw_fpu.png)
++
++### Interfaces:
++
++- bus* : AXI interface for RISC-V to push FPU instructions to FPU.
++
++- fpu_read*: Read interface to [sram_core](https://github.com/ztachip/ztachip/blob/master/HW/src/top/sram_core.vhd). FPU operates only from SRAM memory. Data input for FPU must first be transfered from DDR or PCORE memory space to SRAM space by DP instructions.
++
++- fpu_write*: Write interface to [sram_core](https://github.com/ztachip/ztachip/blob/master/HW/src/top/sram_core.vhd). FPU results are written only to SRAM memory. Results must then be transfered to DDR or PCORE memory space from SRAM space by DP intructions.
++
++### Subcomponents:
++
++- [cmd_fifo](https://github.com/ztachip/ztachip/blob/master/HW/src/util/fifo.vhd) holds FPU instructions issued from RISC-V. Each FPU instruction is associated with a HART context. There are 2 cmd_fifo for each of the HART context.
++
++- [B_fifo_i](https://github.com/ztachip/ztachip/blob/master/HW/src/util/fifo.vhd) used to store B parameters associated with B+C*X*Y opcode. FPU executions are pipelined with all data input being prefetched and pipelined.
++
++- [X_fifo_i](https://github.com/ztachip/ztachip/blob/master/HW/src/util/fifo.vhd) used to store X parameters associated with B+C*X*Y opcode. FPU executions are pipelined with all data input being prefetched and pipelined.
++
++- [Y_fifo_i](https://github.com/ztachip/ztachip/blob/master/HW/src/util/fifo.vhd) used to store Y parameters associated with B+C*X*Y opcode. FPU executions are pipelined with all data input being prefetched and pipelined.
++
++- [falu_vector](https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/falu_vector.vhd) Perform FPU operations in vector mode by nstantiating an array of falu_core.
++
++- [falu_core](https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/falu_core.vhd) Perform FPU operations for each vector elements
++
++- [falu](https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/falu.vhd) performs all falu_core functions except for the SUM opcode which is executed by falu2 instead.
++
++- [falu2](https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/falu.vhd) performs the SUM part after the MAC operations from falu. For example with the operation SUM(X*Y*C), the X*Y*C is performed by falu and results from falu are summed together by falu2
++
++### Functions:
++
++FPU supports floating point arithmetic with different precision below
++
++- FP32: Many transformer intermediate calculations should stay in FP32
++
++- BFLOAT: Transformer activations are normally stored in BFLOAT
++
++Aggregate functions are also better supported by FPU. Aggregate functions are inherently serial operations and better supported with FPU's data flow architecture instead. The following aggregate functions are supported
++
++- MAX
++
++- SUM
++
++- DOT-PRODUCT-SUM
++
++FPU operates in vector mode. FPU input/output are vectors of float numbers. FPU vector width is configured in [config.vhd](https://github.com/ztachip/ztachip/blob/master/HW/src/config.vhd) as fpu_gen_max_c.
++
++FPU execution is fully pipelined. For example, for the all important FMA operations found in LLM attention stage, it can execute up to 2*fpu_gen_max_c float operations (FMA=1ADD+1MUL) per clock cycle.
++
++Data fetching is streamed to FPU from SRAM. Data fetching are overlapped with execution, therefore adding no delay to FPU execution.
++
++FPU operates from SRAM memory space only
++
++- FPU data input must first be transfered from PCORE or DDR space to SRAM space by DP instructions
++
++- FPU results must be transfered to PCORE or DDR space from SRAM space by DP instructions
++
++For highest performance, FPU should be used under both HART context. There is 1 FPU hardware instance but it can operate under different HART context. One can use one HART context to transfer data between SRAM and DDR/PCORE while the other HART context is still busy executing FPU instructions. This way, all memory overhead are overlapped with FPU execution.
++
++## ztachip.core
++
++![hw_core](https://raw.githubusercontent.com/ztachip/ztachip/master/Documentation/images/hw_core.png)
++
++### Interfaces:
++
++- dp_write*: bus to receive DMA data transfer to its internal memory
++
++- dp_read*: bus to send DMA data transfer from its internal memory
++
++- task* : bus to receive tensor operator execution commands from [dp_core](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_core.vhd)
++
++### Subcomponents:
++
++- [stream](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/stream.vhd): this is a stream processor that performs data mapping between input and output.
++One stream processor is used to perform data mapping before data is written to core's internal memory
++And a second stream processor performs data mapping on data as it is just retrieved from core's internal memory.
++
++- [cell](https://github.com/ztachip/ztachip/blob/master/HW/src/top/cell.vhd): 4 pcore are grouped in a cell. The purpose is to improve the fan-out performance of bus signals.
++
++- [cell.pcore](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/pcore.vhd): Implements the VLIW processor array. All tensor operator execution are performed by many ot these pcores.
++
++- [instr](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/instr.vhd): This is the master processor for all pcore's VLIW processor cores that are just simply ALUs running in locked step mode with each other.
++
++- [instr.instr_fetch](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/instr_fetch.vhd): This component performs thread scheduling of execution. pcore
++are multi-threaded processors with 16 hardware threads executing in a round-robin fashion.
++VLIW instructions are complex and require a very deep pipeline, hardware multi-threading is a commonly used technique to hide
++the impact of instruction latency. Performance of 1 VLIW instruction per clock per pcore can then be achieved.
++
++- [instr.rom](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/rom.vhd): Holding VLIW instruction code. All VLIW cores are sharing the same instruction code. Since VLIW processors are all running in lock-step, only 1 instruction is fetched for all the VLIW processors at every clock.
++
++### Functions:
++
++- This component is responsible for all tensor operator execution tasks.
++
++- It is composed of an array of [pcores](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/pcore.vhd). And each pcore is a VLIW vector processor.
++
++- Requests for tensor operator execution are coming from [dp_core](https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_core.vhd) via task* interface signal.
++
++- The component [instr](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/instr.vhd) is controlling the execution of all pcore's VLIW processors.
++VLIW processors are very lightweight processors that are mostly just ALU with memory running in lock-step mode with each other.
++
++## ztachip.core.stream
++
++![hw_stream](https://raw.githubusercontent.com/ztachip/ztachip/master/Documentation/images/hw_stream.png)
++
++This module provides an arbitrary data mapping between input value and output.
++
++[stream](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/stream.vhd) performs data mapping on data just before it is written to pcore's memory space.
++
++[stream](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/stream.vhd) also performs data mapping on data just after it is read from pcore's memory space.
++
++The data mapping is realized using the formula below
++
++```
++y = lookup_quotient[x[11:5]] + x[4:0]* lookup_remainder[x[4:0]]
++```
++
++Effectively, the formula above provides a multi-point linear-interpolation between
++input and output.
++
++stream provides up to 4 different data-mapping functions at the same time. The
++parameter stream_id_in selects which data mapping to be performed.
++
++stream is very commonly used in AI applications to perform activation functions as
++data being written back to memory.
++
++
++## ztachip.core.pcore
++
++![hw_pcore](https://raw.githubusercontent.com/ztachip/ztachip/master/Documentation/images/hw_pcore.png)
++
++### Interfaces:
++
++- dp_read* : bus to send DMA data transfer from pcore's internal memory
++
++- dp_write*: bus to send DMA data transfer to pcore's internal memory
++
++- instruction*: bus to receive VLIW instructions to be executed.
++
++### Subcomponents:
++
++- [alu](https://github.com/ztachip/ztachip/blob/master/HW/src/alu/alu.vhd) : This is the unit that performs the bulk of arithmetic
++vector calculation. There are 8 ALUs for each of the 8 elements in a vector word.
++
++- [xregister_file](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/xregister_file.vhd) : Register banks holding int32 accumulators used by FMA operations.
++
++- [register_bank](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/register_bank.vhd): Holding internal memory. All computations are operated directly
++from this internal memory without intermediate register load/store operations like more traditional processor
++design.
++
++- [register_bank.register_file](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/register_file.vhd): There are 2 pages of internal memory with each
++page associated with one of the two tensor processor's hardware threads. The two register_file implement the
++two internal memory pages.
++
++- [instr_decoder2](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/instr_decoder2.vhd): Main decoder for VLIW instructions.
++
++- [instr_dispatch2](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/instr_dispatch2.vhd): Component that interfaces between
++[instr_decoder2](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/instr_decoder2.vhd) and bank of
++[alu](https://github.com/ztachip/ztachip/blob/master/HW/src/alu/alu.vhd). It forwards execution instructions from instr_decoder2 to [alu](https://github.com/ztachip/ztachip/blob/master/HW/src/alu/alu.vhd).
++It is also responsible for moving data from [register_bank](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/register_bank.vhd)
++to [alu](https://github.com/ztachip/ztachip/blob/master/HW/src/alu/alu.vhd). It is responsible for saving results from [alu](https://github.com/ztachip/ztachip/blob/master/HW/src/alu/alu.vhd) back to [register_bank](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/register_bank.vhd).
++
++- [ialu](https://github.com/ztachip/ztachip/blob/master/HW/src/ialu/ialu.vhd): VLIW may also contain integer arithmetic operation for tasks such as loop counter,
++array indexing calculation, address calculation. This component is responsible for such calculation.
++
++- [iregister_file](https://github.com/ztachip/ztachip/blob/master/HW/src/ialu/iregister_file.vhd): Register banks holding integer values used by ialu.
++
++### Functions
++
++This component performs tensor operator execution.
++
++There are many instances of pcore running in parallel.
++
++pcore has a VLIW architecture.
++
++pcore execution is multi-threaded. There are 16 hardware threads of execution running
++in round-robin fashion.
++
++The VLIW instruction is very wide that contains many sub-functions
++that perform the following tasks simultaneously within a single VLIW instruction.
++
++- Address calculation for 2 input parameters and 1 output parameter.
++
++- Fetching input parameter vectors from [register_bank](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/register_bank.vhd).
++
++- Fetching 32-bit accumulator from [xregister_file](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/xregister_file.vhd). These accumulator values are then used by alu performing FMA (Fused-multiply-add) operations.
++
++- Performing integer calculations on [ialu](https://github.com/ztachip/ztachip/blob/master/HW/src/ialu/ialu.vhd).
++
++- Perform vector calculation on the bank of [alu](https://github.com/ztachip/ztachip/blob/master/HW/src/alu/alu.vhd).
++
++- [alu](https://github.com/ztachip/ztachip/blob/master/HW/src/alu/alu.vhd) may produce results as 32-bit accumulator, save these values to [xregister_file](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/xregister_file.vhd).
++
++- [alu](https://github.com/ztachip/ztachip/blob/master/HW/src/alu/alu.vhd) may produce results as 12-bit word vector. Save these results back to
++[register_bank](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/register_bank.vhd).
++
++Since all the functions above are simultaneously performed in one single VLIW instruction, the
++instruction pipeline is as long as 14 clocks. However, with hardware multi-threading execution, each
++stage of the execution pipeline is occupied by different threads. Therefore we have an effective
++execution rate of one VLIW instruction per clock per pcore.
++
++For example, the code below is compiled into one single VLIW instruction. All data operations and
++arithmetic calculation together take just one clock of execution and also without any memory stall cycles.
++This same code using traditional RISC-V instructions would take up to 10 RISC-V instructions that may also incur memory stall cycles in addition.
++
++`z[i++] = x[i+2]+y[i+3];`
++
++## ztachip.core.pcore.register_bank
++
++This component implements pcore internal memory
++
++pcore's internal memory is partitioned into 2 pages with each page assigned to one of the two
++tensor processor's threads. This is an important concept for ztachip since it allows
++for one thread to access its internal memory while the other thread is performing
++tensor operator execution using the other internal memory's page. This allows for
++a memory operation to be overlapped with tensor operator execution.
++
++It is important to note that tensor operator execution operates only on internal memory without any reference to external memory.
++This is an important concept since with ztachip, data operations are decoupled
++from execution operations by having separate tensor instructions for data operations and execution operations.
++Reference [here](https://github.com/ztachip/ztachip/blob/master/Documentation/Overview.md) for further explanation of this concept.
++
++Internal memory holds 2 types of data
++
++- Private data: Data is private to each of the 16 threads. Private memory words are interleaved between different threads as shown in the picture below.
++
++- Shared data: Data is shared among all 16 threads but within the same pcore. Shared memory words are allocated from the bottom up as shown in the picture below.
++
++```
+++-------------------------+
+++ Thread1.Private word#0  |
+++-------------------------+
+++ Thread2.Private word#0  |
+++-------------------------+
++           :
++           :
+++-------------------------+
+++ Thread16.Private word#0 |
+++-------------------------+
+++ Thread1.Private word#1  |
+++-------------------------+
+++ Thread2.Private word#1  |
+++-------------------------+
++           :
++           :
+++-------------------------+
+++ Thread16.Private word#1 |
+++-------------------------+
++           :
++           :
+++-------------------------+
+++ Shared           word#3 |
+++-------------------------+
+++ Shared           word#2 |
+++-------------------------+
+++ Shared           word#1 |
+++-------------------------+
+++ Shared           word#0 |
+++-------------------------+
++```
++
++
++## ztachip.core.pcore.instr_decoder2
++
++This is the main component that decodes the computing components of VLIW instructions
++
++There are 3 main operations to each VLIW instruction:
++
++- operation on [pcore.alu](https://github.com/ztachip/ztachip/blob/master/HW/src/alu/alu.vhd): To perform math operations on vector data
++
++- operation on [pcore.ialu](https://github.com/ztachip/ztachip/blob/master/HW/src/ialu/ialu.vhd): To perform simple scalar integer operation.
++
++- branching operation. But this is performed by master processor [core.instr](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/instr.vhd) since
++all VLIW processors are running in lockstep therefore sharing the same
++branching operation. ztachip currently does not support yet thread branching/divergence as commonly implemented in GPU,
++therefore all threads must have the same branching condition.
++However you can still perform the equivalent of branching with conditional execution using
++VMASK register as described in next section. Most AI/Vision processing tasks however are mostly predictable
++computing with minimum or no branching.
++
++VLIW instructions are 128 bit long and have the following format
++
++```
++MU                 -- pcore.alu instruction
++   oc         5    -- opcode
++   save       1    -- Save alu.y_out=>xregister_file
++   x3              -- x3 parameter;map to alu.xscalar_in
++      vector  1    -- 1 if parameter is vector,0 if scalar
++      addr    12   -- Internal memory address of x3
++      attr    4    -- Attribute
++   x1              -- x1 parameter;map to alu.x1_in
++      vector  1    -- 1 if parameter is vector,0 if scalar
++      addr    12   -- Internal memory address of x1
++      attr    4    -- Attribute
++   x2              -- x2 parameter;map to alu.x2_in
++      vector  1    -- 1 if parameter is vector,0 if scalar
++      addr    12   -- Internal memory address of x2
++      attr    4    -- Attribute
++   y               -- y parameter;map to alu.y*_out
++      vector  1    -- 1 if parameter is vector,0 if scalar
++      addr    12   -- Internal memory address of y
++      attr    4    -- Attribute
++IMU                -- pcore.ialu instruction
++   oc         5    -- opcode
++   x1         4    -- x1 parameter; map to ialu.x1_in
++   x2         4    -- x2 parameter; map to ialu.x2_in
++   y          4    -- y parameter; map to ialu.y_out
++   const      13   -- Constant field
++CTRL
++   oc         5    -- Branching opcode based on IMU.y value
++   addr       11   -- Code address to jump to
++```
++
++MU.attr field above provides many ways for parameters to reference memory.
++
++Table below shows different addressing options for parameters.
++
++where IREG is ialu's register file and MEM is pcore's internal memory.
++
++```
++ATTR  DESCRIPTION                  MEMORY ACCESS PATTERN
++===========================================================
++11RR  Access via pointer+index     MEM[IREG[addr]+IREG[RR]]
++1011  Access via pointer           MEM[IREG[addr]]
++1000  Access shared memory         MEM[addr]
++1001  Access private memory        MEM[addr]
++00RR  Access shared memory+index   MEM[addr+IREG[RR]]
++01RR  Access private memory+index  MEM[addr+IREG[RR]]
++
++```
++
++## ztachip.core.pcore.ialu
++
++This component is responsible for the scalar integer calculation of VLIW instruction described
++above.
++
++ialu operates using the following registers
++- R0-R7  : General purpose integer registers.
++- VMASK  : Register with each bit is used to enable/disable a vector lane.
++
++The integer calculations provided by ialu are typically used for tasks such as
++
++- Loop counter/control
++
++- Index to an array
++
++- Memory reference by pointer
++
++- Address calculation
++
++- Enable/disable vector lanes.
++
++For example
++
++```
++// i is an integer operation used for loop counter
++for(i=0;i < 10;i++) {
++   :
++   :
++}
++```
++
++```
++// i is an integer used for array indexing and address calculation
++z[i]=x[i]+y[i];
++```
++
++```
++// p is an integer used for pointer reference to memory
++// Both integers p and i are used for memory reference and
++// address calculation below
++p=&mem[0];
++p[i]=10;
++```
++
++```
++// VMASK=3 means only element#0 and element#1 of vector z are
++// being updated after the vector calculation
++VMASK=3;
++z=x+2; // Only the first 2 elements of z are written back to memory.
++```
++
++## ztachip.core.pcore.alu
++
++![hw_alu](https://raw.githubusercontent.com/ztachip/ztachip/master/Documentation/images/hw_alu.png)
++
++### Interfaces
++
++x1_in: This is a 12 bit input value. This parameter is fetched from
++pcore internal memory stored in [register_file](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/register_file.vhd).
++
++x2_in: This is 12 bit input value. This parameter is fetched from
++pcore internal memory stored in [register_file](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/register_file.vhd)
++
++xreg_in: 32-bit accumulator input. This is fetched from [xregister_file](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/xregister_file.vhd).
++
++xscalar_in: constant used to specify the distance for shifting operation.
++
++y_out: Results as a full 32-bit value. This is then be stored in [xregister_file](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/xregister_file.vhd).
++
++y3_out: Results after being clipped to 12 bit. Value is properly clipped if exceeding range.
++This is then be stored in [register_file](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/register_file.vhd).
++
++y2_out: Result of comparator against y_out value. The comparator tests y_out for
++various boolean conditions. This is then be stored in [xregister_file](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/xregister_file.vhd).
++
++### Functions:
++
++ALU has a fairly simple set of operations. We want the ALU to be as simple as
++possible to reduce resource requirements. They are meant to perform linear
++arithmetic operations occurring normally during AI and vision processing tasks.
++
++Other non-linear operations are taken care of by [stream](https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/stream.vhd).
++
++ALU and stream together were shown to be able to cover a wide range of AI and
++vision processing.
++
++ALU has the following arithmetic blocks:
++
++- Multiplication of two 12 bit values.
++
++- Adding the result of multiplication to a 32-bit accumulator value.
++
++- Perform shift operation
++
++- Perform boolean comparison of the result. Comparison against zero include GT,GE,LT,LE,EQ,NE
++
++- Casting the 32-bit result to 12 bit result. Value is clipped if it is overflowed or underflowed after casting.
++
++With the above blocks, the following opcodes are supported
++
++```
++  COMPARE_LT       : y2_out=(y_out < 0)?1:0
++  COMPARE_LE       : y2_out=(y_out <= 0)?1:0
++  COMPARE_GT       : y2_out=(y_out > 0)?1:0
++  COMPARE_GE       : y2_out=(y_out >= 0)?1:0
++  COMPARE_EQ       : y2_out=(y_out==0)?1:0
++  COMPARE_NE       : y2_out=(y_out!=0)?1:0
++  MULTIPLY         : y_out=x1*x2
++  ADD              : y_out=x1+x2
++  SUBTRACT         : y_out=x1-x2
++  FMA              : xreg_in += x1_in*x2_in
++  FMS              : xreg_in -= x1_in*x2_in
++  ASSIGN           : y_out=x1_in
++  ACCUMULATOR_SHL  : y_out=(xreg_in << x_scalar_in)
++  ACCUMULATOR_SHR  : y_out=(xreg_in >> x_scalar_in)
++  INT12 SHR        : y_out=(x1_in >> x_scalar_in)
++  INT12 SHL        : y_out=(x1_in << x_scalar_in)
+ ```
+diff --git a/docs/index.md b/docs/index.md
+index 3be855b..d6caa52 100644
+--- a/docs/index.md
++++ b/docs/index.md
+@@ -18,10 +18,10 @@
+ ## Documentation
+ 
+ The documentation below mirrors the five guides listed on the
+-[ztachip project home page](https://github.com/ztachip/ztachip). The source
+-content is synchronized from the main repository during every documentation
+-build. Formatting, spelling, and grammar are cleaned up for the web, while the
+-technical content and examples are preserved.
++[ztachip project home page](https://github.com/ztachip/ztachip). The web
++versions are stored directly in this repository, including the content and
++figures from the original PDF programmer guides. Obvious spelling and grammar
++errors are corrected while the technical content and examples are preserved.
+ 
+ ::::{grid} 1 1 2 2
+ :gutter: 3
+diff --git a/docs/micropython-programmer-guide.md b/docs/micropython-programmer-guide.md
+index d4bcf31..2bdde03 100644
+--- a/docs/micropython-programmer-guide.md
++++ b/docs/micropython-programmer-guide.md
+@@ -1,6 +1,157 @@
+ # MicroPython Programmer Guide
+ 
+-```{note}
+-This page is synchronized from `micropython/MicropythonUserGuide.md` in the
+-main ztachip repository when the documentation site is built.
++## Introduction to ztachip MicroPython programming
++
++ztachip provides a Python interface to construct a graph of execution and then to schedule for the execution of the Graph.
++
++Graph performs many vision and AI tasks. The execution of the Graph is running with full ztachip acceleration mode so there is not much loss of performance when applications are running as python programs.
++
++A Graph object is composed of GraphNode objects and Tensor objects:
++- Tensors are data objects used to pass data between GraphNodes
++
++- GraphNode is the processing node of a Graph. It performs on the input Tensors and produces output on the output Tensors.
++
++ztachip python programming begins with the import of module zta
++
++```
++import zta
+ ```
++
++Many examples on how to use the Python API are provided [here](https://github.com/ztachip/ztachip/tree/master/MicroPython/examples)
++## Tensor objects
++
++There are 3 types of tensors to be created by the functions below
++
++- TensorCamera(): Tensor that is mapped to image capture from Camera
++
++- TensorDisplay(): Tensor that is mapped to the display canvas. Display canvas are working copy for the next display output.
++
++- Tensor(): temporary tensor used to carry intermediate results between GraphNodes.
++
++## GraphNode objects
++### GraphNodeCopyAndTransform(input,output,color,format,[row,col])
++
++This GraphNode performs data copy from input tensor to output tensor. Perform some color and format conversion if required.
++
++Parameters:
++
++- input: input tensor to this GraphNode
++
++- output: output tensor from this GraphNode
++
++- color: color of the resulted output tensor
++
++    - zta.MONO1: Single channel monochrome
++
++    - zta.MONO3: 3-channel monochrome where R,G,B channels have same value.
++
++    - zta.COLOR: 3-channel RGB color.
++- format: Format of the resulted output tensor
++
++    - zta.PLANAR: channels are separated as RRR....GGG....BBB....
++
++    - zta.INTERLEAVED: channels are separated as RGBRGBRGB....
++
++- row,col: Apply when output tensor is DisplayTensor. Specify where on the display to copy the tensor to. If not specified then [0,0] is assumed.
++### GraphNodeCanny(input,output)
++
++This graphNode performs Canny edge detection algorithm.
++
++Edge detection threshold is set by GraphNodeCanny.SetThreshold(loThreshold,hiThreshold)
++
++Parameters:
++
++- input: Input tensor. This node expects input to be color=zta.MONO1 and format=zta.PLANAR.
++
++- output: Output tensor. It has color=zta.MONO1 and format=zta.PLANAR
++### GraphNodeGaussian(input,output)
++
++This graphNode performs Gaussian blurring algorithm.
++
++Gaussian sigma is set by GraphNodeGaussian.SetSigma(sigma)
++
++Parameters:
++
++- input: Input tensor. This node expects input to be color=zta.COLOR and format=zta.PLANAR.
++
++- output: Output tensor. Output has color=zta.COLOR and format=zta.PLANAR
++### GraphNodeHarris(input)
++
++This graphNode performs Harris-Corner point-of-interest detection algo.
++
++The resulted point-of-interests are then retrieved by calling GetPOI() which returns a list of POI coordinates [col,row]....
++
++Parameters:
++
++- input: Input tensor. This node expects input to be color=zta.MONO1 and format=zta.PLANAR.
++### GraphNodeOpticalFlow(input,output)
++
++This GraphNode performs motion detection using OpticalFlow algo.
++
++Parameters:
++
++- input: Input tensor. This node expects input to have color=zta.COLOR and format=zta.PLANAR
++
++- output: Motion is produced as color-coded pixel. Output has color=zta.COLOR and format=zta.PLANAR
++### GraphNodeResize(width,height)
++
++This GraphNode performs image resize. Currently only image reduction is supported.
++
++Parameters:
++
++- input: Input tensor. This node expects input to have color=zta.COLOR and format=zta.PLANAR
++
++- output: Output tensor has color=zta.COLOR and format=zta.PLANAR
++### GraphNodeImageClassifier(input)
++
++This GraphNode performs MobileNet image classification from TensorFlowLite.
++
++Top 5 classification results are returned by calling GraphNodeImageClassifier.GetTop5 which returns a list of 5 tuples [probability,name]...
++
++Parameters:
++
++- input: Input tensor. This node expects input to have color=zta.COLOR and format=zta.PLANAR and image size=224x224
++### GraphNodeObjectDetection(input)
++
++This GraphNode performs SSD-MobileNet object detection from TensorFlowLite
++
++List of detected objects are returned by calling GraphNodeObjectDetection.GetObjects() which returns a list of tuples describing the detected rectangular region of the objects [topleft_col,topleft_row,botright_col,botright_row,probability,name]
++
++Parameters:
++
++- input: Input tensor. This node expects input to have color=zta.COLOR and format=zta.PLANAR and image size=300x300
++# Graph object
++
++Graph is constructed from a list of GraphNodes objects described earlier.
++
++Graph execution is performed with the following functions:
++
++- Graph.Run(): To execute the graph until completion
++
++- Graph.RunWithTimeout(timeout_in_ms): To execute the graph but only up to a time limit.
++
++- Graph.IsBusy(): To check if graph is still busy running. Normally used in conjunction with RunWithTimeout.
++# Drawing functions.
++
++Drawing is done on a canvas work area defined by TensorDisplay and not directly to the display.
++
++- zta.CanvasDrawText(text,row,col): Draw a string at location [row,col]
++
++- zta.CanvasDrawPoint(r,c): Draw a point at location [row,col]
++
++- zta.CanvasDrawRectangle([top_left_row,top_lef_col],[bot_right_row,bot_right_col]) : Draw a rectangle by specifying the topleft and botright corners.
++
++- zta.DisplayFlushCanvas(): Flush the canvas to the display screen.
++# Camera function
++
++- CameraCapture(): Return True if a new camera capture becomes available, False otherwise.
++
++# Miscellaneous functions
++
++- SetLed(ledVal) : Set LED
++
++- ButtonState() : Return button state (True is pressed, False otherwise)
++
++- GetElapsesTimeMsec() : Return time in msec from previous call to this function
++
++- DeleteAll() : To release all previously allocated Graph,GraphNode and Tensor objects. Call before exiting Python program.
+diff --git a/docs/programmer-guide/index.md b/docs/programmer-guide/index.md
+index bfe2be2..073219e 100644
+--- a/docs/programmer-guide/index.md
++++ b/docs/programmer-guide/index.md
+@@ -1,5 +1,2717 @@
+ # Programmer Guide
+ 
+-The complete programmer guide is generated from the original
+-`Documentation/ztachip_programmer_guide.odt` document during the documentation
+-build. Embedded figures and tables are extracted and published with the guide.
++**Version:** 2.3
++**Author:** Vuong Nguyen
++**Project:** https://github.com/ztachip/ztachip
++**Contact:** vuongdnguyen@hotmail.com
++
++## 1 - Introduction
++
++Domain-Specific-Architecture (DSA) is a general trend in computing research in-order to keep up with the future computing demand fuelled by the exponential growth of AI.
++
++With DSA, the goal is to define a domain of applications where a special computing architecture will be more efficient compared to a more general-purpose computing architecture.
++
++The ztachip domain consists of applications that can be expressed as a sequence of tensor operations. There are 2 primary types of tensor operations defined:
++
++- Tensor data operations: Involving tensor operations such as tensor data copy, tensor transpose, dimensions resize, data remapping...
++
++- Tensor operator operations: Performing computational tasks on a set of tensors.
++
++But to be productive, DSA would also require a Special-Domain-Language (DSL) to abstract away the complexities of DSA.
++
++The goal for DSL is to provide a programming language that is:
++
++- Easy to use and learn.
++
++- The language hides the complexity of hardware implementation from software users.
++
++- Flexible enough to cover as wide range of applications as possible.
++
++ztachip's DSL is composed of two elements:
++
++- tensor programs
++
++- pcore programs
++
++### 1.1 tensor programs
++
++Tensor programs are code that runs on a host processor such as RISC-V. They generate and send proprietary tensor instructions to ztachip's master processor called tensor-core.
++
++Tensor programs have suffix *.m
++
++Tensor programs are primarily C-programs but with some special extensions. There is a special ztachip
++
++compiler that converts these special extensions to tensor instructions before the program can then be compiled with standard RISC-V C/C++ compiler.
++
++With tensor programs, programmers express the problems as a sequence of high-level tensor instructions. Computational tasks are presented as tensor operators that will be defined later by pcore programs.
++
++Tensor programs can be further executed on two separate SW threads with each SW thread emitting tensor instructions to one of the two hardware threads called t-threads available from tensor-core.
++
++t-threads improve performance since they allow for tensor data operations from one t-thread to be overlapped with tensor operator operations from the other t-thread.
++
++### 1.2 pcore programs
++
++P-core programs implement the tensor operators that can be invoked by tensor programs.
++
++P-core programs are executed on an array of ztachip's proprietary VLIW processors called p-cores. VLIW stands for very-long-instruction-word where each instruction can perform many operations at the same time.
++
++P-core programs are files with suffix *.p
++
++P-core programs are multi-threaded with 16 threads. These threads are hardware-based threads without overhead and dispatched in a round-robin fashion. We call these threads to be p-threads.
++
++Tensor operators are presented as operators of C++ object class. Related tensor operators are then grouped together under the same C++ object class. These object classes are single instance objects so they are statically allocated. Due to limited memory available, these objects are overlapped in memory allocation. Therefore, users must partition these objects in such a way that they are not in use at the same time.
++
++### 1.3 Compare ztachip DSL with traditional programming
++
++With traditional programming, data and execution steps are often interleaved. Traditional architecture requires data to be loaded first from memory to on-chip registers before computational steps can take place. But this would create a lot of memory round trip delay and stall cycles especially when data is not readily available in cache.
++
++But with ztachip, computation and data transfer with external memory are decoupled from one another. With ztachip, data are loaded/saved between external memory and pcore's internal memory in a streaming fashion with advanced data fetching and no round-trip delay. This results in huge gain in memory bandwidth usage efficiencies. Computational steps are also very efficient without any memory stall cycles since computation reference pcore's internal memory only.
++
++Also, computational steps being represented as tensor operators provide a natural way to express algorithm parallelism where many computational units can perform similar computation on many different elements of tensors.
++
++## 2 - TENSOR PROGRAMS
++
++Tensor programs are C-codes that are executed on host processor such as RISC-V.
++
++Tensor program emits tensor instructions to the tensor-core. Tensor instructions perform functions such as
++
++- tensor memory operations such as data copy, resize, reshape...
++
++- Dispatching tensor operator executions defined by p-core programs.
++
++Tensor programs are C programs with special embedded tensor syntax extensions. Tensor extensions are lines that begin with character '>'. ztachip special compiler replaces these special extensions with appropriate tensor instruction binary that are then being pushed to tensor processor's instruction queue.
++
++There can be up to 2 hardware-based threads running in the tensor core. We call these t-threads.
++
++t-threads are useful in interleaving memory operation cycle from one t-thread with tensor operator execution cycle from the other t-thread. This greatly improves memory bandwidth efficiencies.
++
++### 2.1 Tensor data object definition
++
++Tensor data objects can be viewed as data variables in tensor programming paradigm.
++
++Tensor data objects are often defined as a sub-tensor of another tensor object. Sub-tensors are defined by specifying index ranges of tensor dimensions.
++
++Tensors can be resided in
++
++- p-core private memory space. In this space, each of p-core's 16 p-threads has its own private memory.
++
++- p-core shared memory space. In this space, all of p-core's 16 p-threads shared the same memory space.
++
++- p-core memory space is further partitioned into 2 separate spaces with each space assigned to each of the two t-threads from tensor-core.
++
++- external DDR memory space.
++
++- SCRATCH space. This is similar to L2 cache in traditional CPU architecture.
++
++#### 2.1.1 Tensor data objects in DDR memory space
++
++External DDR tensor has the syntax below. It specifies a tensor as a sub-tensor of another tensor by specifying its dimension index range.
++
++```text
++DDR(pointer,dim,dim,...)[start:stride:end]...[start:stride:end]
++```
++
++|  |  |
++| --- | --- |
++| pointer | memory address where tensor is stored in DDR memory |
++| dim | tensor dimensions. If omitted than tensor is 1-D spanning the entire DDR memory<br>range. |
++| start | starting index of dimension range. |
++| stride | stride of the dimension range. |
++| end | ending index of dimension range. |
++
++2.1.1.1 Example 1
++
++Example below specifies a tensor that is a sub-set of a tensor 100x200 resided at memory location p. The tensor subset has dimension 20x10 spanning row 0-19 and column 20-29 of original tensor.
++
++```text
++DDR(p,100,200)[0:1:19][20:1:29]
++```
++
++2.1.1.2 Example 2
++
++If stride of index range is ignored, then 1 is assumed Tensor definition below is identical to the one defined in example 1.
++
++```text
++DDR(p,100,200)[0:19][20:29]
++```
++
++2.1.1.3 Example 3
++
++If begin of index range is ignored, then 0 is assumed Tensor definition below is identical to the one defined in example 1.
++
++```text
++DDR(p,100,200)[:19][:29]
++```
++
++2.1.1.4 Example 4
++
++If end of index range is ignored, then end of dimension range is assumed. In example below, tensor spans from row index=0 to 99 and spans from column index=20 to 199.
++
++```text
++DDR(p,100,200)[0:][20:]
++```
++
++#### 2.1.2 Tensor data objects in PCORE private memory space
++
++Tensors that are allocated in p-core private memory space have the following syntax
++
++```text
++PCORE(dim,...)
++[start:stride:end]...[start:stride:end]
++.thread[start:stride:end]
++.class::variable[start:stride:end]...[start:stride:end]
++```
++
++|  |  |
++| --- | --- |
++| dim | p-cores can be arranged as an 1-D array or 2D array. If dim is not specified, then a 1-D<br>arrangement of all available p-cores is assumed. |
++| start | starting index of dimension range. |
++| stride | stride of the dimension range. |
++| end | ending index of dimension range. |
++| thread | referencing the 16 p-threads. |
++| class | class name of variable. variables in pcore's memory space are grouped together by class<br>object. |
++| variable | variable holding tensor data in pcore memory space. |
++
++2.1.2.1 Example 1
++
++Example below, pcores are arranged as 1-D array of VLIW processors. The tensor spans all 8 p-cores. And at each p-core, we span all 16 threads. And at each thread we reference all elements of variable class::private_variable that is defined by p-core programs as a 2x8 array.
++
++```text
++PCORE(8)[0:7].thread[0:15].class::private_variable[0:1][0:7]
++```
++
++2.1.2.2 Example 2
++
++Example below is similar to previous example except for p-cores being arranged as 4x2 array of processors. Below we span all pcores by row and column indexing.
++
++```text
++PCORE(4,2)[0:3][0:1].thread[0:15].class::private_variable[0:1][0:7]
++```
++
++#### 2.1.3 Tensor data objects in p-core shared memory space
++
++Tensors that are allocated in p-core shared memory space are similar to tensor in p-core private memory space except that the thread dimension is now omitted.
++
++```text
++PCORE(dim,...)
++[start:stride:end]...[start:stride:end]
++.class::variable[start:stride:end]...[start:stride:end]
++```
++
++|  |  |
++| --- | --- |
++| dim | p-cores can be arranged as an 1-D array or 2D array.<br>If dim is not specified, then a 1-D arrangement of all available p-cores is assumed. |
++| start | starting index of dimension range. |
++| stride | stride of the dimension range. |
++| end | ending index of dimension range. |
++| class | class name of variable. variables in pcore's memory space are grouped together by<br>class object. |
++| variable | variable holding tensor data in pcore memory space. |
++
++2.1.3.1 Example 1
++
++Example below, pcores are arranged as 1-D array of processors. The referenced tensor spans all 8 p- cores. And at each pcore we reference all elements of variable class::shared_variable that is defined in p-core programs as a 2x8 array. Note that we don't span the thread dimension since shared memory space has no thread dimension.
++
++```text
++PCORE(8)[0:7].class::shared_variable[0:1][0:7]
++```
++
++#### 2.1.4 Tensor data objects in SCRATCH memory space
++
++ztachip has an internal SRAM memory block, and we call this memory region SCRATCH memory space.
++
++SCRATCH purpose is to provide general memory storage.
++
++Tensors can be copied between DDR, PCORE and SCRATCH memory space.
++
++Tensors allocated in SCRATCH space has the format below
++
++```text
++SCRATCH(pointer,dim,dim,...)[start:stride:end]...[start:stride:end]
++```
++
++|  |  |
++| --- | --- |
++| pointer | Tensor memory address in SCRATCH space.<br>0 = start of SCRATCH memory space.<br>SCRATCH maximum size (in bytes) is defined by SRAM SIZE macro.<br>_ |
++| dim | tensor dimensions. If omitted than tensor is 1-D spanning the entire SCRATCH |
++
++|  |  |
++| --- | --- |
++|  | memory space. |
++| start | starting index of dimension range. |
++| stride | stride of the dimension range. |
++| end | ending index of dimension range. |
++
++Usage of this tensor is similar to DDR tensors as defined in 2.1.1
++
++### 2.2 Tensor variables.
++
++Tensor variables are tensor alias. They are faster to reference in tensor programs.
++
++Tensor variable name must start with character '$'.
++
++Example below is an example of a tensor variable declaration and definition.
++
++// First declare the variable
++
++```text
++> VAR $coef_pcore;
++```
++
++// Then assign variable with a tensor definition.
++
++```text
++> $coef_pcore := PCORE(8)[0:7].convolution::coef[0:1][0:7];
++```
++
++\
++
++Whereever $coef_pcore being referenced, the expression representing the variable will be substituted in its place.
++
++Tensor variables can also have an argument. The argument is specified when tensor variables are being referenced. '$' is tensor variable's argument place holder.
++
++#### 2.2.1 Tensor variables - example 1
++
++If a tensor variable $coef_ddr is defined as
++
++```text
++> VAR $coef_pcore;
++> $coef_ddr := MEM(coef,100,200)[$][0:199];
++```
++
++Then
++
++```text
++$coef_ddr[jj]
++```
++
++is the same as below after substituting tensor variable argument $ with jj.
++
++```text
++MEM(coef,100,200)[jj][0:199];
++```
++
++#### 2.2.2 Tensor variables – example 2
++
++If a tensor variable $coef_ddr is defined as
++
++```text
++> VAR $coef_pcore;
++> $coef_ddr := MEM(coef,100,200)[$][0:199];
++```
++
++Then
++
++```text
++$coef_ddr[0:19]
++```
++
++is the same as below after substituting tensor variable argument $ with [0:19].
++
++```text
++MEM(coef,100,200)[0:19][0:199];
++```
++
++### 2.3 Tensor data transfer instructions
++
++These instructions are inserted to tensor programs with special syntax line begins with '>'
++
++These instructions move tensors from one memory space to another.
++
++In addition to tensor memory transfer, these instructions can also perform many functions such as tensor reshape, dimension resize, data remapping...
++
++#### 2.3.1 Tensor data transfer from DDR to PCORE private memory space
++
++```text
++>PCORE[0:1].THREAD[0:1].myclass::var[0:1] <= DDR(p)[0:7];
++```
++
++Example above transfers data from a tensor resided in external DDR memory to a tensor resided in pcore's private memory space named myclass::var.
++
++The result of the transfer is shown below
++
++```text
++PCORE[0].THREAD[0].myclass::var[0] = p[0]
++PCORE[0].THREAD[0].myclass::var[1] = p[1]
++PCORE[0].THREAD[1].myclass::var[0] = p[2]
++PCORE[0].THREAD[1].myclass::var[1] = p[3]
++PCORE[1].THREAD[0].myclass::var[0] = p[4]
++PCORE[1].THREAD[0].myclass::var[1] = p[5]
++PCORE[1].THREAD[1].myclass::var[0] = p[6]
++PCORE[1].THREAD[1].myclass::var[1] = p[7]
++```
++
++#### 2.3.2 Tensor data transfer from DDR to PCORE shared memory space.
++
++```text
++>PCORE[0:1].myclass::shared_var[0:1] <= DDR(p)[0:3];
++```
++
++Example above transfers data from a tensor resided in external DDR memory to a tensor resided in pcore's shared memory space named myclass::shared_var. Tensors in PCORE shared memory space have no thread dimension.
++
++The result of the transfer is shown below
++
++```text
++PCORE[0].myclass::shared_var[0] = p[0]
++PCORE[0].myclass::shared_var[1] = p[1]
++```
++
++```text
++PCORE[1].myclass::shared_var[0] = p[2]
++PCORE[1].myclass::shared_var[1] = p[3]
++```
++
++#### 2.3.3 Tensor data transfer from DDR to tensor operator's parameters
++
++Like C/C++ functions, tensor operators are functions with function parameters declared.
++
++Tensor operator parameters are themselves tensors that reside in pcore private memory space.
++
++Parameters of different operators are overlapped in memory allocation. Therefore, tensor operator parameter's content will be overwritten when a different tensor operator being invoked.
++
++Tensor operator parameters will be explained at more details in chapter 3.
++
++Example1:
++
++```text
++>PCORE(4)[0:3].THREAD[0:15].myclass::my_op.parm <= DDR(p)[0:63];
++```
++
++Example above set parameter parm of tensor operator my_class::my_op with data from DDR memory. parm1 is viewed as a tensor of dimension 4x16
++
++Example2:
++
++```text
++>PCORE(4)[0:3].THREAD[0:15].myclass::my_op.vparm[0:7] <= DDR(p)[0:511];
++```
++
++Example above set parameter parm1 of tensor operator myclass::my_op with data from DDR memory. In this example, in the pcore program, vparm is declared as a vector of width 8, therefore parm1 is viewed as a tensor of dimension 4x16x8
++
++#### 2.3.4 Tensor data transfer from tensor operator's parameters to DDR
++
++Similar to previous section, but now the transfer direction is from tensor operator parameters to DDR memory space.
++
++Tensor operator parameters will be explained at more details in chapter 3.
++
++Example1:
++
++```text
++>DDR(p)[0:63] <= PCORE(4)[0:3].THREAD[0:15].myclass::my_op.z;
++```
++
++Example above transfers parameter z of tensor operator myclass::my_op to DDR memory. In this example, z is viewed as a tensor of dimension 4x16
++
++Example2:
++
++```text
++>DDR(p)[0:511] <= PCORE(4)[0:3].THREAD[0:15].myclass::my_op.vz[0:7];
++```
++
++Example above transfers tensor operator parameter vz to DDR memory. In this example, in the pcore program, vz is declared as vector with width 8, then vz is viewed as a tensor of dimension 4x16x8
++
++#### 2.3.5 Tensor data transfer from DDR to SCRATCH
++
++Example below shows the data transfer of a tensor in DDR space to a tensor in SCRATCH space.
++
++```text
++>SCRATCH(0,256)[:] <= DDR(p,256)[:];
++```
++
++#### 2.3.6 Tensor data transfer from SCRATCH to DDR
++
++Example below shows the data transfer of a tensor in SCRATCH space to a tensor in DDR space.
++
++```text
++>DDR(p,256)[:] <= SCRATCH(0,256)[:];
++```
++
++#### 2.3.7 Tensor data transfer from SCRATCH to DDR
++
++#### 2.3.8 Setting tensor operator's global parameters
++
++Tensor operator parameters are normally unique and private among pcores and p-threads.
++
++However, tensor operator parameters can be specified to have a global scope.
++
++With global scope, all pcores and all p-threads would share the same parameter.
++
++Tensor operator parameters will be explained at more details in chapter 3.
++
++```text
++>myclass::my_op.kk <= INT16(2);
++```
++
++Example above set parameter kk of tensor operator myclass::my_op to 2. This parameter is shared among all pcores and among all p-threads.
++
++#### 2.3.9 Broadcast transfer to PCORE memory space.
++
++All pcores may receive the same broadcast data by specifying '*' as the PCORE index range.
++
++2.3.9.1 Example
++
++Example below broadcast data to all p-cores.
++
++```text
++> PCORE(8)[*].thread[0:15].class::var[0:7] <= DDR(p)[0:127];
++```
++
++#### 2.3.10 Multi-cast transfer to PCORE memory space.
++
++When pcores are arranged in a 2-D array, all pcores belonged to same row or column can receive the same multi-cast data.
++
++Multi-cast is allowed only when dimensions of pcore array have sizes in power of 2.
++
++Examples below demonstrate the syntax for multi-cast transfers.
++
++2.3.10.1Example 1
++
++In example below, pcores are arranged in a 4x2 array.
++
++All pcores belonged to the same row receive the same multi-cast data. In example below, multi-cast transfer is identified with character '*' in the row index of pcore array.
++
++```text
++> PCORE(4,2)[0:3][*].thread[0:15].class::var[0:7] <= DDR(p)[0:511];
++```
++
++2.3.10.2Example 2
++
++In example below, pcores are arranged in a 4x2 array. All pcores belonged to the same column receive the same multi-cast data. In example below, multi-cast transfer is identified with character '*' in the column index of pcore array.
++
++```text
++> PCORE(4,2)[*][0:1].thread[0:15].class::var[0:7] <= DDR(p)[0:255];
++```
++
++#### 2.3.11 Tensor reshaping
++
++```text
++>PCORE[0].THREAD[0:2].myclass::var[0:3] <= DDR(p,100,3,2)[0][0:2][0:3];
++```
++
++Example above transfers data from DDR tensor data object but the DDR dimension indexes are going out-of-bound in some cases.
++
++Tensor data associated with out-of-bound dimension index are substituted with zero for read operation and skipped for write operation.
++
++The result of the transfer is listed below
++
++```text
++PCORE[0].THREAD[0].myclass::var[0] = p[0][0][0]
++PCORE[0].THREAD[0].myclass::var[1] = p[0][0][1]
++PCORE[0].THREAD[0].myclass::var[2] = p[0][0][2] <== Out-of-bound index. Substituted with zero.
++PCORE[0].THREAD[0].myclass::var[3] = p[0][0][3] <== Out-of-bound index. Substituted with zero.
++PCORE[0].THREAD[1].myclass::var[0] = p[0][1][0]
++PCORE[0].THREAD[1].myclass::var[1] = p[0][1][1]
++PCORE[0].THREAD[1].myclass::var[2] = p[0][1][2] <== Out-of-bound index. Substituted with zero.
++PCORE[0].THREAD[1].myclass::var[3] = p[0][1][3] <== Out-of-bound index. Substituted with zero.
++PCORE[0].THREAD[2].myclass::var[0] = p[0][2][0]
++PCORE[0].THREAD[2].myclass::var[1] = p[0][2][1]
++PCORE[0].THREAD[2].myclass::var[2] = p[0][2][2] <== Out-of-bound index. Substituted with zero.
++PCORE[0].THREAD[2].myclass::var[3] = p[0][2][3] <== Out-of-bound index. Substituted with zero.
++```
++
++#### 2.3.12 Setting Out-of-bound access values
++
++During tensor reshaping, out-of-bound values are substituted with zero values by default. However, different value can be specified instead with the use of PAD keyword. The example below, data transfer of out-of-bound items will have values of 0xff.
++
++```text
++>PCORE[0].THREAD[0:2].myclass::var[0:3] <= PAD(0xff) DDR(p,100,3,2)[0][0:2][0:3];
++```
++
++#### 2.3.13 Dimension casting
++
++You can cast the dimension of the components of pcore tensor to different dimension.
++
++Example:
++
++```text
++>PCORE(8)[0:7].THREAD[0:15].myclass::myvar[0:15] <= DDR(p)[0:8*16*16-1];
++```
++
++Now recast dimension of thread component from vector of 16 to array of 4x4. And recast myvar dimension from vector of 16 to array of 4x4. Note that the access pattern of the casted components is also changed from 1-D indexing to 2-D indexing access pattern.
++
++```text
++>PCORE(8)[0:7].THREAD(4,4)[0:3][0:3].myclass::myvar(4,4)[0:3][0:3] <= DDR(p)[0:8*16*16-1];
++```
++
++#### 2.3.14 Data reordering
++
++By default, the tensor data access order starts with index going from right to left.
++
++However, the order can be changed from the default by using FOR directive. The order starts with index without a corresponding FOR directive going from right to left and then the order continues with index with a corresponding FOR directive but in the order of the FOR directives going from right to left.
++
++In example below, the access pattern starts with PCORE component indexing and then J for thread component indexing and then K for myvar component indexing.
++
++```text
++>FOR(K=0:3) FOR(J=0:1) PCORE[0:2].THREAD[J].myclass::myvar[K] <= DDR(p)[0:2*3*4-1];
++```
++
++The result of the transfer above is listed below
++
++```text
++PCORE[0].THREAD[0].myclass::myvar[0] = p[0]
++PCORE[1].THREAD[0].myclass::myvar[0] = p[1]
++PCORE[2].THREAD[0].myclass::myvar[0] = p[2]
++PCORE[0].THREAD[1].myclass::myvar[0] = p[3]
++PCORE[1].THREAD[1].myclass::myvar[0] = p[4]
++PCORE[2].THREAD[1].myclass::myvar[0] = p[5]
++PCORE[0].THREAD[0].myclass::myvar[1] = p[6]
++PCORE[1].THREAD[0].myclass::myvar[1] = p[7]
++PCORE[2].THREAD[0].myclass::myvar[1] = p[8]
++PCORE[0].THREAD[1].myclass::myvar[1] = p[9]
++PCORE[1].THREAD[1].myclass::myvar[1] = p[10]
++PCORE[2].THREAD[1].myclass::myvar[1] = p[11]
++PCORE[0].THREAD[0].myclass::myvar[2] = p[12]
++PCORE[1].THREAD[0].myclass::myvar[2] = p[13]
++PCORE[2].THREAD[0].myclass::myvar[2] = p[14]
++PCORE[0].THREAD[1].myclass::myvar[2] = p[15]
++PCORE[1].THREAD[1].myclass::myvar[2] = p[16]
++PCORE[2].THREAD[1].myclass::myvar[2] = p[17]
++PCORE[0].THREAD[0].myclass::myvar[3] = p[18]
++PCORE[1].THREAD[0].myclass::myvar[3] = p[19]
++PCORE[2].THREAD[0].myclass::myvar[3] = p[20]
++PCORE[0].THREAD[1].myclass::myvar[3] = p[21]
++PCORE[1].THREAD[1].myclass::myvar[3] = p[22]
++PCORE[2].THREAD[1].myclass::myvar[3] = p[23]
++```
++
++#### 2.3.15 Concurrent transfer
++
++pcores are VLIW vector processors that operate on data in vector units. Therefore, to be efficient, ztachip requires data to be in vector format.
++
++However, this restriction may not match application data format. And transferring scalar data is not efficient since transfer is done on one scalar element at a time instead of a whole vector at a time.
++
++Concurrent transfer is the solution to this problem.
++
++Concurrent transfers allow transfers to/from pcore's memory space to happen concurrently on all pcores at the same time. For example, it would take 8 clocks to access all 8 scalar values when they are not in continuous memory location. But with concurrent transfer mode, all pcores are accessing its memory space at the same time, the net result is that we achieve an access rate of 1 vector data-unit per clock to/from pcore memory space even when data are not aligned in vector format. Concurrent transfer is enabled with directive CONCURRENT.
++
++CONCURRENT directive applies only to pcore tensors.
++
++However, concurrent transfers are only allowed for the 2 scenarios described in the following sub- sections.
++
++##### 2.3.15.1 Tensor concurrent transfer – scenario 1.
++
++```text
++>FOR(I=0:7) PCORE(8)[0:7].THREAD[0:15].myclass::myvar(8,8)[:][I] <= DDR(p,1024,8)[0:1023][0:7];
++```
++
++We show below the accessing pattern resulting from tensor transfer instruction above. Note that it takes 8 clocks to set a vector unit from DDR tensor to pcore memory space since data access in vector mode to pcore memory space is not possible.
++
++```text
++PCORE[0].THREAD[0].myclass::myvar(8,8)[0][0] <= p[0];
++PCORE[0].THREAD[0].myclass::myvar(8,8)[1][0] <= p[1];
++PCORE[0].THREAD[0].myclass::myvar(8,8)[2][0] <= p[2];
++PCORE[0].THREAD[0].myclass::myvar(8,8)[3][0] <= p[3];
++PCORE[0].THREAD[0].myclass::myvar(8,8)[4][0] <= p[4];
++PCORE[0].THREAD[0].myclass::myvar(8,8)[5][0] <= p[5];
++PCORE[0].THREAD[0].myclass::myvar(8,8)[6][0] <= p[6];
++PCORE[0].THREAD[0].myclass::myvar(8,8)[7][0] <= p[7];
++:
++:
++```
++
++By adding CONCURRENT directive, the transfer is now rearranged and interleaved automatically among all the pcores so that the 8-clock access cycles are now overlapped between all the pcores.
++
++This way transfer above can still occur in vector mode at rate of 1 vector per clock.
++
++The transfer now becomes...
++
++```text
++>CONCURRENT FOR(I=0:7) PCORE(8)[0:7].THREAD[0:15].myclass::myvar(8,8)[:][I] <= DDR(p,1024,8)[0:1023][0:7];
++```
++
++This type of concurrent transfers is very useful since it is a very common scenario when your data are not vectors but you like to group scalar data as elements of vectors for pcores to process them
++
++simultaneously in vector mode.
++
++##### 2.3.15.2 Tensor concurrent transfer – scenario 2
++
++```text
++>FOR(I=0:7) FOR(J=0:7) PCORE(8)[0:7].THREAD(2,8)[:][:].myclass::myvar[J] <= DDR(p,1024,8)[0:1023][0:7];
++```
++
++We show below the accessing pattern resulting from tensor transfer instruction above. Note that it takes 8 clocks to set a vector unit from DDR tensor to pcore memory space.
++
++```text
++PCORE[0].THREAD[0][0].myclass::myvar[0] <= p[0];
++PCORE[0].THREAD[0][1].myclass::myvar[0] <= p[1];
++PCORE[0].THREAD[0][2].myclass::myvar[0] <= p[2];
++PCORE[0].THREAD[0][3].myclass::myvar[0] <= p[3];
++PCORE[0].THREAD[0][4].myclass::myvar[0] <= p[4];
++PCORE[0].THREAD[0][5].myclass::myvar[0] <= p[5];
++PCORE[0].THREAD[0][6].myclass::myvar[0] <= p[6];
++PCORE[0].THREAD[0][7].myclass::myvar[0] <= p[7];
++```
++
++: : By adding CONCURRENT directive, the transfer is rearranged and interleaved among all the pcores so that the 8-clock access cycles are now overlapped between all the pcores.
++
++This way transfer can still occur in vector mode at rate of 1 vector per clock.
++
++The transfer now becomes...
++
++```text
++>CONCURRENT FOR(I=0:7) FOR(J=0:7) PCORE(8)[0:7].THREAD(2,8)[:][:].myclass::myvar[J] <= DDR(p)[0:8191];
++```
++
++##### 2.3.15.3 Concurrent transfer with SCATTER
++
++Concurrent transfer can also be initiated with SCATTER keyword. When CONCURRENT keyword is specified then the tensor transfer is being reordered automatically such that data access to PCORE memory space happen at the same time on all PCOREs. But with SCATTER keyword, the tensor transfer is not being reordered automatically but must be programmed correctly according to example below.
++
++Example below is found in SW/apps/llm/kernel/llm.m, THREAD indexing is the most inner-loop and PCORE indexing being just before THREAD indexing. This is necessary so that data fetching from different PCOREs can be performed simultaneously on all PCORES at same time.
++
++```text
++> FOR(J=0:cnt2/NUM_PCORE-1) FOR(L=0:cnt4-1) FOR(K=0:NUM_PCORE-1) FOR(I=0:cnt3-1)
++DTYPE(INT16)SCRATCH((uint32_t)ws->sram_x2,NUM_PCORE,DOT_PRODUCT_N_BATCH/NUM_PCORE,DOT_PRODUCT_K_BATCH/4,4)
++[K][J][L][I]
++> <=
++> FOR(K=0:cnt2/NUM_PCORE-1) FOR(L=0:cnt4-1) FOR(J=0:NUM_PCORE-1) FOR(I=0:cnt3-1) SCATTER DTYPE(INT16)
++PCORE[J].THREAD[I].llm_dotproduct::x[L][K];
++```
++
++#### 2.3.16 Tensor transfer with boundary check disabled.
++
++Normally the dimension index is bounded by the tensor dimension. If index is out-of-bound, then a read operation is padded with zero and a write operation is skipped.
++
++However, you can disable this behaviour by adding '+' after tensor dimension.
++
++Example below shows DDR tensor that are accessed with index being out-of-bound.
++
++```text
++>PCORE[0].THREAD[0:2].myclass::myfunc.var[0:3] <= DDR(p,100,2,2)[0][0:2][0:3];
++```
++
++For example p[0][2][2] and p[0][2][3] are both out-of-bound.
++
++Now we disable boundary check on DDR tensor by adding a '+' after the dimension that we would like boundary check to be disabled.
++
++```text
++>PCORE[0].THREAD[0:2].myclass::myfunc.var[0:3] <= DDR(p,100,2+,2+)[0][0:2][0:3];
++```
++
++Now boundary check of the last 2 dimensions of DDR tensor is disabled. Read/Write access to out-of- bound index is carried out as if the index is valid.
++
++#### 2.3.17 Tensor transfer with overlay dimension
++
++Tensor can be defined to have an overlapping dimension definition.
++
++This is useful in-order to add additional boundary checks on the tensor read/write access.
++
++##### 2.3.17.1 Tensor transfer with overlapped dimension - Example 1
++
++```text
++DDR(p,1000(100,200))[:][:]
++```
++
++Tensor above is defined as dimension 100x200 but also constrained as 1-D dimension 1000.
++
++Boundary check is performed on both dimension definitions.
++
++This tensor is being recognized in a tensor data transfer operation as a 100x200 tensor. The other dimension definition of 1000 is only for boundary check purposes.
++
++##### 2.3.17.2 Tensor transfer with overlapped dimension - Example 2
++
++```text
++DDR(p,32,152(10,16))[:][:]
++```
++
++Tensor above is defined as dimension 32x10x16 but also as dimension 32x152
++
++Boundary check is performed on both dimension definitions.
++
++This tensor is being recognized in a tensor data transfer operation as a 32x10x16 tensor. The other dimension definition of 32x152 is only for boundary check purposes.
++
++#### 2.3.18 Tensor padding values
++
++Tensor read/write accesses are checked against dimension boundary.
++
++Any out-of-bound read accesses are padded with zero by default.
++
++Any out-of-bound write accesses are skipped.
++
++But you can set different padding values for out-of-bound read accesses with PAD keyword.
++
++In example below, any out-of-bound read accesses from DDR tensor are padded with 0xff instead of zero.
++
++```text
++>PCORE[0].THREAD[0:2].myclass::myfunc.var[0:3] <= PAD(0xff) DDR(p,100,2,2)[0][0:2][0:3];
++```
++
++#### 2.3.19 Tensor transfer data types
++
++DTYPE directive specifies the data type of the tensor used during a data transfer operation.
++
++Tensors data transfer can have the following data types
++
++|  |  |
++| --- | --- |
++| UINT8 | Unsigned 8-bit integer |
++| INT8 | Signed 8-bit integer |
++| INT16 | Signed 12-bit, or 16-bit integer depends on ztachip<br>configuration. |
++
++When applied to a tensor in DDR memory space, DTYPE directive implies the data type of the tensor.
++
++When applied to a tensor from pcore memory space, since pcore memory data types are always INT16, DTYPE directive implies a data conversion when data are read or written to pcore memory space.
++
++Below is an example of tensor data transfer in UINT8 data format.
++
++```text
++DTYPE(UINT8) PCORE[0].THREAD[0:2].myclass::var[0:3] <= DTYPE(UINT8) DDR(p,100,2,2)[0][0:2][0:3];
++```
++
++or statement below will also have the same effects.
++
++```text
++int fmt=UINT8;
++```
++
++```text
++DTYPE(fmt) PCORE[0].THREAD[0:2].myclass::var[0:3] <= DTYPE(fmt) DDR(p,100,2,2)[0][0:2][0:3];
++```
++
++#### 2.3.20 Tensor data transfer in REPEAT mode
++
++Data transfer may run in repeat mode when REPEAT directive is specified.
++
++REPEAT keyword applies to source tensor only.
++
++When specified, data access from source tensor will be repeated until the destination tensor received all the requested amount of data.
++
++For example, below, var variables for all pcore and p-threads are filled with the same vector values from DDR(p)[0:3].
++
++```text
++PCORE[0:7].THREAD[0:15].myclass::var[0:3] <= REPEAT DDR(p)[0:3];
++```
++
++#### 2.3.21 Tensor data remap
++
++Transfer to/from PCORE memory space can go through a data remapping process.
++
++A stream processor performs lookup/interpolation translation from input values to output values as data are retrieved from or written to pcore's memory space.
++
++The data remapping is performed based on remap tables that are generated by host program before they are loaded to master tensor core.
++
++Procedures to create and load these remap tables will be covered in later sections.
++
++There can be up to 4 different remap tables active at same time.
++
++2.3.21.1 Tensor data remap – Example 1
++
++```text
++> REMAP(0) PCORE(NP)[0:NP-1].THREAD[0:NT-1].convolution.input[0:7] <= DDR(pin)[0:NP*NT*8-1];
++```
++
++In the example above, data just before being written to pcore's memory space are being remapped by table 0
++
++2.3.21.2 Tensor data remap – Example 2
++
++```text
++> DDR(pout)[0:NP*NT*8-1] <= REMAP(1) PCORE(NP)[0:NP-1].THREAD[0:NT-1].convolution.output[0:7];
++```
++
++In the example above, data retrieved from pcore's memory space are being remapped by remap table 1
++
++#### 2.3.22 BARRIER
++
++Tensor data transfers may be executed out of order.
++
++However, when BARRIER directive is specified, then all transfers up to that point must be completed before any instructions after BARRIER can be executed.
++
++Example below, BARRIER is introduced to ensure data retrieval from myvar is completed before setting myvar with new values.
++
++```text
++>DDR(p)[0:8*16*16-1] <= PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15];
++```
++
++```text
++>BARRIER;
++```
++
++```text
++>PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15] <= DDR(p)[0:8*16*16-1];
++```
++
++#### 2.3.23 LATEST
++
++When LATEST directive is specified with a source tensor, then all pending writes to that source tensor must be completed first before the tensor can be used as source tensor for a data transfer operation.
++
++For example, below, the LATEST directive ensures that there are no outstanding write transactions to PCORE memory space before it can proceed with the instruction.
++
++```text
++>PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15] <= DDR(p)[0:8*16*16-1];
++```
++
++```text
++>DDR(p)[0:8*16*16-1] <= LATEST PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15];
++```
++
++#### 2.3.24 CONSTANT FILLER
++
++You may fill destination tensor with a constant value.
++
++Constant may have types UINT8,INT8 or INT16.
++
++Example below fills pcore's myvar variables with constant unsigned 8-bit value 0xAA.
++
++```text
++>DTYPE(UINT8) PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15] <= UINT8(0xAA);
++```
++
++Example below fills pcore's myvar variables with constant signed 8-bit value 0x12.
++
++```text
++>DTYPE(INT8) PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15] <= INT8(0x12);
++```
++
++Example below fills pcore's myvar variables with constant signed 16-bit value 0x123.
++
++```text
++>DTYPE(INT16) PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15] <= INT16(0x123);
++```
++
++### 2.4 Tensor operator execution
++
++Tensor operators are functions defined in pcore programs. They perform numerical calculation on a set of tensors reside in pcore memory space. Tensor operators will be described in more details at later sections.
++
++tensor programs invoke tensor operators using the syntax described in the following sub-sections.
++
++Tensor core ensures that all memory operations to/from pcore memory space are completed before tensor operators can commence.
++
++Tensor operators are executed under one of the two t-threads with each t-thread having its own pcore memory space. This is an important concept since it allows tensor operator to be executed on t-thread A while t-thread B still busy with its memory operation.
++
++#### 2.4.1 Tensor operator syntax
++
++Example below invokes a tensor operator defined as covolution::exe in pcore program
++
++```text
++> EXE_LOCKSTEP(convolution::exe);
++```
++
++Example below invokes the tensor operator but the execution is limited only to 4 pcores.
++
++```text
++> EXE_LOCKSTEP(convolution::exe,4);
++```
++
++Example below invokes tensor operator but the execution is limited only to 4 p-cores and 8 p-threads per pcore.
++
++```text
++> EXE_LOCKSTEP(convolution::exe,4,8);
++```
++
++Example below invokes tensor operator in 2 steps. First a function pointer is computed and assigned to a 32-bit integer variable and then tensor operator is invoked via this function pointer. Example below will have similar effects as previous example.
++
++```text
++uint32_t func;
++func=ztaBuildKernelFunc($convolution::exe,4,8);
++> EXE_LOCKSTEP(func);
++```
++
++ztaBuildKernelFunc will be covered in more details at later sections.
++
++### 2.5 FPU operators
++
++ztachip has a dedicated unit to perform various floating point operators.
++
++FPU unit operates on data resides in SCRATCH space only. FPU data input must first be transferred from PCORE or DDR space to SCRATCH space.
++
++FPU results are written to SCRACH space only. FPU results must then be transferred to PCORE or DDR space from SCRATCH space.
++
++In similar way as other MCORE operations, FPU operators are assigned to a HART context depending on when it is being issued.
++
++FPU waits for all data transfers to/from SCRACH space to be completed before FPU can begin with execution. FPU only waits for the completion of SCRACH data transfer with the same HART context as FPU HART context.
++
++#### 2.5.1 FPU operators definitions
++
++##### 2.5.1.1 General syntax
++
++FPU operators are issued from mcore programs with the following general syntax
++
++```text
++FPU.[V].XXX.[YYY](R=REP,P1=(type)V2[:STRIDE],P2=(type)V2[:STRIDE],...);
++```
++
++|  |  |
++| --- | --- |
++| V | This FPU instruction is executed in vector mode.<br>Number of elements in a vector is configured as<br>fpu_gen_max_c in HW/src/config.vhd.<br>When this parameters not present, then this FPU operation<br>operates in scalar mode. |
++| XXX | FPU opcode |
++| YYY | Optional qualifier for FPU opcode |
++| R | If specified then this FPU operation will be repeated REP<br>times. |
++| P1,P2... | Parameters of FPU operators |
++| V1,V2... | Parameter values.<br>Value definitions are dependent on type<br>type definitions are described below. |
++| STRIDE | V1 are incremented automatically by STRIDE amount every<br>time the FPU instruction is repeated. STRIDE is normally<br>specified when R option is present and parameter type is<br>pointer type. |
++
++Every parameter has a type definition. If type not defined then parameter must be a floating point numeric constant. Parameter type may have the following types
++
++|  |  |
++| --- | --- |
++| float | Parameter is a scalar variable with float data type. |
++| bfloat | Parameter is a scalar variable with bfloat data type |
++| float * | Parameter is the SCRATCH address to an array of float numbers<br>SCRATCH address is the offset to SRAM space with a range from 0 to SRAM SIZE-1<br>_ |
++| bfloat * | Parameter is the SCRATCH address to an array of bfloat numbers<br>SCRATCH address is the offset to SRAM space with a range from 0 to SRAM SIZE-1<br>_ |
++| int8 | Parameter is a scalar variable with int8 data type. |
++| int8 * | Parameter is the SCRATCH address to an array of int8 numbers<br>SCRATCH address is the offset to SRAM space with a range from 0 to SRAM SIZE-1<br>_ |
++| zfloat | Parameter is a 16-bit float variable with format according to 3.9.1. Float numbers<br>generated by pcores (ref 3.9.1) are in this format |
++| zfloat * | Parameter is the SCRATCH address to an array of zfloat numbers.<br>SCRATCH address is the offset to SRAM space with a range from 0 to SRAM SIZE-1<br>_ |
++
++Parameter type may also be a variable with the following values.
++
++|  |  |
++| --- | --- |
++| FPU SET W FP16\|FPU SET M VALUE<br>_ _ _ _ _ _ | bfloat |
++| FPU SET W FP32\|FPU SET M VALUE<br>_ _ _ _ _ _ | float |
++| FPU SET W INT8\|FPU SET M VALUE<br>_ _ _ _ _ _ | int8 |
++| FPU SET W FP16\|FPU SET M ADDR<br>_ _ _ _ _ _ | (bfloat *) |
++| FPU SET W FP32\|FPU SET M ADDR<br>_ _ _ _ _ _ | (float *) |
++| FPU SET W INT8\|FPU SET M ADDR<br>_ _ _ _ _ _ | int8 * |
++
++##### 2.5.1.2 FPU.[V].MAC
++
++Syntax
++
++```text
++>FPU.MAC(N=n,Y=y,A=a,X1=x1,X2=x2,C=c);
++```
++
++performs the arithmetic below
++
++```text
++y[i] = a[i] + x1[i]*x2[i]*c; i=0..n-1
++```
++
++###### 2.5.1.2.1 FPU.[V].MAC.ABS
++
++ABS operator is applied to the results.
++
++Syntax
++
++```text
++>FPU.MAC.ABS(N=n,Y=y,A=a,X1=x1,X2=x2,C=c);
++```
++
++performs the arithmetic below
++
++```text
++y[i] = ABS(a[i] + x1[i]*x2[i]*c); i=0..n-1
++```
++
++###### 2.5.1.2.2 FPU.[V].MAC.FLOOR
++
++FLOOR operator is applied to the results.
++
++Syntax
++
++```text
++>FPU.MAC.FLOOR(N=n,Y=y,A=a,X1=x1,X2=x2,C=c);
++```
++
++performs the arithmetic below
++
++```text
++y[i] = FLOOR(ABS(a[i] + x1[i]*x2[i]*c)); i=0..n-1
++```
++
++##### 2.5.1.3 FPU.[V].RECIPROCAL
++
++Syntax:
++
++```text
++>FPU.RECIPROCAL(N=n,Y=y,X=x);
++```
++
++Approximate the arithmetic below
++
++```text
++y[i] = 1/x[i]; i=0..n-1
++```
++
++This is normally used to provide the first approximation to Taylor expansion to y=1/x
++
++##### 2.5.1.4 FPU.[V].EXP
++
++Syntax:
++
++```text
++>FPU.EXP(N=n,Y=y,X=x);
++```
++
++performs the approximation to arithmetic below
++
++```text
++y[i] = exp(x[i]); i=0..n-1
++```
++
++Note: x must be int8 or int8* data type.
++
++This is normally used to provide the first approximation to Taylor expansion to y=exp(x)
++
++##### 2.5.1.5 FPU.[V].FMA
++
++Syntax:
++
++```text
++>FPU.FMA(N=n,Y=y,A=a,X1=x1,X2=x2);
++```
++
++performs the arithmetic below
++
++```text
++y = a+SUM(x1[i]*y[i]); i=0..n-1
++```
++
++##### 2.5.1.6 FPU.[V].SUM
++
++Syntax:
++
++```text
++>FPU.SUM(N=n,Y=y,A=a,X=x);
++```
++
++performs the arithmetic below
++
++```text
++y = a+SUM(x[i]); i=0..n-1
++```
++
++##### 2.5.1.7 FPU.[V].MAX
++
++Syntax:
++
++```text
++>FPU.MAX(N=n,Y=y,A=a,X=x);
++```
++
++performs the arithmetic below
++
++```text
++y = MAX(a,MAX(x[i])); i=0..n-1
++```
++
++###### 2.5.1.7.1 FPU.[V].MAX by group
++
++Find a maximum value per sub-group in a group Syntax:
++
++```text
++>FPU.MAX(N=n,Y=y,G=g,X=x);
++```
++
++performs the arithmetic below
++
++```text
++y[i] = MAX(x[i][j]); i=0..n/g;j=0..g-1;
++```
++
++#### 2.5.2 FPU memory-access/execution overlay
++
++FPU operators use SCRATCH space for input and output data. Therefore data must be moved between DDR or PCORE memory space to/from SCRATCH memory space before FPU operators may start.
++
++FPU instructions are pending until all previous access to SCRATCH memory space, but only accesses associated with the same HART context as FPU's HART context, are completed.
++
++Example below show method to overlap between FPU execution and memory transfer overhead.
++
++```text
++// This function is called for each HART context with pid=0 for first HART and
++// pid=1 for second HART.
++```
++
++```text
++static hart_func(void *_req,int pid)
++{
++// Copy data input to SCRATCH
++// Assign different SCRATCH space for each HART.
++```
++
++```text
++>SCRATCH(...) <= DDR(...);
++```
++
++```text
++// Now execute the some FPU operations.
++>FPU(...);
++```
++
++```text
++// Dont wait for FPU to be completed, switch to the other HART to do its memory
++// operations while FPU is busy.
++// There is no conflict if each HART uses different SCRATCH memory region.
++```
++
++```text
++ztaTaskYield();
++```
++
++```text
++// The other HART context gives control back.
++```
++
++```text
++// If FPU execution is done then move results to DDR memory.
++```
++
++```text
++DDR(...) <= SCRATCH(...);
++}
++void my_kernel()
++{
++// Launch the 2 HART
++ztaDualHartExecute(hart_func,0);
++}
++```
++
++#### 2.5.3 FPU grouping
++
++FPU operators may be grouped together so that they appear as a single instruction for mcore dispatcher.
++
++Since mcore dispatcher only look at most one instruction ahead for out-of-order execution, this allows for better concurrency.
++
++Example 1:
++
++Below shows how multiple FPU operators are grouped together as one mcore instruction.
++
++“...” is appended at the end of FPU operators to indicate that it is part of a sequence of FPU operators.
++
++```text
++>FPU.FMA(N=n,Y=y1,A=a1,X1=x1,X2=x2)...;
++```
++
++```text
++>FPU.FMA(N=n,Y=y2,A=a2,X1=x1,X2=x2)...;
++```
++
++```text
++>FPU.FMA(N=n,Y=y3,A=a3,X1=x1,X2=x2);
++```
++
++Example 2:
++
++```text
++// Since all 3 FPU operators appear as single instruction, mcore dispatcher is
++```
++
++```text
++// able to execute the last instruction even FPU execution has not been completed.
++```
++
++```text
++// If we don't group the FPU operators, mcore dispatcher will not be able to see
++```
++
++```text
++// the last instruction since each of the FPU operators takes one instruction slot
++```
++
++```text
++// and the last instruction will be too deep into the instruction queue for mcore
++```
++
++```text
++// dispatcher to see.
++```
++
++```text
++// This is important for better concurrency and better performance.
++```
++
++```text
++>FPU.FMA(N=n,Y=y1,A=a1,X1=x1,X2=x2)...;
++```
++
++```text
++>FPU.FMA(N=n,Y=y2,A=a2,X1=x1,X2=x2)...;
++```
++
++```text
++>FPU.FMA(N=n,Y=y3,A=a3,X1=x1,X2=x2);
++```
++
++```text
++>PCORE(...) <= DDR(...); // This instruction is executed even FPU still busy
++```
++
++### 2.6 HOST  SUPPORTING FUNCTIONS
++
++Functions described in following sections are functions running on host processors in-order to support ztachip execution framework.
++
++```text
++2.6.1 void ztaInit()
++```
++
++This is the first function to be called by host processor.
++
++Performs necessary ztachip framework initialization.
++
++Parameters:
++
++None
++
++Return value:
++
++None
++
++|  |  |  |  |  |  |  |  |
++| --- | --- | --- | --- | --- | --- | --- | --- |
++| void | (*func)( | void | *, | int | ), | void | *pparm |
++
++To execute a tensor program but in a multi-threaded execution mode. There are 2 threads being spawned with each thread emitting instructions to one of the 2 available t-threads. The spawned threads are multi-tasking but in cooperation mode. Meaning the thread must explicitly yield control for execution to switch control over to the other thread.
++
++Parameters
++
++|  |  |
++| --- | --- |
++| func | Thread entry function. This function's first parameter has same value as pparm, and<br>second parameter is to identify which t-thread (0 or 1) |
++| pparm | pointer to be passed to func's first parameter. |
++
++Return value: None
++
++```text
++2.6.3  void ztaTaskYield()
++```
++
++For thread spawned by ztaDualHardExecute to yield control to the other thread.
++
++Parameters: None
++
++Return value: None
++
++#### 2.6.4 uint32_t ztaBuildKernelFunc(uint32_t _func,int num_pcore,int num_tid)
++
++Generates function pointer to a tensor operator.
++
++Parameters
++
++|  |  |
++| --- | --- |
++| func<br>_ | Identifier of tensor operator.<br>Tensor operator is identified as $class::operator |
++| num pcore<br>_ | Number of pcores to be used for the execution of this tensor operator. |
++| num tid<br>_ | Number of p-threads per pcore to be used for the execution of this tensor operator. |
++
++Return value: Function pointer to the tensor operator.
++
++Example below shows how tensor operator is invoked via function pointer generated by this function.
++
++```text
++uint32_t func;
++func=ztaBuildKernelFunc($convolution::exe,4,8);
++> EXE_LOCKSTEP(func);
++```
++
++```text
++2.6.5 void *ztaAllocSharedMem(int _size)
++```
++
++Allocates memory that will be used to share data between ztachip and host processor.
++
++Parameters
++
++|  |  |
++| --- | --- |
++| size<br>_ | Memory block size to be allocated in bytes |
++
++Return value Pointer to allocated memory block.
++
++```text
++2.6.6 void *ztaFreeSharedMem(void *p)
++```
++
++Free memory block allocated by ztaAllocSharedMem.
++
++Parameters
++
++|  |  |
++| --- | --- |
++| p | Memory block to be freed. This is the memory block previously allocated by<br>ztaAllocSharedMem. |
++
++Return value: None
++
++```text
++2.6.7 void *ztaBuildSpuBundle(int numSpuImg,...)
++```
++
++This function builds the lookup table to perform tensor data-remapping functions as described in 2.3.13.
++
++As tensors are copied between external memory and pcore memory space, data-remap transforms data before data is written to pcore memory space or just after data is read from pcore memory space.
++
++This function generates a lookup table that in turn will be uploaded to tensor core to perform data remapping.
++
++Parameters
++
++|  |  |
++| --- | --- |
++| numSpuImg | Number of data-remapping functions to be generated.<br>Up to 4 different data-remapping functions are allowed.<br>The following 4 parameters below are to be repeated numSpuImg times. |
++| remap func<br>_ | Function that represents the data remapping.<br>This function will be called to get the expected remapping output for every<br>possible input.<br>remap func has the following definition:<br>_<br>int16 t remap func( // Return expected remapping output for an input<br>_ _<br>int16 t in, // Input<br>_<br>void *pparm, // Same as pparm below<br>uint32 t parm, // Same as parm below<br>_<br>uint32 t parm2 // Same as parm2 below<br>_<br>) |
++| pparm | Parameter to be passed to remap func<br>_ |
++| parm | Parameter to be passed to remap func<br>_ |
++| parm2 | Parameter to be passed to remap func<br>_ |
++
++Return value: Pointer to remapping tables.
++
++2.6.7.1 Example of building data-remap table.
++
++Example below produces a data-remap lookup table for 2 functions.
++
++First function set negative value to zero.
++
++Second function returns the absolute value of the input.
++
++```text
++:
++```
++
++```text
++P =  ztaBuildSpuBundle(2,remap1,0,0,0,remap2,0,0,0);
++```
++
++```text
++:
++```
++
++```text
++int16_t remap1(int16_t input,void *pparm,uint32_t parm,uint32_t parm2) {
++```
++
++```text
++if(input < 0)
++```
++
++```text
++return 0;
++```
++
++```text
++else
++```
++
++```text
++return input;
++```
++
++```text
++}
++```
++
++```text
++int16_t remap2(int16_t input,void *pparm,uint32_t parm,uint32_t parm2) {
++```
++
++```text
++if(input < 0)
++```
++
++```text
++return -input;
++```
++
++```text
++else
++```
++
++```text
++return input;
++```
++
++```text
++}
++```
++
++```text
++2.6.8 void ztaInitPcore(uint16_t *_image)
++```
++
++This function uploads pcore code images to pcore processors.
++
++This must be done as first step in a tensor program.
++
++Parameters
++
++|  |  |
++| --- | --- |
++| image<br>_ | Pointer to memory block that holds pcore compiled binary image.<br>ztachip toolchain generates pcore binary image as it compiles pcore programs.<br>For example, a file named example.p.img is generated as ztachip toolchain<br>compiles a pcore program named example.p.<br>Defined in example.p.img is a array called zta pcore img[] that is initialized with<br>_ _<br>the pcore binary image.<br>zta pcore img is then used as parameter to ztaInitPcore to upload the pcore image<br>_ _<br>to ztachip. |
++
++Return value: None
++
++```text
++2.6.9 void ztaInitStream(uint16_t *_spu)
++```
++
++This function uploads the data-remap tables that are generated by ztaBuildSpuBundle as described in 2.5.7 Data-remap is then used by tensor programs as described in 2.3.13
++
++Parameters
++
++|  |  |
++| --- | --- |
++| spu<br>_ | data-remap table that is generated by ztaBuildSpuBundle. |
++
++Return value:
++
++None
++
++#### 2.6.10 void ztaJobDone(unsigned int job_id)
++
++This function is called at the end of tensor program.
++
++This signals ztachip to send a notification message when tensor program execution has been completed.
++
++ZtaReadResponse as described in 2.5.11 is then called to retrieve the notification message.
++
++Parameters
++
++|  |  |
++| --- | --- |
++| job id<br>_ | Task identifier to be returned in the notification message at the completion of<br>tensor program. |
++
++Return value:
++
++None
++
++```text
++2.6.11
++bool ztaReadResponse(uint32_t *resp)
++```
++
++This function retrieves responses back from ztachip.
++
++ztachip sends a notification message to host at the completion of a tensor program as indicated by ztaJobDone
++
++Parameters
++
++|  |  |
++| --- | --- |
++| resp | To return the identifier of the completed task.<br>The task identifier is specified in the function call ztaJobDone() |
++
++Return value: true if there is a message available, false otherwise.
++
++## 3 - PCORE PROGRAMS
++
++P-core programs are code that are executed on the array of pcore processors.
++
++These programs have a C/C++-like syntax, but not all C/C++ features are supported.
++
++pcore program files have suffix *.p
++
++They implement tensor operators that can then be invoked by tensor programs. Tensor operators are essentially functions that perform numerical computation on a set of tensors resided in pcore memory space.
++
++All pcore processors execute the same instructions in lockstep. If there are branching instructions, all pcores must branch the same way. If branching is not always the same for all pcores, vector mask techniques are used instead to achieve similar results. Vector mask is a common technique to enable/disable computational results from being written back to memory.
++
++pcore execution is then further scheduled into thread block. There are 16 threads per pcore processor. We call them p-threads.
++
++p-threads scheduling is hardware based with zero-overhead. pcore thread executions are pipe-lined and interleaved between different threads. This allows for 1 instruction to be executed per clock even when each instruction may take many clock cycles to complete.
++
++pcore has a VLIW architecture. VLIW stands for very-long-instruction-word where each instruction contain multiple operations.
++
++### 3.1 VLIW instructions
++
++PCORE processor has a VLIW architecture. Each instruction can perform up to 3 operations:
++
++- vector operations
++
++- scalar operations
++
++- control operations
++
++#### 3.1.1 vector operations
++
++Vector operations are executed in the vector ALU units. Implement operations such as
++
++- FMA
++
++- FMS
++
++- ADD
++
++- SUBTRACT
++
++- MULTIPLY
++
++- SHIFT
++
++- COMPARISON
++
++Each operators have the following mode of memory addressing mode
++
++- Addressing via pointer+index
++
++- Addressing via pointer
++
++- Addressing shared memory
++
++- Addressing private memory
++
++- Addressing shared memory + index
++
++- Addressing private memory + index
++
++#### 3.1.2 scalar operations
++
++Scalar operations are executed in the scalar ALU units. Implement integer operations such as ADD,SUB,MUL,SHIFT. These operations are normally used for tasks such as array indexing, address calculation, loop counter...
++
++#### 3.1.3 control operations
++
++Perform conditional branching
++
++### 3.2 General syntax
++
++pcore programs define tensor operators as objects with their own attributes and operations. All these objects are defined as single instance objects. Meaning you don't have to allocate the objects and the objects are statically allocated.
++
++Due to limited memory available from pcore memory space, all tensor objects are overlapped in memory allocation. Therefore, only one object can be in used at a time.
++
++Example below is a simple pcore program vector_math.p which defines some vector operations.
++
++Tensor operators for vector addition and subtraction are grouped under object vector_math. There are 3 tensors x,y,z associated with vector_math object. These tensors have 3 dimensions since they span all the pcores, and then span all the 16 p-threads for each pcore, and at each p-thread there is a vector variable of width 8 defined. If there are 4 pcores available, then x,y,z are tensors of dimension 4x16x8
++
++Tensor program can then assign tensor x,y with data from external memory. And then tensor program
++
++can save results from tensor z back to external memory.
++
++Tensor program can then invoke tensor operators vector_math::add and vector_math::subtract.
++
++```text
++// vector_math.p
++```
++
++```text
++class vector_math;
++```
++
++```text
++vint16 vector_math::x;
++```
++
++```text
++vint16 vector_math::y;
++```
++
++```text
++vint16 vector_math::z;
++```
++
++```text
++// Tensor operator for vector addition
++_kernel_ void vector_math::add()
++{
++z=x+y;
++}
++```
++
++```text
++// Tensor operator for vector subtraction
++_kernel_ void vector_math::subtract()
++{
++z=x-y;
++}
++```
++
++### 3.3 Class declaration
++
++All tensor operators and variables are grouped under object classes.
++
++Each class must be declared at beginning of the file.
++
++```text
++Example:
++class vector_math; // Defines object class vector_math.
++```
++
++### 3.4 Memory layout
++
++Different object classes are overplayed in memory allocation.
++
++Which means only one object class can be in use at a time.
++
++### 3.5 Tensor variables
++
++Tensor variables are tensors allocated in pcore memory space.
++
++Similar to tensor operators, tensor variables are also grouped under object class.
++
++#### 3.5.1 Data types
++
++##### 3.5.1.1 int16
++
++Scalar of 12-bit or 16-bit integer depending on ztachip configuration. This data type is used for math operations with vector ALU.
++
++Example:
++
++```text
++int16 myclass::x; // variable of type int16 and belonged to object class myclass.
++```
++
++##### 3.5.1.2 vint16
++
++vector of 12-bit or 16-bit integers depending on ztachip configuration. This data type is used with vector ALU for math operations.
++
++Example:
++
++```text
++vint16 myclass::x; // variable of type vint16 and belonged to class myclass.
++```
++
++##### 3.5.1.3 int32
++
++32-bit integer type. Variables of this type are used to hold accumulator computing values.
++
++Example:
++
++```text
++int32 myclass::_A; // _A is a 32bit accumulator.
++```
++
++##### 3.5.1.4 vint32
++
++vector of 32-bit integer type. Variables of this type are used to hold accumulator computing values.
++
++Example:
++
++```text
++vint32 myclass::_A; // _A is a vector of 32bit accumulator.
++```
++
++##### 3.5.1.5 int
++
++scalar 12-bit integer. This data type is used with scalar ALU. Variable of this type is normally not used for computation purposes but rather used for tasks such as loop index, array index, pointer...
++
++Example:
++
++```text
++int myclass::i; // i is variable of type int and belonged to class myclass.
++```
++
++##### 3.5.1.6 int16 *
++
++pointer to an int16 variables.
++
++Example:
++
++```text
++int16 * *myclass::p; // p is variable of type int16* and belonged to class myclass.
++```
++
++##### 3.5.1.7 vint16 *
++
++Pointer to a vint16 variable.
++
++Example:
++
++```text
++vint16 *myclass::p; // p is variable of type int16 * and belonged to class myclass.
++```
++
++#### 3.5.2 Variable types
++
++##### 3.5.2.1 Private variables
++
++There is an instance of the variable allocated for each thread.
++
++Example1:
++
++```text
++// separate instance of my_private_variable are allocated for each p-thread
++int16 myclass::my_private_variable;
++```
++
++If we have 4 pcores and there are 16 p-threads per pcore, tensor program would see the variable above as a tensor below:
++
++```text
++int16 my_private_variable[4][16];
++```
++
++Example below shows how tensor program can set values to this tensor.
++
++```text
++>PCORE(4)[0:3].THREAD[0:15].myclass::my_private_variable <= DDR(p)[0:63];
++```
++
++Example2:
++
++```text
++// separate instance of my_private_variable are allocated for each p-thread
++vint16 myclass::my_private_variable;
++```
++
++If we have 4 pcores and there are 16 p-threads per pcore and vector width is 8, then tensor program would see the variable above as a tensor below:
++
++```text
++int16 my_private_variable[4][16][8];
++```
++
++Example below shows how tensor program can set values to this tensor.
++
++```text
++>PCORE(4)[0:3].THREAD[0:15].myclass::my_private_variable[0:7] <= DDR(p)[0:511];
++```
++
++##### 3.5.2.2 Shared variables
++
++There is only one instance of the variable per pcore. The variable is shared among all the p-threads within the same pcore processor.
++
++Shared variables are preceded with keyword `_share`
++
++Example1:
++
++```text
++// my_shared_variable is shared among all the p-threads in the same PCORE.
++_share int16 myclass::my_shared_variable;
++```
++
++If we have 4 pcores, tensor program would see the variable above as a tensor below:
++
++```text
++int16 my_shared_variable[4];
++```
++
++Example below shows how tensor program can set values to this tensor.
++
++```text
++>PCORE(4)[0:3].myclass::my_shared_variable <= DDR(p)[0:3];
++```
++
++Example2:
++
++```text
++// my_shared_variable is shared among all the p-threads in the same PCORE.
++_share vint16 myclass::my_shared_variable;
++```
++
++If we have 4 pcores and vector width is 8 then tensor program would see the variable above as a tensor below:
++
++```text
++int16 my_shared_variable[4][8];
++```
++
++Example below shows how tensor program can set values to this tensor.
++
++```text
++>PCORE(4)[0:3].myclass::my_shared_variable[0:7] <= DDR(p)[0:31];
++```
++
++##### 3.5.2.3 Parameter variables
++
++Tensor operators can have variables as function parameters.
++
++Example1:
++
++```text
++_kernel_ void vector_math::add(int16 x,int16 y,int16 z)
++{
++z=x+y;
++}
++```
++
++x,y,z in example above are tensors declared as tensor operator parameters.
++
++If we have 4 pcores and 16 threads per pcore, then x,y,z are tensors with dimension 4x16
++
++And x is set from tensor program as followed:
++
++```text
++>PCORE(4)[0:3].THREAD[0:15].vector_math::add.x <= DDR(p)[0:63];
++```
++
++Example2:
++
++```text
++_kernel_ void vector_math::add(vint16 x,vint16 y,vint16 z)
++{
++z=x+y;
++}
++```
++
++x,y,z in example above are tensors declared as tensor operator parameter.
++
++If we have 4 pcores with 16 threads per pcore and vint16 are vector type with width=8, then x,y,z are tensors with dimension 4x16x8
++
++And x can be set from tensor program as followed:
++
++```text
++>PCORE(4)[0:3].THREAD[0:15].vector_math::add.x[0:7] <= DDR(p)[0:63];
++```
++
++##### 3.5.2.4 Global variables
++
++Variables of global scope are defined as function parameters with prefix _global.
++
++All pcores and p-threads shared the same global variables.
++
++Global variables are read-only.
++
++Global variables can be set by tensor programs as described in 2.3.5
++
++Global variables can only be of int type.
++
++Example:
++
++```text
++_kernel_ void vector_math::add(_global int kk)
++{
++z[kk] = x[kk]+y[kk];
++}
++```
++
++In example above, parameter kk of tensor operator vector_math::add is shared among all pcores and p- threads.
++
++And tensor program would set parameter kk as followed:
++
++```text
++> vector_add::add.kk <= INT16(2); // Set kk=2
++```
++
++### 3.6 Tensor operators
++
++Tensor operators are functions that can be invoked by tensor programs. These functions have a void return type and preceded with keyword `_kernel_`
++
++Tensor operators must be defined as an operation of a class as defined in 3.4
++
++They may optionally have an input parameter list. Parameter list are temporary variables that have a lifetime of the function call only.
++
++When another function being called, the parameter list of the new functions may overwrite the parameter variables of the previous function call.
++
++For example:
++
++```text
++_kernel_ void matrix::my_function(vint16 x,vint16 y)
++{
++z=x+y;
++}
++```
++
++Tensor operator above can be invoked from tensor program as followed.
++
++```text
++>EXE_LOCKSTEP(matrix::my_function);
++```
++
++### 3.7 _VMASK
++
++This is a special integer variable where each bit activates/deactivates write operation to a vector lane. When bit is set, then write operation to the corresponding vector lane is enabled.
++
++When bit is clear, then write operation to the corresponding vector lane is skipped.
++
++Example:
++
++```text
++vint16 x,y;
++```
++
++```text
++_VMASK=1;  // enables only the first lane of the vector ALU.
++```
++
++```text
++x=y;       // equivalent to x[0]=y[0];
++```
++
++```text
++_VMASK=3;  // enables the first and second lane of vector ALU.
++```
++
++```text
++x=y;       // Equivalent to x[0]=y[0];x[1]=y[1];
++```
++
++```text
++_VMASK=-1; // Enable all lanes
++```
++
++```text
++x=y;       // Equivalent to x[0]=y[0];x[1]=y[1];...;x[7]=y[7];
++```
++
++### 3.8 COMPARISON OPERATORS
++
++Since p-cores are all executed in lock-step mode, comparison operators described in subsequent sections are alternative ways to have conditional execution.
++
++#### 3.8.1 GE(v1,v2)
++
++Test for v1 >= v2. Result is an integer where each bit corresponds to condition being true for the vector lane.
++
++Return value is an int type. The result is normally assigned to _VMASK.
++
++Example:
++
++```text
++// Doing element wise comparison of vector v1 and v2
++```
++
++```text
++_VMASK=GE(v1,v2);
++```
++
++```text
++// Set v1 elements to v2 elements if v1 element if greater or equal to v2 element.
++v1=v2;
++```
++
++#### 3.8.2 GT(v1,v2)
++
++Test for v1 > v2. Result is an integer where each bit corresponds to condition being true for the vector lane.
++
++Return value is an int type. The result is normally assigned to _VMASK.
++
++For example:
++
++```text
++// Doing element wise comparison of vector v1 and v2
++```
++
++```text
++_VMASK=GT(v1,v2);
++```
++
++```text
++// Set v1 elements to v2 elements if v1 element if greater than v2 element.
++v1=v2;
++```
++
++#### 3.8.3 LE(v1,v2)
++
++Test for v1 <= v2. Result is an integer where each bit corresponds to condition being true for the vector lane.
++
++Return value is an int type. The result is normally assigned to _VMASK.
++
++For example:
++
++```text
++// Doing element wise comparison of vector v1 and v2
++```
++
++```text
++_VMASK=LE(v1,v2);
++```
++
++```text
++// Set v1 elements to v2 elements if v1 element if less than or equal to v2 element.
++v1=v2;
++```
++
++#### 3.8.4 LT(v1,v2)
++
++Test for v1 < v2. Result is an integer where each bit corresponds to condition being true for the vector lane.
++
++Return value is an int type. The result is normally assigned to _VMASK.
++
++For example:
++
++```text
++// Doing element wise comparison of vector v1 and v2
++```
++
++```text
++_VMASK=LT(v1,v2);
++```
++
++```text
++// Set v1 elements to v2 elements if v1 element if less than v2 element.
++v1=v2;
++```
++
++#### 3.8.5 EQ(v1,v2)
++
++Test for v1 == v2. Result is an integer where each bit corresponds to condition being true for the vector lane.
++
++Return value is an int type. The result is normally assigned to _VMASK.
++
++For example:
++
++```text
++// Doing element wise comparison of vector v1 and v2
++```
++
++```text
++_VMASK=EQ(v1,v2);
++```
++
++```text
++// Set v1 elements to v2 elements if v1 element if is equalled to v2 element.
++v1=v2;
++```
++
++#### 3.8.6 NE(v1,v2)
++
++Test for v1 != v2. Result is an integer where each bit corresponds to condition being true for the vector lane.
++
++Return value is an int type. The result is normally assigned to _VMASK.
++
++For example:
++
++```text
++// Doing element wise comparison of vector v1 and v2
++```
++
++```text
++_VMASK=NE(v1,v2);
++```
++
++```text
++// Set v1 elements to v2 elements if v1 element not equal to v2 element.
++v1=v2;
++```
++
++### 3.9 FLOATING POINT OPERATORS
++
++#### 3.9.1 CONV_FLOAT
++
++This function converts pcore's 32-bit accumulator to a proprietary 16-bit float number.
++
++It has higher accuracy than standard FLOAT16 format.
++
++The generated 16-bit float format is proprietary with the format below
++
++```text
++Format: SEEEEMMMMMMMMMMM
++```
++
++```text
++S: sign bit
++```
++
++```text
++E: 4-bit exponent
++```
++
++```text
++M : 11-bit mantissa
++```
++
++```text
++IF E=0
++```
++
++```text
++number = 0MMMMMMMMMMM
++ELSE
++```
++
++```text
++number = 1MMMMMMMMMMM x 2**(EEEE)
++```
++
++### 3.10 SUBFIELD OPERATORS
++
++#### 3.10.1 N0-N1
++
++This function extracts a nibble value from a word int16
++
++This opcode is executed the same time with other opcodes in the same VLIM instruction.
++
++|  |  |
++| --- | --- |
++| N0 | Extract bit field [3:0]; sign extended |
++
++|  |  |
++| --- | --- |
++| N1 | Extract bit field [7:4]; sign extended |
++| N2 | Extract bit field [11:8]; sign extended |
++| N3 | Extract bit field [15:12]; sign extended |
++
++#### 3.10.2 B0-B1
++
++This function extracts a byte value from a word int16
++
++This opcode is executed the same time with other opcodes in the same VLIM instruction.
++
++|  |  |
++| --- | --- |
++| B0 | Extract byte [7:0]; sign extended |
++| B1 | Extract byte [15:8]; sign extended |
++
++## 4 - DEBUGGING
++
++Debugging tensor programs is the same as debugging any C/C++ programs using GDB debugger.
++
++With GDB debugger, we can execute tensor programs in single step mode.
++
++GDB debugger provides commands to read/write DDR external memory.
++
++For debugging purposes, p-core memory space is also mapped to memory address that are reachable by GDB debugger. ztachip toolchain generates a XML file to show where each p-core program symbols are mapped to memory address.
++
++Unlike tensor program, p-core program debugging cannot be single stepped. But p-core tensor operators are typically compact functions and inspecting the input and output to the function is normally sufficient. Example below is common way to debug a tensor operator.
++
++- Using GDB debugger to pause tensor program just before EXE_LOCKSTEP.
++
++- Inspect appropriate symbols in p-core memory space that represent input to the tensor operators.
++
++- Using GDB debugger to step over EXE_LOCKSTEP.
++
++- Now inspect appropriate symbols in p-core memory space that represent output from tensor operators.
++
++## 5 - BUILD PROCEDURES
++
++For each acceleration function, there are 2 files to be built: a tensor program and a pcore program.
++
++Tensor program has suffix *.m
++
++pcore program has suffix *.p
++
++ztachip/SW/compiler/compiler is used to compile tensor programs and pcore programs.
++
++### 5.1 Example
++
++In example below, we would like to build a ztachip acceleration function implemented in example.m and example.p
++
++- Using ztachip compiler to translate tensor instructions embedded in tensor program example.m to special binary code. The generated file is example.m.c
++
++- Using ztachip compiler to compile pcore program example.p. The generated file is example.p.img. This file is then being included in the tensor program.
++
++- Compiles example.m.c using host (RISC-V) C/C++ compiler.
++
++-
++
++For more details about build procedure, reference ztachip/SW/makefile.kernels
++
++## 6 - EXAMPLES
++
++The following sections are some examples of tensor and pcore programs.
++
++Procedure to build tensor programs is based on ztachip/SW/makefile
++
++Procedure to build pcore programs is based on ztachip/SW/makefile.kernels
++
++### 6.1 Basic example
++
++Example below is a simple vector addition example. It simply takes 2 vectors x and y from external memory and perform vector addition x+y before saving the result that is tensor z to external memory.
++
++There are 2 components:
++
++- tensor program implemented in example.m
++
++- pcore program implemented in example.p
++
++#### 6.1.1 Tensor program code (example.m)
++
++```text
++// This file contains the pcore binary image generated when example.p being compiled.
++```
++
++```text
++#include “example.p.img”
++```
++
++```text
++void do_vector_add(int16_t *x,int16_t *y,int16_t *z,int len) {
++```
++
++```text
++uint32_t resp;
++```
++
++```text
++// Load pcore binary image
++```
++
++```text
++ztaInitPcore(zta_pcore_img);
++```
++
++```text
++for(i=0;i < len;i += 512) {
++```
++
++```text
++// Load x tensor from DDR memory to pcore memory space
++```
++
++```text
++>DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::x[0:7] <= DTYPE(INT16)DDR(x,len)[i:i+511];
++```
++
++```text
++// Load y tensor from DDR memory to pcore memory space
++```
++
++```text
++>DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::y[0:7] <= DTYPE(INT16)DDR(y,len)[i:i+511];
++```
++
++```text
++// Execute tensor operator example::add
++```
++
++```text
++>EXE_LOCKSTEP(example::add);
++```
++
++```text
++// Save result tensor z from pcore memory space to DDR memory.
++```
++
++```text
++DTYPE(INT16)DDR(z,len)[i:i+511] <= DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::z[0:7];
++```
++
++```text
++}
++```
++
++```text
++// The job is all submitted at this point but not necessarily executed yet.
++```
++
++```text
++ztaJobDone(0);
++```
++
++```text
++// Wait for ztachip to indicate that the execution is completed.
++```
++
++```text
++while(!ztaReadResponse(&resp));
++```
++
++```text
++}
++```
++
++#### 6.1.2 pcore program code (example.p)
++
++```text
++// Declare class
++```
++
++```text
++class example;
++```
++
++```text
++// x tensor allocated in pcore private memory space
++```
++
++```text
++vint16_t example::x;
++```
++
++```text
++// y tensor allocated in pcore private memory space
++```
++
++```text
++vint16_t example::y;
++```
++
++```text
++// z tensor allocated in pcore private memory space
++```
++
++```text
++vint16_t example::z;
++```
++
++```text
++// Tensor operator for vector addition
++```
++
++```text
++_kernel_ void example::add() {
++```
++
++```text
++z=x+y;
++```
++
++```text
++}
++```
++
++### 6.2 Example running dual tensor-threads
++
++This example also performs vector addition like previous example.
++
++However, now we perform vector addition using both t-threads with each t-thread performing addition on half of the vector.
++
++The advantage is that tensor operator execution from one t-thread will overlap with tensor memory operation from the other t-thread, therefore improving overall performance with no memory wait time.
++
++There are 2 components:
++
++- tensor program implemented in example.m
++
++- pcore program implemented in example.p
++
++#### 6.2.1 example.m
++
++```text
++// This file contains the pcore binary image generated when example.p being compiled.
++```
++
++```text
++#include “example.p.img”
++```
++
++```text
++typedef struct {
++```
++
++```text
++int16_t *x;
++```
++
++```text
++int16_t *y;
++```
++
++```text
++int16_t *z;
++```
++
++```text
++int len;
++```
++
++```text
++} REQUEST;
++```
++
++```text
++void do_vector_add(int16_t *x,int16_t *y,int16_t *z,int len) {
++```
++
++```text
++REQUEST req = {x,y,z,len};
++```
++
++```text
++// Load pcore binary image
++```
++
++```text
++ztaInitPcore(zta_pcore_img);
++```
++
++```text
++// Launch dual threads with each emitting tensor instructions to one of the 2 tensor-threads
++ztaDualHartExecute(thread_entry_point,&req);
++```
++
++```text
++// The job is all submitted at this point but not necessarily executed yet.
++```
++
++```text
++ztaJobDone(_req_id);
++```
++
++```text
++// Wait for ztachip to indicate that the execution is completed.
++```
++
++```text
++while(!ztaReadResponse(&resp));
++```
++
++```text
++}
++```
++
++```text
++// Thread entry function. We have 2 threads matching the 2 tensor threads.
++```
++
++```text
++void thread_entry_point(void *p,int pid) {
++```
++
++```text
++REQUEST *req=(REQUEST *)p;
++```
++
++```text
++// First thread takes the first half of vector, second thread takes bottom half
++```
++
++```text
++for(i=(pid==0)?0:req->len/2;i < (pid==0)?req->len/2:req->len;i += 512) {
++```
++
++```text
++// Load x,y tensors from DDR memory to pcore memory space
++```
++
++```text
++>DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::x[0:7] <= DTYPE(INT16)DDR(x)[i:i+511];
++```
++
++```text
++>DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::y[0:7] <= DTYPE(INT16)DDR(y)[i:i+511];
++```
++
++```text
++// Execute tensor operator example::add
++```
++
++```text
++>EXE_LOCKSTEP(example::add);
++```
++
++```text
++// Yield control for the other thread to take control
++```
++
++```text
++ztaTaskYield();
++```
++
++```text
++// Save result tensor z from pcore memory space to DDR memory.
++```
++
++```text
++// First thread saves first half of vector result, second thread saves bottom half of vector result
++```
++
++```text
++>DTYPE(INT16)DDR(z,(pid==0)?req->len/2:req->len)[i:i+511] <=
++```
++
++```text
++>DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::z[0:7];
++```
++
++```text
++}
++```
++
++```text
++}
++```
++
++#### 6.2.2 pcore program code (example.p)
++
++```text
++// Declare class
++```
++
++```text
++class example;
++```
++
++```text
++// x tensor allocated in pcore private memory space
++```
++
++```text
++vint16_t example::x;
++```
++
++```text
++// y tensor allocated in pcore private memory space
++```
++
++```text
++vint16_t example::y;
++```
++
++```text
++// z tensor allocated in pcore private memory space
++```
++
++```text
++vint16_t example::z;
++```
++
++```text
++// Tensor operator for vector addition
++```
++
++```text
++_kernel_ void example::add() {
++```
++
++```text
++z=x+y;
++```
++
++```text
++}
++```
++
++### 6.3 Example of using tensor data-remap function.
++
++This example also performs vector addition like previous examples. However, we also divide the result by 3. The division step is performed by tensor data-remapping.
++
++#### 6.3.1 Tensor program code (example.m)
++
++```text
++// This file contains the pcore binary image generated when example.p being compiled.
++```
++
++```text
++#include “example.p.img”
++```
++
++```text
++// Remap function. Divide input by 2
++```
++
++```text
++int16_t remap_func(int16_t in,void *,uint32_t,uint32_t) {
++```
++
++```text
++return in/3;
++```
++
++```text
++}
++```
++
++```text
++void do_vector_add(int16_t *x,int16_t *y,int16_t *z,int len) {
++```
++
++```text
++uint32_t resp;
++```
++
++```text
++void *lookup;
++```
++
++```text
++// Load pcore binary image
++```
++
++```text
++ztaInitPcore(zta_pcore_img);
++```
++
++```text
++// Build lookup table
++```
++
++```text
++lookup=ztaBuildSpuBundle(1,remap_func,0,0,0);
++// Load lookup table
++ztaInitStream(lookup);
++```
++
++```text
++for(i=0;i < len;i += 512) {
++```
++
++```text
++// Load x tensor from DDR memory to pcore memory space
++```
++
++```text
++>DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::x[0:7] <= DTYPE(INT16)DDR(x,len)[i:i+511];
++```
++
++```text
++// Load y tensor from DDR memory to pcore memory space
++```
++
++```text
++>DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::y[0:7] <= DTYPE(INT16)DDR(y,len)[i:i+511];
++```
++
++```text
++// Execute tensor operator example::add
++```
++
++```text
++>EXE_LOCKSTEP(example::add);
++```
++
++```text
++// Save result tensor z from pcore memory space to DDR memory.
++```
++
++```text
++// Also performing data-remapping of the result using REMAP directive.
++```
++
++```text
++DTYPE(INT16)DDR(z,len)[i:i+511] <= REMAP(0)DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::z[0:7];
++```
++
++```text
++}
++```
++
++```text
++// The job is all submitted at this point but not necessarily executed yet.
++```
++
++```text
++ztaJobDone(0);
++```
++
++```text
++// Wait for ztachip to indicate that the execution is completed.
++```
++
++```text
++while(!ztaReadResponse(&resp));
++```
++
++```text
++ztaFreeSharedMem(lookup);
++```
++
++```text
++}
++```
++
++#### 6.3.2 pcore program code (example.p)
++
++```text
++// Declare class
++```
++
++```text
++class example;
++```
++
++```text
++// x tensor allocated in pcore private memory space
++```
++
++```text
++vint16_t example::x;
++```
++
++```text
++// y tensor allocated in pcore private memory space
++```
++
++```text
++vint16_t example::y;
++```
++
++```text
++// z tensor allocated in pcore private memory space
++```
++
++```text
++vint16_t example::z;
++```
++
++```text
++// Tensor operator for vector addition
++```
++
++```text
++_kernel_ void example::add() {
++```
++
++```text
++z=x+y;
++```
++
++```text
++}
++```
++
++### 6.4 More examples
++
++ztachip provides many vision and AI acceleration functions.
++
++They are excellent examples to be used as reference points for tensor and pcore programming.
++
++The following tensor/pcore programs are available.
++
++|  |  |
++| --- | --- |
++| Canny edge detection | ztachip/SW/apps/canny/kernels/canny.m<br>ztachip/SW/apps/canny/kernels/canny.p |
++| Colour space conversion | ztachip/SW/apps/color/kernels/color.m<br>ztachip/SW/apps/color/kernels/color.p |
++| Contrast equalizer | ztachip/SW/apps/equalize/kernels/equalize.m<br>ztachip/SW/apps/equalize/kernels/equalize.p |
++| Gaussian blurring | ztachip/SW/apps/gaussian/kernels/gaussian.m<br>ztachip/SW/apps/gaussian/kernels/gaussian.p |
++| Harris Corner detector | ztachip/SW/apps/harris/kernels/harris.m<br>ztachip/SW/apps/harris/kernels/harris.p |
++| Optical Flow | ztachip/SW/apps/of/kernels/of.m<br>ztachip/SW/apps/of/kernels/of.p |
++| Image resize | ztachip/SW/apps/resize/kernels/resize.m<br>ztachip/SW/apps/resize/kernels/resize.p |
++| TensorFlow's CONV layer | ztachip/SW/apps/nn/kernels/conv.m<br>ztachip/SW/apps/nn/kernels/conv.p |
++| TensorFlow's FCN layer. | ztachip/SW/apps/nn/kernels/fcn.m<br>ztachip/SW/apps/nn/kernels/fcn.p |
+diff --git a/docs/technical-overview.md b/docs/technical-overview.md
+index 0fa7b0e..4e6e530 100644
+--- a/docs/technical-overview.md
++++ b/docs/technical-overview.md
+@@ -1,6 +1,142 @@
+ # Technical Overview
+ 
+-```{note}
+-This page is synchronized from `Documentation/Overview.md` in the main ztachip
+-repository when the documentation site is built.
+-```
++## Abstract
++
++The recent explosion in AI creates an almost limitless demand for computing power.
++AI workload is especially challenging since it is demanding in both computing power
++and memory bandwidth.
++
++In addition, AI deployed at the edge also demands very low power.
++
++It is generally agreed in the computing community that the way forward is that we
++need a special architecture for this kind of workload. This is formally known as
++Domain-Specific-Architecture (DSA).
++
++ztachip is one such DSA particularly optimized for vision and AI workload.
++
++## Challenges
++
++DSA also presents many challenges including
++
++1. DSA is designed for a special set of applications in exchange for higher efficiencies.
++However, we would like the DSA domain to be as diverse as possible while still benefiting
++from a more efficient hardware implementation.
++
++2. DSA implies both a special hardware and software architecture for a particular domain of applications.
++How can we present DSA concepts without requiring users to have cross-disciplined knowledge?
++It will be difficult to find software engineers that are also knowledgeable in hardware design.
++
++The most common DSA used today is the Systolic-Array (SA).
++SA maps very well to many important math operations required in AI, namely
++matrix multiplication, dot product, convolution...
++
++![systolic](https://raw.githubusercontent.com/ztachip/ztachip/master/Documentation/images/systolic.bmp)
++
++However, SA is also very difficult to program. Users of SA often rely on prebuilt
++libraries provided by hardware vendors. Training/research AI workload that requires custom algorithm
++implementation is therefore not suitable for SA.
++
++SA is also not flexible enough to adapt to a wider range of applications. For example,
++most ASICs with SA still require a powerful CPU and GPU to perform other
++tasks such as vision preprocessing. For many edge AI applications involving vision,
++the vision preprocessing steps are often just as computing intensive as the AI steps.
++
++## DSA with ztachip
++
++ztachip is an open-source DSA architecture. It is a novel architecture as far as we
++know.
++
++The primary objective for ztachip is to provide DSA that covers a wide range of
++applications and not just for AI. DSA programming with ztachip should also be intuitive
++and simple.
++
++ztachip targets applications that can be expressed as a sequence of tensor operations.
++Tensor operations include data operation and computing operation. Data operations involving
++tensors may also involve complex operations such as tensor transpose, tensor dimension resize,
++data remapping, etc.
++
++![ztachip_example](https://raw.githubusercontent.com/ztachip/ztachip/master/Documentation/images/ztachip_app_example.bmp)
++
++The reason for the above constraints is that we would like data plane operations to be
++decoupled from computing operations. Tensor data operations are used to moved
++data between external memory and internal memory. And tensor computing operations are performed
++strictly from internal memory only. This strategy provides many advantages to the hardware
++design including
++
++- Memory transfer to/from external memory is streaming with prefetching and without round trip delay
++
++- Tensor data operations specify exactly the data required for later execution. This
++eliminates the need for caching.
++
++- Computing operations are presented as tensor operators. This is an intuitive way
++to specify algorithm parallelism. Many hardware threads can then be mapped to a large number
++of parallel tasks. For example with vector addition, each element-wise addition can be mapped to a thread.
++
++- Tensor computing involves only with internal memory, greatly simplifying
++the hardware design since there are no memory stall cycles to contend with.
++
++## What are provided with ztachip
++
++ztachip provides the following DSA components:
++
++- Hardware stack with all the RTL source codes that can be ported to different
++FPGA and ASIC.
++
++- A compiler to implement the necessary Domain Specific Language (DSL) to
++hide the complexities from users. This means software engineers don't have to know
++about the hardware aspects and the same software can then be ported to different
++hardware with different capacities with just a recompilation
++
++- Software stack is provided that implements many vision and AI algorithms. Native support
++for TensorFlow without retraining is also provided.
++
++![dsa_component](https://raw.githubusercontent.com/ztachip/ztachip/master/Documentation/images/dsa_component.bmp)
++
++## Results
++
++The two metrics of interest are domain coverage and performance.
++
++### Domain coverage
++
++For domain coverage, ztachip's DSL has been proven on a wide range of applications
++including many vision preprocessing and AI tasks.
++
++- Image classification with TensorFlow's MobileNet AI model.
++
++- Object detection with TensorFlow's SSD-MobileNet AI model.
++
++- Edge detection using Canny algorithm
++
++- Color space (RGB/YUYV) conversion
++
++- Equalizer for contrast enhancement
++
++- Gaussian convolution for image blurring
++
++- Harris Corner Detection algorithm, commonly used by robotic SLAM also.
++
++- Optical flow algorithm to detect motion
++
++- Image resizing
++
++### Performance and power consumption
++
++Performance is also very promising. Using the popular MobileNet-SSD AI model as a reference point,
++ztachip achieves a performance of 10 FPS at 20 GOPS of hardware computing resources.
++
++Compared with Nvidia Jetson Nano, it has a performance of 40 FPS but with a computing hardware resource at 500 GOPS.
++
++Therefore ztachip has a 6x better computing resource utilization than Nvidia in this case, resulting in much lower
++power consumption.
++
++Memory requirements for ztachip are also much lower due to the efficient use of memory.
++
++## Future developments
++
++ztachip current implementation operates on vector data types (8 x 8/12/16-bit).
++
++The logical next step is for native support of matrix data types (8 x 8 x 8/12/16-bit).
++
++ALU (Arithmetic Logical Units) sub-system is extended from an 8-unit-wide vector of ALU units to an 8x8 matrix of ALU units. This will provide an 8x improvement in computing density when bus width is limited to 8 data elements. An improvement of 32x from current implementation is possible when bus width is extended to 16 data elements.
++
++To provide an intuitive programming syntax to support matrix data types.
+diff --git a/docs/vision-ai-stack-programmer-guide/index.md b/docs/vision-ai-stack-programmer-guide/index.md
+index bc61d7a..4c7fc45 100644
+--- a/docs/vision-ai-stack-programmer-guide/index.md
++++ b/docs/vision-ai-stack-programmer-guide/index.md
+@@ -1,5 +1,1226 @@
+ # Vision AI Stack Programmer Guide
+ 
+-The complete Vision AI Stack programmer guide is generated from the original
+-`Documentation/visionai_programmer_guide.odt` document during the documentation
+-build. Embedded figures and tables are extracted and published with the guide.
++**Version:** 1.0
++**Author:** Vuong Nguyen
++**Project:** https://github.com/ztachip/ztachip
++**Contact:** vuongdnguyen@hotmail.com
++
++## 1 - INTRODUCTION
++
++ztachip provides many pre-built acceleration functions for vision and AI applications.
++
++To support these acceleration functions, a graph-based framework is introduced. Different vision and AI functions are connected into a graph of execution nodes.
++
++Users can use this graph framework to integrate their own custom acceleration functions with ztachip vision-ai stack.
++
++## 2 - GRAPH FRAMEWORK
++
++Graph is a ztachip framework used to connect different processing nodes together. It is a particularly popular framework used by many other AI and vision frameworks such as OpenCV, TensorFlow, OpenVX, etc.
++
++Each ztachip acceleration function is packaged as a graph node.
++
++The flow of execution is then specified by how the graph nodes are connected to form a graph.
++
++There can be multiple Graph objects representing different execution flows.
++
++ztachip graph framework is composed of the following C++ classes:
++
++- TENSOR: Objects that encapsulate tensor data objects. They are used as...
++
++- Input tensor data to a graph
++
++- Output result tensor data from a graph.
++
++- Intermediate tensor to transfer data between graph nodes.
++
++- GraphNode
++
++- Unit of execution in a graph. GraphNode takes input data tensor from previous graph nodes and transfer output data tensor to next graph nodes.
++
++- Graph
++
++- Objects that represent the graph.
++
++### 1.1 Graph structure
++
++![Graph framework](../_static/pdf/vision-ai-stack/graph-framework.png)
++
++Diagram below illustrates how the main objects of a Graph are interconnected.
++
++### 1.2 TENSOR
++
++TENSOR class encapsulates tensor data objects.
++
++Data exchanged between graph nodes is carried by TENSOR objects.
++
++#### 1.2.1 Class Interface
++
++```text
++1.2.1.1
++TENSOR()
++```
++
++Default constructor without initialization.
++
++```text
++1.2.1.2
++TENSOR(
++```
++
++```text
++TensorDataType _dataType,
++TensorFormat _fmt,
++TensorObjType objType,
++std::vector<int> &dim,
++void *shm)
++```
++
++Constructor with initialization.
++
++Input
++
++|  |  |
++| --- | --- |
++| dataType<br>_ | Data type of this tensor.<br>Reference 1.2.2.1 for TensorDataType definition. |
++| fmt<br>_ | Layout format of this tensor<br>Reference 1.2.2.2 for TensorFormat definition |
++| objType | Object type of this tensor<br>Reference 1.2.2.3 for TensorObjType definition. |
++| dim | Dimension size of this tensor. |
++| shm | If non-zero then use this parameter as memory allocation block for this tensor.<br>In this case, this object does not own this memory block and will not free it<br>when done.<br>If zero, then allocate new memory block for this tensor. The memory is owned<br>by this object will be freed by this object's destructor. |
++
++```text
++1.2.1.3
++ZtaStatus Create(
++```
++
++```text
++TensorDataType _dataType,
++TensorFormat _fmt,
++TensorObjType _objType,
++std::vector<int> &dim,
++ZTA_SHARED_MEM _shm=0)
++```
++
++Call to initialize this object when default constructor was used.
++
++Parameters are like 1.2.1.2
++
++Output:
++
++- ZtaStatusOk if successful
++
++- ZtaStatusFail otherwise.
++
++```text
++1.2.1.4
++ZtaStatus Clone(TENSOR *other)
++```
++
++To initialize this object to have the same parameters as another tensor. New memory block is also allocated and initialized to have the same contents as the other tensor.
++
++Input
++
++|  |  |
++| --- | --- |
++| other | Reinitialize this tensor with contents of 'other' tensor. |
++
++Output:
++
++- ZtaStatusOk if successful
++
++- ZtaStatusFail otherwise.
++
++```text
++1.2.1.5
++ZtaStatus Alias(TENSOR *other)
++```
++
++Initialize this object to be a reference to another TENSOR object.
++
++Input
++
++|  |  |
++| --- | --- |
++| other | This object is just a reference to the 'other' tensor.<br>This tensor does not own its data contents since it is just referencing other<br>tensor's data contents. |
++
++Output:
++
++- ZtaStatusOk if successful
++
++- ZtaStatusFail otherwise.
++
++```text
++1.2.1.6
++ZtaStatus Alias(void *_shm)
++```
++
++Data content for this tensor is a reference to a given allocated memory block. This tensor does not own the memory block and will not free it upon completion.
++
++Input
++
++|  |  |
++| --- | --- |
++| shm<br>_ | This tensor's data content is referencing ' shm' memory block.<br>_ |
++
++Output:
++
++- ZtaStatusOk if successful
++
++- ZtaStatusFail otherwise.
++
++```text
++1.2.1.7
++ZtaStatus CreateWithBitmap(
++```
++
++```text
++const char *bmpFile,
++TensorFormat fmt=TensorFormatSplit)
++```
++
++```text
++Initialize this tensor with the dimensions of a bitmap.
++Load the bitmap content into this tensor.
++```
++
++```text
++Input
++```
++
++|  |  |
++| --- | --- |
++| bmpFile | File name of the bitmap to initialize this tensor with.<br>Bitmap file must be 24-bit BMP format. |
++| Fmt | Layout format of this tensor.<br>Reference 1.2.2.2 for TensorFormat definition. |
++
++Output:
++
++- ZtaStatusOk if successful
++
++- ZtaStatusFail otherwise.
++
++```text
++1.2.1.8
++TensorDataType GetDataType()
++```
++
++Return data type of this tensor. Reference 1.2.2.1 for TensorDataType definition.
++
++```text
++1.2.1.9
++TensorFormat GetFormat()
++```
++
++Return data layout format of this tensor. Reference 1.2.2.2 for TensorFormat definition.
++
++```text
++1.2.1.10
++TensorObjType GetObjType()
++```
++
++Return object type of this tensor. Reference 1.2.2.3 for TensorObjType definition.
++
++```text
++1.2.1.11
++std::vector<int> *GetDimension()
++```
++
++Return dimension list of this tensor. The list starts with size of outer-most dimension and ends with size inner-most dimension.
++
++```text
++1.2.1.12
++int GetDimension(int _idx)
++```
++
++Return size of a dimension of this tensor.
++
++Input
++
++|  |  |
++| --- | --- |
++| idx<br>_ | Dimension index to return its size.<br>idx ranges from 0 to (num dimension-1) with 0 means outer-most<br>_ _<br>dimension and (num dimension-1) means inner-most dimension.<br>_ |
++
++Output:
++
++- ZtaStatusOk if successful
++
++- ZtaStatusFail otherwise.
++
++```text
++1.2.1.13
++void *GetBuf()
++```
++
++Return data buffer address of this tensor.
++
++```text
++1.2.1.14
++int GetBufLen()
++```
++
++Return total length of data buffer of this tensor.
++
++```text
++1.2.1.15
++static size_t GetTensorSize(std::vector<int>& shape)
++```
++
++This is a utility function that returns the buffer size for a tensor with a particular dimension.
++
++Size return is number of elements for the tensor.
++
++#### 1.2.2 Data Types
++
++```text
++1.2.2.1
++TensorDataType Enumeration
++```
++
++This class supports the following data types
++
++|  |  |
++| --- | --- |
++| TensorDataTypeInt8 | Signed 8-bit integer. |
++| TensorDataTypeUint8 | Unsigned 8-bit integer. |
++| TensorDataTypeInt16 | Signed 16-bit integer. |
++| TensorDataTypeUint16 | Unsigned 16-bit integer. |
++
++```text
++1.2.2.2
++TensorFormat Enumeration
++```
++
++This enumeration supports for the following data layout format
++
++|  |  |
++| --- | --- |
++| TensorFormatInterleaved | For example with a tensor 3x2<br>In this layout format, tensor elements layout in data buffer is as followed.<br>[0][0]<br>[1][0]<br>[2][0]<br>[0][1]<br>[1][1]<br>[2][1] |
++| TensorFormatSplit | For example with a tensor 3x2<br>In this layout format, tensor elements layout in data buffer is as followed.<br>[0][0]<br>[0][1]<br>[1][0]<br>[1][1]<br>[2][0]<br>[2][1] |
++
++```text
++1.2.2.3
++TensorObjType Enumeration
++```
++
++This enumeration supports the following tensor object types
++
++|  |  |
++| --- | --- |
++| TensorObjTypeRGB | Object type is an image with pixel color in RGB order |
++| TensorObjTypeBGR | Image with pixel color in BGR order |
++| TensorObjTypeYUYV | Image in YUYV color space. |
++| TensorObjTypeMonochrome | Monochrome image but in RGB format with R,G,B<br>having same values |
++| TensorObjTypeMonochromeSingleChannel | Monochrome image but only with 1 byte per pixel<br>representing the intensity |
++| TensorObjTypeUnknown | Unknown data object type |
++
++### 1.3 GraphNode Class
++
++This is a class template with virtual functions to be implemented by a derived class. Objects with GraphNode as base class are the execution units of a graph.
++
++ztachip acceleration functions implemented by corresponding tensor programs and pcore programs are encapsulated within a derived class of GraphNode.
++
++#### 1.3.1 Class Interface
++
++```text
++1.3.1.1
++GraphNode()
++```
++
++Default constructor
++
++```text
++1.3.1.2
++ZtaStatus Verify()
++```
++
++```text
++This is a virtual function to be implemented by a derived class.
++The derived class verifies the integrity of this graph node and performs any necessary
++initialization required before the start of execution.
++```
++
++Output:
++
++- ZtaStatusOk if successful
++
++- ZtaStatusFail otherwise.
++
++```text
++1.3.1.3
++ZtaStatus Execute(int queue,bool stepMode)
++```
++
++```text
++This is a virtual function to be implemented by a derived class.
++The derived class perform the execution associated with this node.
++```
++
++```text
++Input
++```
++
++|  |  |
++| --- | --- |
++| queue | There may be multiple graphs running simultaneously.<br>Each graph has a unique queue id.<br>Graph node will use this queue id to generate a unique job-id<br>which will then be passed to ztachip for task completion<br>notification. |
++| stepMode | If false, then execute this node till completion.<br>If true, then partially execute this node. This function will<br>be invoked again for the node to continue with the execution.<br>This is useful when a graph node may take a long execution<br>time, and step mode allows execution of a slow graph to be<br>pre-empted by other more critical graph. |
++
++Output:
++
++- ZtaStatusOk if processing is completed successfully.
++
++- ZtaStatusPending if processing is successful but not fully completed. More processing is still
++
++required.
++
++- ZtaStatusFail if errors are encountered.
++
++```text
++1.3.1.4
++uint32_t GetJobId(int queue)
++```
++
++Generate a unique job id for a tensor program execution.
++
++Refer to [1] on how tensor program would use this job-id.
++
++Example in [1] shows that tensor program is waiting for the completion of the task by waiting for the notification message from ztachip about the completion of job-id. However, when tensor program is called from within a graph framework, tensor program must not wait for the completion message since this is done by graph framework instead.
++
++Input
++
++|  |  |
++| --- | --- |
++| queue | The same as queue id passed from Execute function (1.3.1.3)<br>Each graph has a unique queue id. |
++
++Output:
++
++Unique job id for a tensor processing task.
++
++#### 1.3.2 Example of implementing a graph node.
++
++Below is an example that shows how a new graph node is implemented.
++
++GraphNode primary function is to provide wrapper functions for a tensor program so that tensor program can be invoked as part of a graph execution.
++
++```text
++// Declare a new graph node. It is derived from GraphNode
++```
++
++```text
++class MyGraphNode : public GraphNode {
++```
++
++```text
++MyGraphNode();
++```
++
++```text
++~MyGraphNode();
++```
++
++```text
++ZtaStatus Create(TENSOR *in,TENSOR *out);
++```
++
++```text
++ZtaStatus Prepare() {}
++```
++
++```text
++ZtaStatus Verify() {}
++```
++
++```text
++ZtaStatus Execute(int queue,bool stepMode);
++```
++
++```text
++private:
++```
++
++```text
++TENSOR *m_in;
++```
++
++```text
++TENSOR *m_out;
++```
++
++```text
++}
++```
++
++```text
++// Initialize this node.
++```
++
++```text
++ZtaStatus MyGraphNode ::Create(TENSOR *in,TENSOR *out) {
++```
++
++```text
++// In this example, output tensor has same format as input tensor
++```
++
++```text
++m_in=in;
++```
++
++```text
++m_out=out;
++```
++
++```text
++m_out->Clone(m_in);
++```
++
++```text
++return ZtaStatusOk;
++```
++
++```text
++}
++```
++
++```text
++// Verify this node.
++```
++
++```text
++ZtaStatus MyGraphNode ::Verify() {
++```
++
++```text
++return ZtaStatusOk;
++```
++
++```text
++}
++```
++
++```text
++// Prepare for new execution run.
++```
++
++```text
++ZtaStatus MyGraphNode ::Prepare() {
++```
++
++```text
++return ZtaStatusOk;
++```
++
++```text
++}
++```
++
++```text
++// Execute this node
++```
++
++```text
++ZtaStatus MyGraphNode ::Execute(int queue,stepMode) {
++```
++
++```text
++// Get a job id and run the tensor program
++```
++
++```text
++my_tensor_program(GetJobId(queue),
++```
++
++```text
++(uint8_t *)m_in->GetBuf(),
++```
++
++```text
++(uint8_t *)m_out->GetBuf(),
++```
++
++```text
++m_in->GetBufLen());
++```
++
++```text
++return ZtaStatusOk;
++```
++
++```text
++}
++```
++
++### 1.4 Graph
++
++Object of this class implements a flow of execution of multiple steps with each step are performed by a graph node. Graph object owns all the graph nodes and coordinates the execution of these nodes. There can be multiple instances of Graph objects with each instance performing a separate task.
++
++#### 1.4.1 Class Interface
++
++```text
++1.4.1.1
++Graph()
++```
++
++Default constructor of this class
++
++```text
++1.4.1.2
++ZtaStatus Clear()
++```
++
++Reset the graph by clearing all the nodes.
++
++Output:
++
++- ZtaStatusOk if successful
++
++- ZtaStatusFail otherwise.
++
++```text
++1.4.1.3
++ZtaStatus Add(GraphNode *node)
++```
++
++Add a graph node to the end of the graph.
++
++Output:
++
++- ZtaStatusOk if successful
++
++- ZtaStatusFail otherwise.
++
++```text
++1.4.1.4
++ZtaStatus Verify()
++```
++
++Verify the integrity of the graph. Graph will then call Verify function of each node in the graph.
++
++Output:
++
++- ZtaStatusOk if successful
++
++- ZtaStatusFail otherwise.
++
++```text
++1.4.1.5
++ZtaStatus Prepare()
++```
++
++This function marks the beginning of a new graph execution. Previous execution results are discarded.
++
++Output:
++
++- ZtaStatusOk if successful
++
++- ZtaStatusFail otherwise.
++
++```text
++1.4.1.6
++ZtaStatus RunSingleStep()
++```
++
++Execute this graph in step mode.
++
++In this mode, this function may have to be called multiple times to reach execution completion.
++
++This mode is useful when we want to run multiple graphs at the same time, and we don't want a slow graph to block the execution of other graphs that are more time critical.
++
++Output:
++
++- ZtaStatusOk if graph processing is completed successfully.
++
++- ZtaStatusPending if graph processing is successful but not fully completed. More processing is still required by calling RunSingleStep() function again.
++
++- ZtaStatusFail otherwise.
++
++```text
++1.4.1.7
++ZtaStatus RunUntilCompletion()
++```
++
++To execute the graph until completion.
++
++Output:
++
++- ZtaStatusOk if successful
++
++- ZtaStatusFail otherwise.
++
++```text
++1.4.1.8
++bool IsRunning()
++```
++
++Return true if graph is currently busy, false if graph is idle and ready to accept a new execution run.
++
++#### 1.4.2 Example running a single graph
++
++Example below shows how a single graph is created and executed.
++
++```text
++// Declare graph,node and tensor objects
++```
++
++```text
++Graph graph;
++```
++
++```text
++Task1GraphNode node1;
++```
++
++```text
++Task2GraphNode node2;
++```
++
++```text
++TENSOR tensor_input,tensor_output,tensor_temp;
++```
++
++```text
++// Initialize tensor_input dimension and content from a bitmap image
++```
++
++```text
++tensor_input.CreateWithBitmap(“bitmap.bmp”);
++```
++
++```text
++// Initialize and attach graph nodes to the graph
++```
++
++```text
++// node1 executes first, then node1 passes its output to node2 via tensor_temp,
++```
++
++```text
++// then node2 is the final stage of the graph.
++```
++
++```text
++// input to the graph is the tensor_input.
++```
++
++```text
++// output of the graph is the tensor_output.
++```
++
++```text
++node1.Create(&tensor_input,&tensor_temp);
++```
++
++```text
++node2.Create(&tensor_temp,&tensor_output);
++```
++
++```text
++graph.Add(&node1);
++```
++
++```text
++graph.Add(&node2);
++```
++
++```text
++// Verify the graph
++```
++
++```text
++graph.Verify();
++```
++
++```text
++// Prepare for execution
++```
++
++```text
++graph.Prepare();
++```
++
++```text
++// Execute the graph till completion
++```
++
++```text
++graph.RunUntilCompletion();
++```
++
++```text
++// Done. Result is now in tensor_output
++```
++
++#### 1.4.3 Example running multiple graphs
++
++Example below shows how to create and execute multiple graphs simultaneously
++
++This is like previous example except that there are 2 instances of the graph.
++
++```text
++// Declare graph,node and tensor objects
++```
++
++```text
++Graph graph[2];
++```
++
++```text
++Task1GraphNode node1;
++```
++
++```text
++Task2GraphNode node2;
++```
++
++```text
++Task3GraphNode node3;
++```
++
++```text
++Task4GraphNode node4;
++```
++
++```text
++TENSOR tensor_input[2],tensor_output[2],tensor_temp[2];
++```
++
++```text
++// Initialize tensor_input dimension and content from a bitmap image
++```
++
++```text
++tensor_input[0].CreateWithBitmap(“bitmap1.bmp”);
++```
++
++```text
++tensor_input[1].CreateWithBitmap(“bitmap2.bmp”);
++```
++
++```text
++// Create first graph
++```
++
++```text
++node1.Create(&tensor_input[0],&tensor_temp[0]);
++```
++
++```text
++node2.Create(&tensor_temp[0],&tensor_output[0]);
++```
++
++```text
++graph[0].Add(&node1);
++```
++
++```text
++graph[0].Add(&node2);
++```
++
++```text
++graph[0].Verify();
++```
++
++```text
++graph[0].Prepare();
++```
++
++```text
++// Create second graph
++```
++
++```text
++node3.Create(&tensor_input[1],&tensor_temp[1]);
++```
++
++```text
++node4.Create(&tensor_temp[1],&tensor_output[1]);
++```
++
++```text
++graph[1].Add(&node3);
++```
++
++```text
++graph[1].Add(&node4);
++```
++
++```text
++graph[1].Verify();
++```
++
++```text
++graph[1].Prepare();
++```
++
++```text
++// We can run each graph to completion consecutively.
++```
++
++```text
++// But in this example, we interleave the execution of both graphs by running
++```
++
++```text
++// them in step mode.
++```
++
++```text
++// Since graphs are executed in steps, we have control on how to schedule the
++```
++
++```text
++// execution of these graphs or even interleaving graph execution with other
++```
++
++```text
++// tasks that are not related to graph.
++```
++
++```text
++while(graph[0].IsRunning() || graph[1].IsRunning()) {
++```
++
++```text
++if(graph[0].IsRunning())
++```
++
++```text
++graph[0].RunSingleStep();
++```
++
++```text
++if(graph[1].IsRunning())
++```
++
++```text
++graph[1].RunSingleStep();
++```
++
++```text
++}
++```
++
++```text
++// Done. Result are now in tensor_output[0] and tensor_output[1]
++```
++
++## 2 - VISION STACK
++
++ztachip has a library of graph nodes that perform many common vision processing tasks.
++
++These vision processing functions are very efficient and fast since they are implemented based on tensor programming as described in [1].
++
++This vision library is used under the graph framework as described in chapter 1.
++
++Vision stack provides the following vision processing acceleration:
++
++- Edge detection using Canny Algorithm
++
++- Color space conversion
++
++- Tensor reshaping
++
++- Image Gaussian blurring
++
++- Feature detection using Harris-Corner Algorithm
++
++- Motion detection with Optical-flow algorithm
++
++- Image resizes
++
++### 2.1 GraphNodeCanny
++
++GraphNodeCanny is graph node implementing edge detection algorithm based on canny edge detector algorithm.
++
++```text
++2.1.1 GraphNodeCanny(TENSOR *input,TENSOR *output)
++```
++
++Constructor for this graph node.
++
++Input
++
++|  |  |
++| --- | --- |
++| input | Input image to perform edge detection |
++| output | Output tensor will be initialized to have the same width and height as input<br>tensor but with the following tensor attributes<br>– DataType = TensorDataTypeUint8<br>– DataFormat = TensorFormatSplit<br>– ObjType = TensorObjTypeMonochromeSingleChannel |
++
++```text
++2.1.2 Create(TENSOR *input,TENSOR *output)
++```
++
++Call to initialize graph node when default constructor was used.
++
++Parameters are like 2.1.1
++
++```text
++2.1.3 void SetThreshold(int _loThreshold,int _hiThreshold)
++```
++
++Setting edge detection threshold
++
++Input
++
++|  |  |
++| --- | --- |
++| loThreshold<br>_ | loThreshold must be <= 255.<br>_<br>If pixel gradient id below loThreshold than pixel is rejected as edge.<br>_<br>Default low threshold is 81. |
++| hiThreshold<br>_ | hiThreshold must be <= 255<br>_<br>If pixel gradient is above hiThreshold than pixel is accepted as edge.<br>_<br>Default high threshold is 163. |
++
++Output: None
++
++```text
++2.1.4 void GetThreshold(int *_loThreshold,int *_hiThreshold)
++```
++
++Return current edge detection threshold
++
++### 2.2 GraphNodeColorAndReshape
++
++This graph node performs color space conversion and tensor reshaping.
++
++```text
++2.2.1 GraphNodeColorAndReshape(
++```
++
++```text
++TENSOR *input,
++TENSOR *output,
++TensorObjType _dstColorSpace,
++TensorFormat _dstFormat,
++int clip_x=0,
++int clip_y=0,
++int clip_w=0,
++int clip_h=0,
++int dst_x=0,
++int dst_y=0,
++int dst_w=0,
++int dst_h=0)
++```
++
++Constructor for this graph node.
++
++Transform and copy input tensor to output tensor.
++
++Transform from a source tensor with a DataType/DataFormat to a destination tensor with a different DataType/DataFormat.
++
++Input
++
++|  |  |
++| --- | --- |
++| input | Input tensor |
++| output | Output tensor |
++| dstColorSpace<br>_ | Object type of destination tensor |
++| dstFormat<br>_ | Data format layout of destination tensor |
++| clip x<br>_<br>clip y<br>_<br>clip w<br>_<br>clip h<br>_ | Identifies the region within input tensor to be used as source tensor.<br>clip x and clip y is the origin of the region.<br>_ _<br>clip w and clip h is the dimension of the region.<br>_ _ |
++| dst x<br>_<br>dst y<br>_<br>dst w<br>_<br>dst h<br>_ | Identifies the region within output tensor to write result to.<br>dst x and dst y is the origin of the region.<br>_ _<br>dst w and dst h is the dimension of the region.<br>_ _ |
++
++```text
++2.2.2 Create(
++```
++
++```text
++TENSOR *input,
++TENSOR *output,
++TensorObjType _dstColorSpace,
++TensorFormat _dstFormat,
++int clip_x=0,
++int clip_y=0,
++int clip_w=0,
++int clip_h=0,
++int dst_x=0,
++int dst_y=0,
++int dst_w=0,
++int dst_h=0)
++```
++
++Call to initialize graph node when default constructor was used.
++
++Parameters are like 2.2.1
++
++### 2.3 GraphNodeGaussian
++
++This graph node performs image blurring using a Gaussian filter.
++
++```text
++2.3.1 GraphNodeGaussian(TENSOR *input,TENSOR *output)
++```
++
++Constructor for this graph node.
++
++Input:
++
++|  |  |
++| --- | --- |
++| input | Input tensor to apply the gaussian filter. |
++| output | Output tensor. |
++
++```text
++2.3.2 ZtaStatus Create(TENSOR *input,TENSOR *output)
++```
++
++Call to initialize graph node when default constructor was used.
++
++Parameters are like 2.3.1
++
++```text
++2.3.3 void SetSigma(float _sigma)
++```
++
++Set sigma value of the gaussian filter.
++
++```text
++2.3.4 float GetSigma()
++```
++
++Return current sigma value of the the gaussian filter.
++
++### 2.4 GraphNodeHarris
++
++This graph node performs Harris-Corner feature detection on an image.
++
++```text
++2.4.1 GraphNodeHarris(TENSOR *input,TENSOR *output)
++```
++
++Constructor for this graph node.
++
++Input:
++
++|  |  |
++| --- | --- |
++| input | Input tensor. |
++| output | Output tensor with width=input's width, height=input's height,<br>dataType=int16.<br>Data elements are feature detection scores. zero for no detection. |
++
++```text
++2.4.2 ZtaStatus Create(TENSOR *input,TENSOR *output)
++```
++
++Call to initialize graph node when default constructor was used.
++
++Parameters are like 2.4.1
++
++### 2.5 GraphNodeOpticalFlow
++
++This graph node performs optical flow algorithm for motion detection on two images captured consecutively in time.
++
++```text
++2.5.1 GraphNodeOpticalFlow(TENSOR *input1,
++```
++
++```text
++TENSOR *x_gradient,
++TENSOR *y_gradient,
++TENSOR *t_gradient,
++TENSOR *x_vect,
++TENSOR *y_vect,
++TENSOR *display)
++```
++
++Constructor for this graph node.
++
++Input
++
++|  |  |
++| --- | --- |
++| input1 | input1 is expected to be an alias tensor to an image buffer.<br>At every new execution, there must a new buffer submitted with the<br>previous buffer still valid and unchanged.<br>This graph node compares current image buffer with the last image buffer<br>for motion detection. |
++| x gradient<br>_ | buffer with dimension hxw of type int16<br>Holds the gradient change in x direction. |
++| y gradient<br>_ | buffer with dimension hxw of type int16<br>Holds the gradient change in y direction. |
++| t gradient<br>_ | buffer with dimension hxw of type int16<br>Holds the gradient change in time direction. |
++| x vect<br>_ | x component of motion vector |
++| y vect<br>_ | y component of motion vector |
++| display | Buffer with dimension 3xhxw intended for display purposes. If set to 0<br>then display will not be generated,<br>Pixel colour represents motion vector direction.<br>- red means movement to the right<br>- green means movement to the left<br>- blue means vertical movement.<br>Pixel intensity represents motion vector magnitude. |
++
++#### 2.5.2 ZtaStatus Create(TENSOR *input1,
++
++```text
++TENSOR *x_gradient,
++TENSOR *y_gradient,
++TENSOR *t_gradient,
++TENSOR *x_vect,
++TENSOR *y_vect,
++TENSOR *display)
++```
++
++Call to initialize graph node when default constructor was used.
++
++Parameters are like 2.5.1
++
++### 2.6 GraphNodeResize
++
++```text
++This graph node performs image resize
++```
++
++```text
++2.6.1 GraphNodeResize(TENSOR *input,TENSOR *output,int w,int h)
++```
++
++```text
++Resize image
++```
++
++|  |  |
++| --- | --- |
++| input | Input tensor to be resized |
++| output | Output tensor |
++| w | Width of image after resizing |
++| h | Height of image after resizing |
++
++```text
++2.6.2 ZtaStatus Create(TENSOR *input,TENSOR *output,int w,int h)
++```
++
++Call to initialize graph node when default constructor was used.
++
++Parameters are like 2.6.1
++
++## 3 - AI STACK
++
++ztachip provides acceleration functions for the execution of Google's TensorFlowLite model. AI stack is implemented as graph node.
++
++The following Neural Network Layers are supported
++
++- Convolution - ConvolutionDepthWise - FCN - Add - Concatenation - Logistics - ObjectDetection - PoolAverage - Reshape - Relu
++
++### 2.7 TfliteNn
++
++This is a graph node that would execute a TensorFlowLite model.
++
++It executes an AI model using the original TensorFlowLite trained model binary that we can be downloaded from Google website. No model retraining is required.
++
++```text
++2.7.1 ZtaStatus Create(const char *fname,TENSOR *_input,
++```
++
++```text
++int numOutput,...)
++```
++
++Load a TensorFlowLite model and prepare for inferencing.
++
++Input
++
++|  |  |
++| --- | --- |
++| fname | TensorFlowLite model file name.<br>It has suffix *.tflite |
++| input<br>_ | Input tensor to the model. |
++| numOutput | Number of output tensors expected. After this parameter, we expect<br>numOutput numbers of tensors to follow |
++
++Output:
++
++- ZtaStatusOk if successful
++
++- ZtaStatusFail otherwise.
++
++```text
++2.7.2 ZtaStatus Load(const char *fname,TENSOR *_input,
++```
++
++```text
++int numOutput,...)
++```
++
++Same as 2.7.1
++
++```text
++2.7.3 ZtaStatus Unload()
++```
++
++Unload and close the current TensorFlowLite model.

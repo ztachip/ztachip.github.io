@@ -18,10 +18,10 @@
 ## Documentation
 
 The documentation below mirrors the five guides listed on the
-[ztachip project home page](https://github.com/ztachip/ztachip). The source
-content is synchronized from the main repository during every documentation
-build. Formatting, spelling, and grammar are cleaned up for the web, while the
-technical content and examples are preserved.
+[ztachip project home page](https://github.com/ztachip/ztachip). The web
+versions are stored directly in this repository, including the content and
+figures from the original PDF programmer guides. Obvious spelling and grammar
+errors are corrected while the technical content and examples are preserved.
 
 ::::{grid} 1 1 2 2
 :gutter: 3
