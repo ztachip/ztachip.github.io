@@ -1,13 +1,13 @@
-SPHINXOPTS ?=
-SPHINXBUILD ?= sphinx-build
-SOURCEDIR = docs
-BUILDDIR = _build
+.PHONY: sync html serve clean
 
 sync:
 	python3 tools/sync_source_docs.py
 
-html: sync
-	$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS)
+html:
+	mkdocs build --strict
+
+serve:
+	mkdocs serve
 
 clean:
-	rm -rf "$(BUILDDIR)"
+	rm -rf site

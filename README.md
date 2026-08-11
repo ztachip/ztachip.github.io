@@ -17,7 +17,7 @@ conversions of the original PDF documents, with their technical content
 preserved and obvious spelling and grammar errors corrected.
 
 GitHub Pages does not download or convert the source PDFs during a build. The
-workflow only builds the committed Markdown and image assets with Sphinx.
+workflow only builds the committed Markdown and image assets with MkDocs.
 
 ## Local preview
 
@@ -25,8 +25,7 @@ workflow only builds the committed Markdown and image assets with Sphinx.
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-make html
-python3 -m http.server 8000 -d _build/html
+mkdocs serve
 ```
 
-Open `http://localhost:8000`.
+Open `http://127.0.0.1:8000/`.
