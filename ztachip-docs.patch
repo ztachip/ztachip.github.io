@@ -1,0 +1,845 @@
+diff --git a/.github/workflows/docs.yml b/.github/workflows/docs.yml
+new file mode 100644
+index 0000000..c4695d7
+--- /dev/null
++++ b/.github/workflows/docs.yml
+@@ -0,0 +1,55 @@
++name: docs
++
++on:
++  push:
++    branches: [master]
++    paths:
++      - "docs/**"
++      - "Documentation/**"
++      - "micropython/MicropythonUserGuide.md"
++      - ".github/workflows/docs.yml"
++  workflow_dispatch: {}
++
++permissions:
++  contents: read
++
++concurrency:
++  group: docs-publish
++  cancel-in-progress: false
++
++jobs:
++  build-and-deploy:
++    runs-on: ubuntu-latest
++    steps:
++      - name: Checkout ztachip
++        uses: actions/checkout@v4
++
++      - name: Set up Python
++        uses: actions/setup-python@v5
++        with:
++          python-version: "3.11"
++          cache: "pip"
++          cache-dependency-path: docs/requirements.txt
++
++      - name: Install Sphinx toolchain
++        run: pip install -r docs/requirements.txt
++
++      - name: Build HTML docs
++        run: sphinx-build -b html docs/source docs/build/html
++
++      # Publishes docs/build/html to the ztachip/ztachip.github.io repo.
++      # Requires a repo secret PAGES_DEPLOY_TOKEN: a Personal Access Token
++      # (classic, "repo" scope) belonging to an account with push access to
++      # ztachip/ztachip.github.io. Create it under
++      # Settings > Secrets and variables > Actions on this repo.
++      - name: Publish to ztachip.github.io
++        if: github.ref == 'refs/heads/master'
++        uses: peaceiris/actions-gh-pages@v4
++        with:
++          personal_token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
++          external_repository: ztachip/ztachip.github.io
++          publish_branch: master
++          publish_dir: docs/build/html
++          user_name: "github-actions[bot]"
++          user_email: "github-actions[bot]@users.noreply.github.com"
++          commit_message: "docs: publish from ztachip/ztachip@${{ github.sha }}"
+diff --git a/docs/Makefile b/docs/Makefile
+new file mode 100644
+index 0000000..2bc2156
+--- /dev/null
++++ b/docs/Makefile
+@@ -0,0 +1,14 @@
++# Minimal makefile for Sphinx documentation
++
++SPHINXOPTS    ?=
++SPHINXBUILD   ?= sphinx-build
++SOURCEDIR     = source
++BUILDDIR      = build
++
++.PHONY: help Makefile
++
++help:
++	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
++
++%: Makefile
++	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+diff --git a/docs/README.md b/docs/README.md
+new file mode 100644
+index 0000000..0455dc5
+--- /dev/null
++++ b/docs/README.md
+@@ -0,0 +1,54 @@
++# ztachip web documentation
++
++This directory builds a Sphinx/Read-the-Docs-themed site (styled like
++https://spinalhdl.github.io/VexiiRiscv-RTD) from the existing docs under
++`Documentation/` and `micropython/MicropythonUserGuide.md`. Nothing in those
++source files needs to move — the pages under `docs/source/` just `{include}`
++them, so editing the original `.md` files is still the way to update content.
++
++Included polish, beyond a bare Sphinx default:
++
++- A generated `ztachip` wordmark/favicon (`docs/source/_static/logo.png`,
++  `favicon.ico`) — placeholders, swap in real brand assets whenever you have
++  them.
++- `custom.css` for a slightly less generic RTD look (accent color, hero
++  block and feature cards on the landing page, nicer code blocks).
++- Copy-to-clipboard buttons on code blocks (`sphinx-copybutton`).
++- `sitemap.xml` generation (`sphinx-sitemap`) and a real 404 page
++  (`sphinx-notfound-page`).
++- "Edit on GitHub" links on every page (via `html_context`).
++
++## Build locally
++
++```
++$ pip install -r docs/requirements.txt
++$ sphinx-build -b html docs/source docs/build/html
++```
++
++Open `docs/build/html/index.html` in a browser.
++
++## Publishing
++
++`.github/workflows/docs.yml` builds the site on every push to `master` that
++touches `docs/`, `Documentation/`, or the MicroPython guide, and publishes
++the result to the `ztachip/ztachip.github.io` repository.
++
++To enable it:
++
++1. Create a Personal Access Token (classic, `repo` scope) for an account
++   with push access to `ztachip/ztachip.github.io`.
++2. Add it as a repository secret named `PAGES_DEPLOY_TOKEN` on
++   `ztachip/ztachip` (Settings > Secrets and variables > Actions).
++3. Make sure `ztachip.github.io` has a `master` branch (or whichever branch
++   Pages is configured to serve) that serves the repo root.
++
++## Still worth doing
++
++- The two PDF-based pages (Programmers Guide, VisionAI Stack Programmers
++  Guide) currently just embed/link the existing PDFs — converting those into
++  native HTML pages is a natural next step, following the same pattern as
++  `overview.md` / `hardware_design.md`.
++- Swap the generated placeholder logo/favicon for real brand assets.
++- If you want a custom domain, add a `CNAME` file to
++  `ztachip.github.io` (peaceiris/actions-gh-pages won't remove it) rather
++  than to this repo.
+diff --git a/docs/make.bat b/docs/make.bat
+new file mode 100644
+index 0000000..2465f97
+--- /dev/null
++++ b/docs/make.bat
+@@ -0,0 +1,33 @@
++@ECHO OFF
++
++pushd %~dp0
++
++if "%SPHINXBUILD%" == "" (
++	set SPHINXBUILD=sphinx-build
++)
++set SOURCEDIR=source
++set BUILDDIR=build
++
++if "%1" == "" goto help
++
++%SPHINXBUILD% >NUL 2>NUL
++if errorlevel 9009 (
++	echo.
++	echo.The 'sphinx-build' command was not found. Make sure you have Sphinx
++	echo.installed, then set the SPHINXBUILD environment variable to point
++	echo.to the full path of the 'sphinx-build' executable. Alternatively you
++	echo.may add the Sphinx directory to PATH.
++	echo.
++	echo.If you don't have Sphinx installed, grab it from
++	echo.https://www.sphinx-doc.org/
++	exit /b 1
++)
++
++%SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
++goto end
++
++:help
++%SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
++
++:end
++popd
+diff --git a/docs/requirements.txt b/docs/requirements.txt
+new file mode 100644
+index 0000000..906f918
+--- /dev/null
++++ b/docs/requirements.txt
+@@ -0,0 +1,6 @@
++sphinx==7.2.6
++sphinx-rtd-theme==2.0.0
++myst-parser==2.0.0
++sphinx-copybutton==0.5.2
++sphinx-sitemap==2.6.0
++sphinx-notfound-page==1.0.2
+diff --git a/docs/source/_static/custom.css b/docs/source/_static/custom.css
+new file mode 100644
+index 0000000..ac3c1aa
+--- /dev/null
++++ b/docs/source/_static/custom.css
+@@ -0,0 +1,95 @@
++/* Light polish on top of sphinx_rtd_theme for a cleaner, more "product docs"
++   feel, in the spirit of https://spinalhdl.github.io/VexiiRiscv-RTD/ */
++
++:root {
++  --zta-ink: #1e293b;
++  --zta-accent: #0d9488;
++  --zta-accent-dark: #0f766e;
++}
++
++/* Sidebar branding */
++.wy-side-nav-search {
++  background-color: var(--zta-ink);
++}
++.wy-side-nav-search input[type="text"] {
++  border-radius: 4px;
++}
++.wy-nav-top {
++  background-color: var(--zta-ink);
++}
++.wy-menu-vertical a:hover,
++.wy-menu-vertical li.current a:hover {
++  background-color: rgba(13, 148, 136, 0.12);
++}
++.wy-menu-vertical li.toctree-l1.current > a {
++  border-left: 3px solid var(--zta-accent);
++}
++
++/* Links */
++a,
++a:visited {
++  color: var(--zta-accent-dark);
++}
++a:hover {
++  color: var(--zta-accent);
++}
++
++/* Headings get a touch more breathing room */
++.rst-content h1,
++.rst-content h2,
++.rst-content h3 {
++  font-weight: 700;
++}
++.rst-content h1 {
++  border-bottom: 2px solid #e5e7eb;
++  padding-bottom: 0.3em;
++}
++
++/* Hero block used on the landing page */
++.zta-hero {
++  background: linear-gradient(135deg, #0f172a 0%, #0d9488 140%);
++  color: #f8fafc;
++  border-radius: 8px;
++  padding: 1.6em 1.8em;
++  margin-bottom: 1.6em;
++}
++.zta-hero p {
++  color: #e2e8f0;
++  margin-bottom: 0;
++}
++.zta-hero a {
++  color: #99f6e4;
++}
++
++/* Simple feature card grid on the landing page */
++.zta-grid {
++  display: grid;
++  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
++  gap: 1em;
++  margin: 1.4em 0;
++}
++.zta-card {
++  border: 1px solid #e5e7eb;
++  border-radius: 6px;
++  padding: 1em 1.2em;
++  background: #fafafa;
++}
++.zta-card h3 {
++  margin-top: 0 !important;
++  font-size: 1.05em !important;
++  border-bottom: none !important;
++}
++
++/* Nicer code blocks */
++.rst-content div[class^="highlight"] {
++  border-radius: 6px;
++}
++
++/* Copy-button tweak so it matches the accent color */
++.copybtn {
++  opacity: 0.55;
++}
++.copybtn:hover {
++  opacity: 1;
++  background-color: var(--zta-accent);
++}
+diff --git a/docs/source/_static/favicon.ico b/docs/source/_static/favicon.ico
+new file mode 100644
+index 0000000000000000000000000000000000000000..61b549f2cf258b5cb30c9f26c2ac3d290e1c9c3c
+GIT binary patch
+literal 10996
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/docs/source/_static/logo.png b/docs/source/_static/logo.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..8f10e4250d1f4f4a2ebdee6248ff59e88f5d33ad
+GIT binary patch
+literal 6075
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/docs/source/conf.py b/docs/source/conf.py
+new file mode 100644
+index 0000000..fbd3b1a
+--- /dev/null
++++ b/docs/source/conf.py
+@@ -0,0 +1,76 @@
++# Configuration file for the Sphinx documentation builder.
++# https://www.sphinx-doc.org/en/master/usage/configuration.html
++import datetime
++
++project = "ztachip"
++copyright = f"2021 - {datetime.date.today().year}, ztachip"
++author = "ztachip"
++
++# Site is published to the root of ztachip/ztachip.github.io.
++html_baseurl = "https://ztachip.github.io/"
++
++extensions = [
++    "myst_parser",
++    "sphinx.ext.autosectionlabel",
++    "sphinx_copybutton",
++    "sphinx_sitemap",
++    "notfound.extension",
++]
++
++# Allow both restructured text and markdown (myst) sources.
++source_suffix = {
++    ".rst": "restructuredtext",
++    ".md": "markdown",
++}
++
++myst_enable_extensions = [
++    "colon_fence",
++    "linkify",
++]
++myst_heading_anchors = 3
++
++master_doc = "index"
++
++templates_path = ["_templates"]
++exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
++
++# -- Copy-button (skip the leading '$ ' shell prompt when users copy) -----
++copybutton_prompt_text = r"\$ "
++copybutton_prompt_is_regexp = True
++
++# -- 404 page ---------------------------------------------------------
++notfound_urls_prefix = "/"
++notfound_context = {
++    "title": "Page not found",
++    "body": (
++        "<h1>Page not found</h1>"
++        "<p>The page you were looking for doesn't exist, or moved. "
++        "Head back to the <a href='/'>docs home</a>.</p>"
++    ),
++}
++
++# -- HTML output -------------------------------------------------------
++html_theme = "sphinx_rtd_theme"
++html_static_path = ["_static"]
++html_css_files = ["custom.css"]
++html_logo = "_static/logo.png"
++html_favicon = "_static/favicon.ico"
++html_title = "ztachip documentation"
++html_theme_options = {
++    "logo_only": True,
++    "navigation_depth": 4,
++    "collapse_navigation": False,
++    "sticky_navigation": True,
++    "style_external_links": True,
++}
++html_show_sourcelink = True
++html_show_sphinx = True
++
++# Keep this in sync with the GitHub repo so "Edit on GitHub" style links work.
++html_context = {
++    "display_github": True,
++    "github_user": "ztachip",
++    "github_repo": "ztachip",
++    "github_version": "master",
++    "conf_py_path": "/docs/source/",
++}
+diff --git a/docs/source/hardware_design.md b/docs/source/hardware_design.md
+new file mode 100644
+index 0000000..d924a45
+--- /dev/null
++++ b/docs/source/hardware_design.md
+@@ -0,0 +1,5 @@
++# Hardware architecture
++
++```{include} ../../Documentation/HardwareDesign.md
++:relative-images:
++```
+diff --git a/docs/source/index.rst b/docs/source/index.rst
+new file mode 100644
+index 0000000..062b7bd
+--- /dev/null
++++ b/docs/source/index.rst
+@@ -0,0 +1,66 @@
++ztachip documentation
++======================
++
++.. raw:: html
++
++   <div class="zta-hero">
++     <p><strong>Multicore, Data-Aware, Embedded RISC-V AI Accelerator</strong>
++     for edge inferencing on low-end FPGA devices or custom ASIC. Free and
++     open source (MIT).</p>
++     <p>
++       <a href="https://github.com/ztachip/ztachip">View on GitHub</a>
++       &nbsp;&middot;&nbsp;
++       <a href="https://github.com/ztachip/ztachip/issues">Report an issue</a>
++     </p>
++   </div>
++
++Acceleration provided by ztachip can be up to 20-50x compared with a
++non-accelerated RISC-V implementation on many vision/AI tasks, and it
++outperforms a RISC-V core equipped with a vector extension. An innovative
++tensor processor hardware accelerates a wide range of tasks — from vision
++primitives like edge detection, optical flow, motion detection and color
++conversion, to running full TensorFlow AI models — rather than just a narrow
++band of workloads such as convolution.
++
++.. image:: https://github.com/ztachip/ztachip/raw/master/Documentation/images/ztachip_arch.png
++   :alt: ztachip architecture
++   :align: center
++   :width: 100%
++
++.. raw:: html
++
++   <div class="zta-grid">
++     <div class="zta-card">
++       <h3>Hardware</h3>
++       <p>Mcore scheduling processor, dataplane, scratch-pad memory, stream
++       processor, and a Tensor Engine with 28x Pcores acting as a
++       configurable systolic array.</p>
++     </div>
++     <div class="zta-card">
++       <h3>Software</h3>
++       <p>A C-like DSL compiler for the tensor processor, prebuilt vision/AI
++       libraries, application examples, and a MicroPython port.</p>
++     </div>
++     <div class="zta-card">
++       <h3>Runs on low-end FPGA</h3>
++       <p>Demonstrated on the Arty A7-100T board, including a multitasking
++       demo running object detection, edge detection, Harris-corner and
++       motion detection simultaneously.</p>
++     </div>
++   </div>
++
++This site renders the documents that live under ``Documentation/`` and
++``micropython/`` in the `ztachip/ztachip
++<https://github.com/ztachip/ztachip>`_ repository. Each page below pulls
++directly from those source files, so editing a ``.md`` file in the repo and
++re-running the docs build is all that's needed to update this site.
++
++.. toctree::
++   :maxdepth: 2
++   :caption: Contents
++
++   overview
++   hardware_design
++   programmer_guide
++   visionai_guide
++   micropython_guide
+diff --git a/docs/source/micropython_guide.md b/docs/source/micropython_guide.md
+new file mode 100644
+index 0000000..7dace24
+--- /dev/null
++++ b/docs/source/micropython_guide.md
+@@ -0,0 +1,5 @@
++# MicroPython programmer's guide
++
++```{include} ../../micropython/MicropythonUserGuide.md
++:relative-images:
++```
+diff --git a/docs/source/overview.md b/docs/source/overview.md
+new file mode 100644
+index 0000000..5aa0759
+--- /dev/null
++++ b/docs/source/overview.md
+@@ -0,0 +1,5 @@
++# Technical overview
++
++```{include} ../../Documentation/Overview.md
++:relative-images:
++```
+diff --git a/docs/source/programmer_guide.rst b/docs/source/programmer_guide.rst
+new file mode 100644
+index 0000000..971dc3b
+--- /dev/null
++++ b/docs/source/programmer_guide.rst
+@@ -0,0 +1,16 @@
++Programmers Guide
++==================
++
++.. note::
++   This page currently embeds the existing PDF as-is. Converting it into
++   native, searchable HTML pages (e.g. section-by-section ``.md``/``.rst``
++   files like :doc:`overview`) is a good follow-up once someone has time to
++   split the PDF content up.
++
++`Download the PDF <https://github.com/ztachip/ztachip/raw/master/Documentation/ztachip_programmer_guide.pdf>`_
++
++.. raw:: html
++
++   <iframe src="https://github.com/ztachip/ztachip/raw/master/Documentation/ztachip_programmer_guide.pdf"
++           width="100%" height="800px" style="border: 1px solid #ccc;">
++   </iframe>
+diff --git a/docs/source/visionai_guide.rst b/docs/source/visionai_guide.rst
+new file mode 100644
+index 0000000..cf9a95b
+--- /dev/null
++++ b/docs/source/visionai_guide.rst
+@@ -0,0 +1,16 @@
++VisionAI Stack Programmers Guide
++=================================
++
++.. note::
++   This page currently embeds the existing PDF as-is. Converting it into
++   native, searchable HTML pages (e.g. section-by-section ``.md``/``.rst``
++   files like :doc:`overview`) is a good follow-up once someone has time to
++   split the PDF content up.
++
++`Download the PDF <https://github.com/ztachip/ztachip/raw/master/Documentation/visionai_programmer_guide.pdf>`_
++
++.. raw:: html
++
++   <iframe src="https://github.com/ztachip/ztachip/raw/master/Documentation/visionai_programmer_guide.pdf"
++           width="100%" height="800px" style="border: 1px solid #ccc;">
++   </iframe>
