@@ -176,9 +176,15 @@ body.nav-hidden .side { display:none; }
 <li><a href="#41-porting-the-hardware-stack">4.1 Porting the Hardware Stack</a></li>
 <li><a href="#42-porting-the-software-stack">4.2 Porting the Software Stack</a></li>
 </ul>
+<li><a href="#5-running-ztachip-in-simulation">5. Running ztachip in Simulation</a></li>
+<ul>
+<li><a href="#51-build-the-simulation-image">5.1 Build the Simulation Image</a></li>
+<li><a href="#52-compile-and-run-the-rtl">5.2 Compile and Run the RTL</a></li>
+</ul>
 </ul>
 </div><div class="main"><div class="navbar"><button class="navbtn navtoggle" onclick="navToggle()" title="Show or hide the contents" aria-label="Contents"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="2" rx="1"/><rect x="1" y="5" width="14" height="2" rx="1"/><rect x="1" y="9" width="14" height="2" rx="1"/><rect x="1" y="13" width="14" height="2" rx="1"/></svg></button><a class="navbtn" href="index.html" title="Home" aria-label="Home"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 0.7 7.6h1.9V14.6h4V10.4h2.8v4.2h4V7.6h1.9z"/></svg></a><span class="gap"></span><button class="navbtn" id="secprev" onclick="secStep(-1)" title="Previous section" aria-label="Previous section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.4 14.1 9.5 12.7 10.9 8 6.2 3.3 10.9 1.9 9.5z"/></svg></button><button class="navbtn" id="secnext" onclick="secStep(1)" title="Next section" aria-label="Next section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 12.6 1.9 6.5 3.3 5.1 8 9.8 12.7 5.1 14.1 6.5z"/></svg></button></div><section class="sec on"><h1 id="getting-started-running-a-visionai-demo-on-artix-7-fpga">Getting Started: Running a Vision/AI Demo on Artix-7 FPGA</h1>
-<p>This guide walks through everything needed to see ztachip running: building the software, building the FPGA image, and loading and running the vision and AI demos on a Digilent Arty A7 board.</p>
+<p>This guide walks through everything needed to see ztachip running: building the software, building the FPGA image, and loading and running the vision and AI demos on a Digilent Arty A7 board, together with the benchmark results measured on that board.</p>
+<p>The Arty A7 is only the reference platform. The last two chapters cover the two other ways to run ztachip: <strong>porting it to another FPGA, ASIC or SoC</strong>, and <strong>running it in simulation</strong>, which needs no hardware at all.</p>
 <h2 id="1-software-build-procedure">1. Software Build Procedure</h2>
 <h3 id="11-prerequisites-ubuntu">1.1 Prerequisites (Ubuntu)</h3>
 <p>Install the required Ubuntu packages:</p>
@@ -435,7 +441,44 @@ load</code></pre>
 <li>Update the boot loader <a href="https://github.com/ztachip/ztachip/blob/master/SW/base/crt.S">SW/base/crt.S</a> if your SoC has any special boot-loading method. In the provided example, the boot loader is simple, since it expects code and data to be loaded by JTAG before execution begins.</li>
 <li>Your SoC may have different peripherals, with new drivers to be implemented. All peripheral drivers are implemented in <a href="https://github.com/ztachip/ztachip/blob/master/SW/src/soc.cpp">SW/src/soc.cpp</a>.</li>
 <li>Refer <a href="https://github.com/ztachip/ztachip/blob/master/HW/riscv/README.md">here</a> if you would like to use a different RISC-V implementation. ztachip uses <a href="https://github.com/SpinalHDL/VexRiscv">VexRiscv</a> by default.</li>
-</ul></section><nav class="pagerbar"><button class="pbtn" id="pgprev" onclick="secStep(-1)"><span class="arrow">&#9664;</span><span class="lbl" id="pgprevlbl">Previous</span></button><span class="pgcount" id="pgcount"></span><button class="pbtn" id="pgnext" onclick="secStep(1)"><span class="lbl" id="pgnextlbl">Next</span><span class="arrow">&#9654;</span></button></nav></div></div>
+</ul>
+</section>
+<section class="sec"><h2 id="5-running-ztachip-in-simulation">5. Running ztachip in Simulation</h2>
+<p>ztachip can also be run under an RTL simulator, without any board. The example test programs exercise the tensor processor and report their results by blinking a simulated LED.</p>
+</section>
+<section class="sec"><h3 id="51-build-the-simulation-image">5.1 Build the Simulation Image</h3>
+<p>First, build the example test program used for simulation.</p>
+<p>The example test applications are located under:</p>
+<pre><code>SW/apps/test
+SW/sim</code></pre>
+<p>Build the simulation image:</p>
+<pre><code>export PATH=/opt/riscv/bin:$PATH
+
+cd ztachip
+
+cd SW/compiler
+make clean all
+
+cd ..
+make clean all -f makefile.kernels
+make clean all -f makefile.sim</code></pre>
+<p>The generated simulation memory image is:</p>
+<pre><code>&lt;ztachip&gt;/SW/build/ztachip_sim.hex</code></pre>
+<p>Copy this file into the directory where you run your simulator.</p>
+<p>The image will be loaded into the simulated memory.</p>
+</section>
+<section class="sec"><h3 id="52-compile-and-run-the-rtl">5.2 Compile and Run the RTL</h3>
+<p>Compile the RTL sources from the following directories:</p>
+<pre><code>HW/src
+HW/platform/simulation
+HW/simulation
+HW/riscv/sim</code></pre>
+<p>The top-level simulation component is:</p>
+<pre><code>HW/simulation/main.vhd</code></pre>
+<p>Provide a clock to:</p>
+<pre><code>main:clk</code></pre>
+<p>The following output should blink each time a test successfully passes:</p>
+<pre><code>main:led_out</code></pre></section><nav class="pagerbar"><button class="pbtn" id="pgprev" onclick="secStep(-1)"><span class="arrow">&#9664;</span><span class="lbl" id="pgprevlbl">Previous</span></button><span class="pgcount" id="pgcount"></span><button class="pbtn" id="pgnext" onclick="secStep(1)"><span class="lbl" id="pgnextlbl">Next</span><span class="arrow">&#9654;</span></button></nav></div></div>
 <script>
 function navToggle() { document.body.classList.toggle('nav-hidden'); }
 // on a phone the panel starts hidden, so the document is what you see first
