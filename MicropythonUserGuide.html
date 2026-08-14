@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ztachip MicroPython User Guide</title>
+<style>
+:root { color-scheme: light; }
+body { margin:0; background:#ffffff; color:#24292f;
+       font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+       font-size:15px; line-height:1.6; }
+h1,h2,h3,h4,h5,h6 { line-height:1.3; margin:26px 0 10px 0; }
+h1 { font-size:26px; } h2 { font-size:22px; border-bottom:1px solid #d8dce0;
+     padding-bottom:6px; } h3 { font-size:18px; } h4 { font-size:16px; }
+h5,h6 { font-size:15px; }
+a { color:#0a58ca; }
+img { max-width:100%; }
+p { margin:10px 0; }
+ul { margin:8px 0 8px 0; padding-left:26px; }
+li { margin:3px 0; }
+hr { border:0; border-top:1px solid #d8dce0; margin:24px 0; }
+
+pre { background:#e4e6e8; padding:12px 14px; border:1px solid #d8dce0;
+      border-radius:6px; overflow-x:auto; }
+pre code { background:transparent; color:#1f2328; padding:0;
+           font-size:13px; line-height:1.5; }
+code { background:#e4e6e8; color:#1f2328; padding:1px 4px; border-radius:4px;
+       font-family:'Cascadia Code',Consolas,'Liberation Mono',monospace;
+       font-size:13px; }
+
+.c-com { color:#6a737d; font-style:italic; }
+.c-str { color:#032f62; }
+.c-key { color:#d73a49; }
+.c-num { color:#005cc5; }
+.c-pre { color:#e36209; }
+
+table { border-collapse:collapse; margin:8px 0 16px 0; }
+th, td { border:1px solid #c9ced4; padding:6px 10px; vertical-align:top; }
+th { background:#eef1f4; text-align:left; }
+
+details > summary { cursor:pointer; }
+
+.layout { display:flex; align-items:flex-start; gap:0; }
+.side { flex:0 0 auto; width:230px; min-width:130px; max-width:70%;
+        resize:horizontal; overflow:auto; height:100vh; box-sizing:border-box;
+        position:sticky; top:0; background:#000000; color:#e8eaed;
+        padding:12px 14px 24px 14px; font-size:13px; line-height:1.7; }
+.side a { color:#e8eaed; text-decoration:none; }
+.side a:hover { text-decoration:underline; }
+.side ul { list-style:none; margin:4px 0 4px 4px; padding-left:12px; }
+.side .plate { background:#d6e8ff; color:#0b2545; padding:9px 10px;
+        border-radius:6px; text-align:center; font-weight:bold;
+        margin:0 0 14px 0; line-height:1.35; }
+.side .home { display:inline-block; margin-bottom:12px; padding:5px 10px;
+        background:#1f2937; color:#e8eaed; border:1px solid #3a4553;
+        border-radius:5px; font-size:12px; }
+.main { flex:1 1 auto; min-width:0; padding:0 26px; max-width:900px; }
+</style>
+</head>
+<body>
+<div class="layout"><div class="side">
+<a class="home" href="index.html">&#8592; Home</a>
+<div class="plate">ztachip MicroPython User Guide</div>
+<b>Contents</b>
+<ul>
+<li><a href="#1-introduction">1. Introduction</a></li>
+<ul>
+<li><a href="#11-tensor-objects">1.1 Tensor objects</a></li>
+<li><a href="#12-graphnode-objects">1.2 GraphNode objects</a></li>
+<ul>
+<li><a href="#121-graphnodecopyandtransforminputoutputcolorformatrowcol">1.2.1 GraphNodeCopyAndTransform</a></li>
+<li><a href="#122-graphnodecannyinputoutput">1.2.2 GraphNodeCanny</a></li>
+<li><a href="#123-graphnodegaussianinputoutput">1.2.3 GraphNodeGaussian</a></li>
+<li><a href="#124-graphnodeharrisinput">1.2.4 GraphNodeHarris</a></li>
+<li><a href="#125-graphnodeopticalflowinputoutput">1.2.5 GraphNodeOpticalFlow</a></li>
+<li><a href="#126-graphnoderesizewidthheight">1.2.6 GraphNodeResize</a></li>
+<li><a href="#127-graphnodeimageclassifierinput">1.2.7 GraphNodeImageClassifier</a></li>
+<li><a href="#128-graphnodeobjectdetectioninput">1.2.8 GraphNodeObjectDetection</a></li>
+</ul>
+</ul>
+<li><a href="#2-graph-object">2. Graph object</a></li>
+<ul>
+<li><a href="#21-graphrun">2.1 Graph.Run</a></li>
+<li><a href="#22-graphrunwithtimeouttimeout_in_ms">2.2 Graph.RunWithTimeout</a></li>
+<li><a href="#23-graphisbusy">2.3 Graph.IsBusy</a></li>
+</ul>
+<li><a href="#3-drawing-functions">3. Drawing functions</a></li>
+<ul>
+<li><a href="#31-ztacanvasdrawtexttextrowcol">3.1 zta.CanvasDrawText</a></li>
+<li><a href="#32-ztacanvasdrawpointrc">3.2 zta.CanvasDrawPoint</a></li>
+<li><a href="#33-ztacanvasdrawrectangletop_left_rowtop_lef_colbot_right_rowbot_right_col">3.3 zta.CanvasDrawRectangle</a></li>
+<li><a href="#34-ztadisplayflushcanvas">3.4 zta.DisplayFlushCanvas</a></li>
+</ul>
+<li><a href="#4-camera-function">4. Camera function</a></li>
+<ul>
+<li><a href="#41-cameracapture">4.1 CameraCapture</a></li>
+</ul>
+<li><a href="#5-miscellaneous-functions">5. Miscellaneous functions</a></li>
+<ul>
+<li><a href="#51-setledledval">5.1 SetLed</a></li>
+<li><a href="#52-buttonstate">5.2 ButtonState</a></li>
+<li><a href="#53-getelapsestimemsec">5.3 GetElapsesTimeMsec</a></li>
+<li><a href="#54-deleteall">5.4 DeleteAll</a></li>
+</ul>
+</ul>
+</div><div class="main"><h1 id="ztachip-micropython-user-guide">ztachip MicroPython User Guide</h1>
+<h2 id="1-introduction">1. Introduction</h2>
+<p>ztachip provides a Python interface to construct a graph of execution and then to schedule for the execution of the Graph.</p>
+<p>Graph performs many vision and AI tasks. The execution of the Graph is running with full ztachip acceleration mode so there is not much loss of performance when applications are running as python programs.</p>
+<p>A Graph object is composed of GraphNode objects and Tensor objects:</p>
+<ul>
+<li>Tensors are data objects used to pass data between GraphNodes</li>
+<li>GraphNode is the processing node of a Graph. It performs on the input Tensors and produces output on the output Tensors.</li>
+</ul>
+<p>ztachip python programming begins with the import of module zta</p>
+<pre><code><span class="c-key">import</span> zta</code></pre>
+<p>Many examples on how to use the Python API are provided <a href="https://github.com/ztachip/ztachip/blob/master/micropython/examples">here</a></p>
+<h3 id="11-tensor-objects">1.1 Tensor objects</h3>
+<p>There are 3 types of tensors to be created by the functions below</p>
+<ul>
+<li>TensorCamera(): Tensor that is mapped to image capture from Camera</li>
+<li>TensorDisplay(): Tensor that is mapped to the display canvas. Display canvas are working copy for the next display output.</li>
+<li>Tensor(): temporary tensor used to carry intermediate results between GraphNodes.</li>
+</ul>
+<h3 id="12-graphnode-objects">1.2 GraphNode objects</h3>
+<h4 id="121-graphnodecopyandtransforminputoutputcolorformatrowcol">1.2.1 GraphNodeCopyAndTransform(input,output,color,format,[row,col])</h4>
+<p>This GraphNode performs data copy from input tensor to output tensor. Perform some color and format conversion if required.</p>
+<p>Parameters:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input</td><td>input tensor to this GraphNode</td></tr>
+<tr><td>output</td><td>output tensor from this GraphNode</td></tr>
+<tr><td>color</td><td>color of the resulted output tensor<br>zta.MONO1: Single channel monochrome<br>zta.MONO3: 3-channel monochrome where R,G,B channels have same value.<br>zta.COLOR: 3-channel RGB color.</td></tr>
+<tr><td>format</td><td>Format of the resulted output tensor<br>zta.PLANAR: channels are seperated as RRR....GGG....BBB....<br>zta.INTERLEAVED: channels are seperated as RGBRGBRGB....</td></tr>
+<tr><td>row,col</td><td>Apply when output tensor is DisplayTensor. Specify where on the display to copy the tensor to. If not specified then [0,0] is assumed.</td></tr>
+</table>
+<h4 id="122-graphnodecannyinputoutput">1.2.2 GraphNodeCanny(input,output)</h4>
+<p>This graphNode performs Canny edge detection algorithm.</p>
+<p>Edge detection threshold is set by GraphNodeCanny.SetThreshold(loThreshold,hiThreshold)</p>
+<p>Parameters:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input</td><td>Input tensor. This node expects input to be color=zta.MONO1 and format=zta.PLANAR.</td></tr>
+<tr><td>output</td><td>Output tensor. It has color=zta.MONO1 and format=zta.PLANAR</td></tr>
+</table>
+<h4 id="123-graphnodegaussianinputoutput">1.2.3 GraphNodeGaussian(input,output)</h4>
+<p>This graphNode performs Gaussian blurring algorithm.</p>
+<p>Gaussian sigma is set by GraphNodeGaussian.SetSigma(sigma)</p>
+<p>Parameters:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input</td><td>Input tensor. This node expects input to be color=zta.COLOR and format=zta.PLANAR.</td></tr>
+<tr><td>output</td><td>Output tensor. Output has color=zta.COLOR and format=zta.PLANAR</td></tr>
+</table>
+<h4 id="124-graphnodeharrisinput">1.2.4 GraphNodeHarris(input)</h4>
+<p>This graphNode performs Harris-Corner point-of-interest detection algo.</p>
+<p>The resulted point-of-interests are then retrieved by calling GetPOI() which returns a list of POI coordinates [col,row]....</p>
+<p>Parameters:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input</td><td>Input tensor. This node expects input to be color=zta.MONO1 and format=zta.PLANAR.</td></tr>
+</table>
+<h4 id="125-graphnodeopticalflowinputoutput">1.2.5 GraphNodeOpticalFlow(input,output)</h4>
+<p>This GraphNoode performs motion detection using OpticalFlow algo.</p>
+<p>Parameters:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input</td><td>Input tensor. This node expects input to have color=zta.COLOR and format=zta.PLANAR</td></tr>
+<tr><td>output</td><td>Motion is produced as color-coded pixel. Output has color=zta.COLOR and format=zta.PLANAR</td></tr>
+</table>
+<h4 id="126-graphnoderesizewidthheight">1.2.6 GraphNodeResize(width,height)</h4>
+<p>This GraphNode performs image resize. Currently only image reduction is supported.</p>
+<p>Parameters:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input</td><td>Input tensor. This node expects input to have color=zta.COLOR and format=zta.PLANAR</td></tr>
+<tr><td>output</td><td>Output tensor has color=zta.COLOR and format=zta.PLANAR</td></tr>
+</table>
+<h4 id="127-graphnodeimageclassifierinput">1.2.7 GraphNodeImageClassifier(input)</h4>
+<p>This GraphNode performs Mobinet image classification from TensorFlowLite.</p>
+<p>Top 5 classification results are returned by calling GraphNodeImageClassifier.GetTop5 which returns a list of 5 tuples [probability,name]...</p>
+<p>Parameters:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input</td><td>Input tensor. This node expects input to have color=zta.COLOR and format=zta.PLANAR and image size=224x224</td></tr>
+</table>
+<h4 id="128-graphnodeobjectdetectioninput">1.2.8 GraphNodeObjectDetection(input)</h4>
+<p>This GraphNode performs SSD-Mobinet object detection from TensorFlowLite</p>
+<p>List of detected objects are returned by calling GraphNodeObjectDetection.GetObjects() which returns a list of tuples describing the detected rectangular region of the objects [topleft_col,topleft_row,botright_col,botright_row,probability,name]</p>
+<p>Parameters:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input</td><td>Input tensor. This node expects input to have color=zta.COLOR and format=zta.PLANAR and image size=300x300</td></tr>
+</table>
+<h2 id="2-graph-object">2. Graph object</h2>
+<p>Graph is constructed from a list of GraphNodes objects described earlier.</p>
+<p>Graph execution is performed with the following functions:</p>
+<h3 id="21-graphrun">2.1 Graph.Run()</h3>
+<p>To execute the graph until completion.</p>
+<h3 id="22-graphrunwithtimeouttimeout_in_ms">2.2 Graph.RunWithTimeout(timeout_in_ms)</h3>
+<p>To execute the graph but only up to a time limit.</p>
+<p>Parameters:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>timeout_in_ms</td><td>Time limit in milliseconds.</td></tr>
+</table>
+<h3 id="23-graphisbusy">2.3 Graph.IsBusy()</h3>
+<p>To check if graph is still busy running. Normally used in conjection with RunWithTimeout.</p>
+<h2 id="3-drawing-functions">3. Drawing functions</h2>
+<p>Drawing is done on a canvas work area defined by TensorDisplay and not directly to the display.</p>
+<h3 id="31-ztacanvasdrawtexttextrowcol">3.1 zta.CanvasDrawText(text,row,col)</h3>
+<p>Draw a string at location [row,col].</p>
+<p>Parameters:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>text</td><td>String to be displayed.</td></tr>
+<tr><td>row</td><td>Row where the string is displayed.</td></tr>
+<tr><td>col</td><td>Column where the string is displayed.</td></tr>
+</table>
+<h3 id="32-ztacanvasdrawpointrc">3.2 zta.CanvasDrawPoint(r,c)</h3>
+<p>Draw a point at location [row,col].</p>
+<p>Parameters:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>r</td><td>Row where the point is drawn.</td></tr>
+<tr><td>c</td><td>Column where the point is drawn.</td></tr>
+</table>
+<h3 id="33-ztacanvasdrawrectangletop_left_rowtop_lef_colbot_right_rowbot_right_col">3.3 zta.CanvasDrawRectangle([top_left_row,top_lef_col],[bot_right_row,bot_right_col])</h3>
+<p>Draw a rectangle by specifying the topleft and botright corners.</p>
+<p>Parameters:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>top_left_row</td><td>Row of the top-left corner of the rectangle.</td></tr>
+<tr><td>top_lef_col</td><td>Column of the top-left corner of the rectangle.</td></tr>
+<tr><td>bot_right_row</td><td>Row of the bottom-right corner of the rectangle.</td></tr>
+<tr><td>bot_right_col</td><td>Column of the bottom-right corner of the rectangle.</td></tr>
+</table>
+<h3 id="34-ztadisplayflushcanvas">3.4 zta.DisplayFlushCanvas()</h3>
+<p>Flush the canvas to the display screen.</p>
+<h2 id="4-camera-function">4. Camera function</h2>
+<h3 id="41-cameracapture">4.1 CameraCapture()</h3>
+<p>Return True is a new camera capture becomes available, False otherwise.</p>
+<h2 id="5-miscellaneous-functions">5. Miscellaneous functions</h2>
+<h3 id="51-setledledval">5.1 SetLed(ledVal)</h3>
+<p>Set LED.</p>
+<p>Parameters:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>ledVal</td><td>Bit mask selecting which LEDs are on. Bit 0 is the first LED, bit 1 the second, and so on.</td></tr>
+</table>
+<h3 id="52-buttonstate">5.2 ButtonState()</h3>
+<p>Return button state (True is pressed, False otherwise).</p>
+<h3 id="53-getelapsestimemsec">5.3 GetElapsesTimeMsec()</h3>
+<p>Return time in msec from previous call to this function.</p>
+<h3 id="54-deleteall">5.4 DeleteAll()</h3>
+<p>To release all previously allocated Graph, GraphNode and Tensor objects. Call before exiting Python program.</p></div></div>
+</body>
+</html>

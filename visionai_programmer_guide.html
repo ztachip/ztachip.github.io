@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ztachip Vision-AI Stack Programmer Guide</title>
+<style>
+:root { color-scheme: light; }
+body { margin:0; background:#ffffff; color:#24292f;
+       font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+       font-size:15px; line-height:1.6; }
+h1,h2,h3,h4,h5,h6 { line-height:1.3; margin:26px 0 10px 0; }
+h1 { font-size:26px; } h2 { font-size:22px; border-bottom:1px solid #d8dce0;
+     padding-bottom:6px; } h3 { font-size:18px; } h4 { font-size:16px; }
+h5,h6 { font-size:15px; }
+a { color:#0a58ca; }
+img { max-width:100%; }
+p { margin:10px 0; }
+ul { margin:8px 0 8px 0; padding-left:26px; }
+li { margin:3px 0; }
+hr { border:0; border-top:1px solid #d8dce0; margin:24px 0; }
+
+pre { background:#e4e6e8; padding:12px 14px; border:1px solid #d8dce0;
+      border-radius:6px; overflow-x:auto; }
+pre code { background:transparent; color:#1f2328; padding:0;
+           font-size:13px; line-height:1.5; }
+code { background:#e4e6e8; color:#1f2328; padding:1px 4px; border-radius:4px;
+       font-family:'Cascadia Code',Consolas,'Liberation Mono',monospace;
+       font-size:13px; }
+
+.c-com { color:#6a737d; font-style:italic; }
+.c-str { color:#032f62; }
+.c-key { color:#d73a49; }
+.c-num { color:#005cc5; }
+.c-pre { color:#e36209; }
+
+table { border-collapse:collapse; margin:8px 0 16px 0; }
+th, td { border:1px solid #c9ced4; padding:6px 10px; vertical-align:top; }
+th { background:#eef1f4; text-align:left; }
+
+details > summary { cursor:pointer; }
+
+.layout { display:flex; align-items:flex-start; gap:0; }
+.side { flex:0 0 auto; width:230px; min-width:130px; max-width:70%;
+        resize:horizontal; overflow:auto; height:100vh; box-sizing:border-box;
+        position:sticky; top:0; background:#000000; color:#e8eaed;
+        padding:12px 14px 24px 14px; font-size:13px; line-height:1.7; }
+.side a { color:#e8eaed; text-decoration:none; }
+.side a:hover { text-decoration:underline; }
+.side ul { list-style:none; margin:4px 0 4px 4px; padding-left:12px; }
+.side .plate { background:#d6e8ff; color:#0b2545; padding:9px 10px;
+        border-radius:6px; text-align:center; font-weight:bold;
+        margin:0 0 14px 0; line-height:1.35; }
+.side .home { display:inline-block; margin-bottom:12px; padding:5px 10px;
+        background:#1f2937; color:#e8eaed; border:1px solid #3a4553;
+        border-radius:5px; font-size:12px; }
+.main { flex:1 1 auto; min-width:0; padding:0 26px; max-width:900px; }
+</style>
+</head>
+<body>
+<div class="layout"><div class="side">
+<a class="home" href="index.html">&#8592; Home</a>
+<div class="plate">ztachip Vision-AI Stack Programmer Guide</div>
+<b>Contents</b>
+<ul>
+<li><a href="#1-introduction">1. INTRODUCTION</a></li>
+<li><a href="#2-graph-framework">2. GRAPH FRAMEWORK</a></li>
+<ul>
+<li><a href="#21-graph-structure">2.1 Graph structure</a></li>
+<li><a href="#22-tensor">2.2 TENSOR</a></li>
+<ul>
+<li><a href="#221-class-interface">2.2.1 Class Interface</a></li>
+<li><a href="#222-data-types">2.2.2 Data Types</a></li>
+</ul>
+<li><a href="#23-graphnode-class">2.3 GraphNode Class</a></li>
+<ul>
+<li><a href="#231-class-interface">2.3.1 Class Interface</a></li>
+<li><a href="#232-example-of-implementing-a-graph-node">2.3.2 Example of implementing a graph node.</a></li>
+</ul>
+<li><a href="#24-graph">2.4 Graph</a></li>
+<ul>
+<li><a href="#241-class-interface">2.4.1 Class Interface</a></li>
+<li><a href="#242-example-running-a-single-graph">2.4.2 Example running a single graph</a></li>
+<li><a href="#243-example-running-multiple-graphs">2.4.3 Example running multiple graphs</a></li>
+</ul>
+</ul>
+<li><a href="#3-vision-stack">3. VISION STACK</a></li>
+<ul>
+<li><a href="#31-graphnodecanny">3.1 GraphNodeCanny</a></li>
+<ul>
+<li><a href="#311-graphnodecannytensor-inputtensor-output">3.1.1 GraphNodeCanny</a></li>
+<li><a href="#312-createtensor-inputtensor-output">3.1.2 Create</a></li>
+<li><a href="#313-void-setthresholdint-_lothresholdint-_hithreshold">3.1.3 void SetThreshold</a></li>
+<li><a href="#314-void-getthresholdint-_lothresholdint-_hithreshold">3.1.4 void GetThreshold</a></li>
+</ul>
+<li><a href="#32-graphnodecolorandreshape">3.2 GraphNodeColorAndReshape</a></li>
+<ul>
+<li><a href="#321-graphnodecolorandreshape-tensor-input-tensor-output-tensorobjtype-_dstcolorspace-tensorformat-_dstformat-int-clip_x0-int-clip_y0-int-clip_w0-int-clip_h0-int-dst_x0-int-dst_y0-int-dst_w0-int-dst_h0">3.2.1 GraphNodeColorAndReshape</a></li>
+<li><a href="#322-create-tensor-input-tensor-output-tensorobjtype-_dstcolorspace-tensorformat-_dstformat-int-clip_x0-int-clip_y0-int-clip_w0-int-clip_h0-int-dst_x0-int-dst_y0-int-dst_w0-int-dst_h0">3.2.2 Create</a></li>
+</ul>
+<li><a href="#33-graphnodegaussian">3.3 GraphNodeGaussian</a></li>
+<ul>
+<li><a href="#331-graphnodegaussiantensor-inputtensor-output">3.3.1 GraphNodeGaussian</a></li>
+<li><a href="#332-ztastatus-createtensor-inputtensor-output">3.3.2 ZtaStatus Create</a></li>
+<li><a href="#333-void-setsigmafloat-_sigma">3.3.3 void SetSigma</a></li>
+<li><a href="#334-float-getsigma">3.3.4 float GetSigma</a></li>
+</ul>
+<li><a href="#34-graphnodeharris">3.4 GraphNodeHarris</a></li>
+<ul>
+<li><a href="#341-graphnodeharristensor-inputtensor-output">3.4.1 GraphNodeHarris</a></li>
+<li><a href="#342-ztastatus-createtensor-inputtensor-output">3.4.2 ZtaStatus Create</a></li>
+</ul>
+<li><a href="#35-graphnodeopticalflow">3.5 GraphNodeOpticalFlow</a></li>
+<ul>
+<li><a href="#351-graphnodeopticalflowtensor-input1-tensor-x_gradient-tensor-y_gradient-tensor-t_gradient-tensor-x_vect-tensor-y_vect-tensor-display">3.5.1 GraphNodeOpticalFlow</a></li>
+<li><a href="#352-ztastatus-createtensor-input1-tensor-x_gradient-tensor-y_gradient-tensor-t_gradient-tensor-x_vect-tensor-y_vect-tensor-display">3.5.2 ZtaStatus Create</a></li>
+</ul>
+<li><a href="#36-graphnoderesize">3.6 GraphNodeResize</a></li>
+<ul>
+<li><a href="#361-graphnoderesizetensor-inputtensor-outputint-wint-h">3.6.1 GraphNodeResize</a></li>
+<li><a href="#362-ztastatus-createtensor-inputtensor-outputint-wint-h">3.6.2 ZtaStatus Create</a></li>
+</ul>
+</ul>
+<li><a href="#4-ai-stack">4. AI STACK</a></li>
+<ul>
+<li><a href="#41-tflitenn">4.1 TfliteNn</a></li>
+<ul>
+<li><a href="#411-ztastatus-createconst-char-fnametensor-_input-int-numoutput">4.1.1 ZtaStatus Create</a></li>
+<li><a href="#412-ztastatus-loadconst-char-fnametensor-_input-int-numoutput">4.1.2 ZtaStatus Load</a></li>
+<li><a href="#413-ztastatus-unload">4.1.3 ZtaStatus Unload</a></li>
+</ul>
+</ul>
+</ul>
+</div><div class="main"><h1 id="ztachip-vision-ai-stack-programmer-guide">ztachip Vision-AI Stack Programmer Guide</h1>
+<h2 id="1-introduction">1. INTRODUCTION</h2>
+<p>ztachip provides many pre-built acceleration functions for vision and AI applications.</p>
+<p>To support these acceleration functions, a graph-based framework is introduced. Different vision and AI functions are connected into a graph of execution nodes.</p>
+<p>Users can use this graph framework to integrate their own custom acceleration functions with ztachip vision-ai stack.</p>
+<h2 id="2-graph-framework">2. GRAPH FRAMEWORK</h2>
+<p>Graph is a ztachip framework used to connect different processing nodes together. It is particular popular framework used by many other AI and vision frameworks such as OpenCV, TensorFLow, OpenVX, etc...</p>
+<p>Each ztachip acceleration functions are packaged as a graph node.</p>
+<p>The flow of execution is then specified by how the graph nodes are connected to form a graph.</p>
+<p>There can be multiple Graph objects representing different execution flow.</p>
+<p>ztachip graph framework is composed of the following C++ classes:</p>
+<ul>
+<li>TENSOR: Objects that encapsulate tensor data objects. They are used as...</li>
+<ul>
+<li>Input tensor data to a graph</li>
+<li>Output result tensor data from a graph.</li>
+<li>Intermediate tensor to transfer data between graph nodes.</li>
+</ul>
+<li>GraphNode</li>
+<ul>
+<li>Unit of execution in a graph. GraphNode takes input data tensor from previous graph nodes and transfer output data tensor to next graph nodes.</li>
+</ul>
+<li>Graph</li>
+<ul>
+<li>Objects that represent the graph.</li>
+</ul>
+</ul>
+<h3 id="21-graph-structure">2.1 Graph structure</h3>
+<p>Diagram below illustrates how the main objects of a Graph are interconnected.</p>
+<p><img src="media/Documentation_assets_visionai-graph-objects.svg" alt="Main objects of a Graph"></p>
+<h3 id="22-tensor">2.2 TENSOR</h3>
+<p>TENSOR class encapsulates tensor data objects.</p>
+<p>Data exchange between graph nodes are TENSOR objects.</p>
+<h4 id="221-class-interface">2.2.1 Class Interface</h4>
+<h5 id="2211-tensor">2.2.1.1 TENSOR()</h5>
+<p>Default constructor without initialization.</p>
+<h5 id="2212-tensor-tensordatatype-_datatype-tensorformat-_fmt-tensorobjtype-objtype-stdvectorint-dim-void-shm">2.2.1.2 TENSOR( TensorDataType _dataType, TensorFormat _fmt, TensorObjType objType, std::vector&lt;int&gt; &amp;dim, void *shm)</h5>
+<p>Constructor with initialization.</p>
+<p>Input</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>_dataType</td><td>Data type of this tensor.<br>Reference 1.2.2.1 for TensorDataType definition.</td></tr>
+<tr><td>_fmt</td><td>Layout format of this tensor<br>Reference 1.2.2.2 for TensorFormat definition</td></tr>
+<tr><td>objType</td><td>Object type of this tensor<br>Reference 1.2.2.3 for TensorObjType definition.</td></tr>
+<tr><td>dim</td><td>Dimension size of this tensor.</td></tr>
+<tr><td>shm</td><td>If non-zero then use this parameter as memory allocation block for this tensor. In this case, this object does not own this memory block and will not free it when done.<br>If zero, then allocate new memory block for this tensor. The memory is owned by this object will be freed by this object&#x27;s destructor.</td></tr>
+</table>
+<h5 id="2213-ztastatus-create-tensordatatype-_datatype-tensorformat-_fmt-tensorobjtype-_objtype-stdvectorint-dim-zta_shared_mem-_shm0">2.2.1.3 ZtaStatus Create( TensorDataType _dataType, TensorFormat _fmt, TensorObjType _objType, std::vector&lt;int&gt; &amp;dim, ZTA_SHARED_MEM _shm=0)</h5>
+<p>Call to initialize this object when default constructor was used.</p>
+<p>Parameters are like 1.2.1.2</p>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if sucessful</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h5 id="2214-ztastatus-clonetensor-other">2.2.1.4 ZtaStatus Clone(TENSOR *other)</h5>
+<p>To initialize this object to have the same parameters as another tensor.</p>
+<p>New memory block is also allocated and initialized to have the same contents as the other tensor.</p>
+<p>Input</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>other</td><td>Reinitialize this tensor with contents of &#x27;other&#x27; tensor.</td></tr>
+</table>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if successful</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h5 id="2215-ztastatus-aliastensor-other">2.2.1.5 ZtaStatus Alias(TENSOR *other)</h5>
+<p>Initialize this object to be a reference to another TENSOR object.</p>
+<p>Input</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>other</td><td>This object is just a reference to the &#x27;other&#x27; tensor.<br>This tensor does not own its data contents since it is just referencing other tensor&#x27;s data contents.</td></tr>
+</table>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if successful</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h5 id="2216-ztastatus-aliasvoid-_shm">2.2.1.6 ZtaStatus Alias(void *_shm)</h5>
+<p>Data content for this tensor is a reference to a given allocated memory block.</p>
+<p>This tensor does not own the memory block and will not free it upon completion.</p>
+<p>Input</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>_shm</td><td>This tensors data content is referencing &#x27;_shm&#x27; memory block.</td></tr>
+</table>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if successful</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h5 id="2217-ztastatus-createwithbitmap-const-char-bmpfile-tensorformat-fmttensorformatsplit">2.2.1.7 ZtaStatus CreateWithBitmap( const char *bmpFile, TensorFormat fmt=TensorFormatSplit)</h5>
+<p>Initialize this tensor with the dimensions of a bitmap.</p>
+<p>Load the bitmap content into this tensor.</p>
+<p>Input</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>bmpFile</td><td>File name of the bitmap to initialize this tensor with.<br>Bitmap file must be 24-bit BMP format.</td></tr>
+<tr><td>Fmt</td><td>Layout format of this tensor.<br>Reference 1.2.2.2 for TensorFormat definition.</td></tr>
+</table>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if successful</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h5 id="2218-tensordatatype-getdatatype">2.2.1.8 TensorDataType GetDataType()</h5>
+<p>Return data type of this tensor.</p>
+<p>Reference 1.2.2.1 for TensorDataType definition.</p>
+<h5 id="2219-tensorformat-getformat">2.2.1.9 TensorFormat GetFormat()</h5>
+<p>Return data layout format of this tensor.</p>
+<p>Reference 1.2.2.2 for TensorFormat definition.</p>
+<h5 id="22110-tensorobjtype-getobjtype">2.2.1.10 TensorObjType GetObjType()</h5>
+<p>Return object type of this tensor.</p>
+<p>Reference 1.2.2.3 for TensorObjType definition.</p>
+<h5 id="22111-stdvectorint-getdimension">2.2.1.11 std::vector&lt;int&gt; *GetDimension()</h5>
+<p>Return dimension list of this tensor.</p>
+<p>The list starts with size of outer-most dimension and ends with size inner-most dimension.</p>
+<h5 id="22112-int-getdimensionint-_idx">2.2.1.12 int GetDimension(int _idx)</h5>
+<p>Return size of a dimension of this tensor.</p>
+<p>Input</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>_idx</td><td>Dimension index to return its size.<br>_idx ranges from 0 to (num_dimension-1) with 0 means outer-most dimension and (num_dimension-1) means inner-most dimension.</td></tr>
+</table>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if successful</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h5 id="22113-void-getbuf">2.2.1.13 void *GetBuf()</h5>
+<p>Return data buffer address of this tensor.</p>
+<h5 id="22114-int-getbuflen">2.2.1.14 int GetBufLen()</h5>
+<p>Return total length of data buffer of this tensor.</p>
+<h5 id="22115-static-size_t-gettensorsizestdvectorint-shape">2.2.1.15 static size_t GetTensorSize(std::vector&lt;int&gt;&amp; shape)</h5>
+<p>This is a utility function that returns the buffer size for a tensor with a particular dimension.</p>
+<p>Size return is number of elements for the tensor.</p>
+<h4 id="222-data-types">2.2.2 Data Types</h4>
+<h5 id="2221-tensordatatype-enumeration">2.2.2.1 TensorDataType Enumeration</h5>
+<p>This class supports the following data types</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>TensorDataTypeInt8</td><td>Signed 8-bit integer.</td></tr>
+<tr><td>TensorDataTypeUint8</td><td>Unsigned 8-bit integer.</td></tr>
+<tr><td>TensorDataTypeInt16</td><td>Signed 16-bit integer.</td></tr>
+<tr><td>TensorDataTypeUint16</td><td>Unsigned 16-bit integer.</td></tr>
+</table>
+<h5 id="2222-tensorformat-enumeration">2.2.2.2 TensorFormat Enumeration</h5>
+<p>This enumeration supports for the following data layout format</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>TensorFormatInterleaved</td><td>For example with a tensor 3x2<br>In this layout format, tensor elements layout in data buffer is as followed.<br>[0][0]<br>[1][0]<br>[2][0]<br>[0][1]<br>[1][1]<br>[2][1]</td></tr>
+<tr><td>TensorFormatSplit</td><td>For example with a tensor 3x2<br>In this layout format, tensor elements layout in data buffer is as followed.<br>[0][0]<br>[0][1]<br>[1][0]<br>[1][1]<br>[2][0]<br>[2][1]</td></tr>
+</table>
+<h5 id="2223-tensorobjtype-enumeration">2.2.2.3 TensorObjType Enumeration</h5>
+<p>This enumeration supports the following tensor object types</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>TensorObjTypeRGB</td><td>Object type is an image with pixel color in RGB order</td></tr>
+<tr><td>TensorObjTypeBGR</td><td>Image with pixel color in BGR order</td></tr>
+<tr><td>TensorObjTypeYUYV</td><td>Image in YUYV color space.</td></tr>
+<tr><td>TensorObjTypeMonochrome</td><td>Monochrome image but in RGB format with R,G,B having same values</td></tr>
+<tr><td>TensorObjTypeMonochromeSingleChannel</td><td>Monochrome image but only with 1 byte per pixel representing the intensity</td></tr>
+<tr><td>TensorObjTypeUnknown</td><td>Unknown data object type</td></tr>
+</table>
+<h3 id="23-graphnode-class">2.3 GraphNode Class</h3>
+<p>This is a class template with virtual functions to be implemented by a derived class.</p>
+<p>Objects with GraphNode as base class are the execution units of a graph.</p>
+<p>ztachip acceleration functions implemented by corresponding tensor programs and pcore programs are encapsulated within a derived class of GraphNode.</p>
+<h4 id="231-class-interface">2.3.1 Class Interface</h4>
+<h5 id="2311-graphnode">2.3.1.1 GraphNode()</h5>
+<p>Default constructor</p>
+<h5 id="2312-ztastatus-verify">2.3.1.2 ZtaStatus Verify()</h5>
+<p>This is a virtual function to be implemented by a derived class.</p>
+<p>The derived class verifies the integrity of this graph node and performs any necessary initialization required before the start of execution.</p>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if successful</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h5 id="2313-ztastatus-executeint-queuebool-stepmode">2.3.1.3 ZtaStatus Execute(int queue,bool stepMode)</h5>
+<p>This is a virtual function to be implemented by a derived class.</p>
+<p>The derived class perform the execution associated with this node.</p>
+<p>Input</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>queue</td><td>There may be multiple graphs running simultaneously.<br>Each graph has a unique queue id.<br>Graph node will use this queue id to generate a unique job-id which will then be passed to ztachip for task completion notification.</td></tr>
+<tr><td>stepMode</td><td>If false, then execute this node till completion.<br>If true, then partially execute this node. This function will be invoked again for the node to continue with the execution.<br>This is useful when a graph node may take a long execution time, and step mode allows execution of a slow graph to be pre-empted by other more critical graph.</td></tr>
+</table>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if processing is completed successfully.</li>
+<li>ZtaStatusPending if processing is successful but not fully completed. More processing is still required.</li>
+<li>ZtaStatusFail if errors are encountered.</li>
+</ul>
+<h5 id="2314-uint32_t-getjobidint-queue">2.3.1.4 uint32_t GetJobId(int queue)</h5>
+<p>Generate a unique job id for a tensor program execution.</p>
+<p>Refer to [1] on how tensor program would use this job-id.</p>
+<p>Example in [1] shows that tensor program is waiting for the completion of the task by waiting for the notification message from ztachip about the completion of job-id. However, when tensor program is called from within a graph framework, tensor program must not wait for the completion message since this is done by graph framework instead.</p>
+<p>Input</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>queue</td><td>The same as queue id passed from Execute function (1.3.1.3)<br>Each graph has a unique queue id.</td></tr>
+</table>
+<p>Output:</p>
+<p>Unique job id for a tensor processing task.</p>
+<h4 id="232-example-of-implementing-a-graph-node">2.3.2 Example of implementing a graph node.</h4>
+<p>Below is an example that shows how a new graph node is implemented.</p>
+<p>GraphNode primary function is to provide wrapper functions for a tensor program so that tensor program can be invoked as part of a graph execution.</p>
+<pre><code><span class="c-com">// Declare a new graph node. It is derived from GraphNode</span>
+<span class="c-key">class</span> MyGraphNode : <span class="c-key">public</span> GraphNode {
+   MyGraphNode();
+   ~MyGraphNode();
+   ZtaStatus Create(TENSOR *<span class="c-key">in</span>,TENSOR *out);
+   ZtaStatus Prepare() {}
+   ZtaStatus Verify() {}
+   ZtaStatus Execute(<span class="c-key">int</span> queue,<span class="c-key">bool</span> stepMode);
+<span class="c-key">private</span>:
+   TENSOR *m_in;
+   TENSOR *m_out;
+}
+
+<span class="c-com">// Initialize this node.</span>
+ZtaStatus MyGraphNode ::Create(TENSOR *<span class="c-key">in</span>,TENSOR *out) {
+   <span class="c-com">// In this example, output tensor has same format as input tensor</span>
+   m_in=<span class="c-key">in</span>;
+   m_out=out;
+   m_out-&gt;Clone(m_in);
+   <span class="c-key">return</span> ZtaStatusOk;
+}
+<span class="c-com">// Verify this node.</span>
+ZtaStatus MyGraphNode ::Verify() {
+   <span class="c-key">return</span> ZtaStatusOk;
+}
+<span class="c-com">// Prepare for new execution run.</span>
+ZtaStatus MyGraphNode ::Prepare() {
+   <span class="c-key">return</span> ZtaStatusOk;
+}
+
+<span class="c-com">// Execute this node</span>
+ZtaStatus MyGraphNode ::Execute(<span class="c-key">int</span> queue,stepMode) {
+   <span class="c-com">// Get a job id and run the tensor program</span>
+   my_tensor_program(GetJobId(queue),
+                    (<span class="c-key">uint8_t</span> *)m_in-&gt;GetBuf(),
+                    (<span class="c-key">uint8_t</span> *)m_out-&gt;GetBuf(),
+                    m_in-&gt;GetBufLen());
+   <span class="c-key">return</span> ZtaStatusOk;
+}</code></pre>
+<h3 id="24-graph">2.4 Graph</h3>
+<p>Object of this class implements a flow of execution of multiple steps with each step are performed by a graph node.</p>
+<p>Graph object owns all the graph nodes and coordinates the execution of these nodes.</p>
+<p>There can be multiple instances of Graph objects with each instance performing a separate task.</p>
+<h4 id="241-class-interface">2.4.1 Class Interface</h4>
+<h5 id="2411-graph">2.4.1.1 Graph()</h5>
+<p>Default constructor of this class</p>
+<h5 id="2412-ztastatus-clear">2.4.1.2 ZtaStatus Clear()</h5>
+<p>Reset the graph by clearing all the nodes.</p>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if successful</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h5 id="2413-ztastatus-addgraphnode-node">2.4.1.3 ZtaStatus Add(GraphNode *node)</h5>
+<p>Add a graph node to the end of the graph.</p>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if successful</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h5 id="2414-ztastatus-verify">2.4.1.4 ZtaStatus Verify()</h5>
+<p>Verify the integrity of the graph.</p>
+<p>Graph will then call Verify function of each node in the graph.</p>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if successful</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h5 id="2415-ztastatus-prepare">2.4.1.5 ZtaStatus Prepare()</h5>
+<p>This function marks the beginning of a new graph execution. Previous execution results are discarded.</p>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if successful</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h5 id="2416-ztastatus-runsinglestep">2.4.1.6 ZtaStatus RunSingleStep()</h5>
+<p>Execute this graph in step mode.</p>
+<p>In this mode, this function may have to be called multiple times to reach execution completion.</p>
+<p>This mode is useful when we want to run multiple graphs at the same time, and we don&#x27;t want a slow graph to block the execution of other graphs that are more time critical.</p>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if graph processing is completed successfully.</li>
+<li>ZtaStatusPending if graph processing is successful but not fully completed. More processing is still required by calling RunSingleStep() function again.</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h5 id="2417-ztastatus-rununtilcompletion">2.4.1.7 ZtaStatus RunUntilCompletion()</h5>
+<p>To execute the graph until completion.</p>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if successful</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h5 id="2418-bool-isrunning">2.4.1.8 bool IsRunning()</h5>
+<p>Return true if graph is currently busy, false if graph is idle and ready to accept a new execution run.</p>
+<h4 id="242-example-running-a-single-graph">2.4.2 Example running a single graph</h4>
+<p>Example below shows how a single graph is created and executed.</p>
+<pre><code><span class="c-com">// Declare graph,node and tensor objects</span>
+Graph graph;
+Task1GraphNode node1;
+Task2GraphNode node2;
+TENSOR tensor_input,tensor_output,tensor_temp;
+
+<span class="c-com">// Initialize tensor_input dimension and content from a bitmap image</span>
+tensor_input.CreateWithBitmap(<span class="c-str">&quot;bitmap.bmp&quot;</span>);
+
+<span class="c-com">// Initialize and attach graph nodes to the graph</span>
+<span class="c-com">// node1 executes first, then node1 passes its output to node2 via tensor_temp,</span>
+<span class="c-com">// then node2 is the final stage of the graph.</span>
+<span class="c-com">// input to the graph is the tensor_input.</span>
+<span class="c-com">// output of the graph is the tensor_output.</span>
+node1.Create(&amp;tensor_input,&amp;tensor_temp);
+node2.Create(&amp;tensor_temp,&amp;tensor_output);
+graph.Add(&amp;node1);
+graph.Add(&amp;node2);
+
+<span class="c-com">// Verify the graph</span>
+graph.Verify();
+
+<span class="c-com">// Prepare for execution</span>
+graph.Prepare();
+
+<span class="c-com">// Execute the graph till completion</span>
+graph.RunUntilCompletion();
+
+<span class="c-com">// Done. Result is now in tensor_output</span></code></pre>
+<h4 id="243-example-running-multiple-graphs">2.4.3 Example running multiple graphs</h4>
+<p>Example below shows how to create and execute multiple graphs simultaneously</p>
+<p>This is like previous example except that there are 2 instances of the graph.</p>
+<pre><code><span class="c-com">// Declare graph,node and tensor objects</span>
+Graph graph[<span class="c-num">2</span>];
+Task1GraphNode node1;
+Task2GraphNode node2;
+Task3GraphNode node3;
+Task4GraphNode node4;
+TENSOR tensor_input[<span class="c-num">2</span>],tensor_output[<span class="c-num">2</span>],tensor_temp[<span class="c-num">2</span>];
+
+<span class="c-com">// Initialize tensor_input dimension and content from a bitmap image</span>
+tensor_input[<span class="c-num">0</span>].CreateWithBitmap(<span class="c-str">&quot;bitmap1.bmp&quot;</span>);
+tensor_input[<span class="c-num">1</span>].CreateWithBitmap(<span class="c-str">&quot;bitmap2.bmp&quot;</span>);
+
+<span class="c-com">// Create first graph</span>
+node1.Create(&amp;tensor_input[<span class="c-num">0</span>],&amp;tensor_temp[<span class="c-num">0</span>]);
+node2.Create(&amp;tensor_temp[<span class="c-num">0</span>],&amp;tensor_output[<span class="c-num">0</span>]);
+graph[<span class="c-num">0</span>].Add(&amp;node1);
+graph[<span class="c-num">0</span>].Add(&amp;node2);
+graph[<span class="c-num">0</span>].Verify();
+graph[<span class="c-num">0</span>].Prepare();
+
+<span class="c-com">// Create second graph</span>
+node3.Create(&amp;tensor_input[<span class="c-num">1</span>],&amp;tensor_temp[<span class="c-num">1</span>]);
+node4.Create(&amp;tensor_temp[<span class="c-num">1</span>],&amp;tensor_output[<span class="c-num">1</span>]);
+graph[<span class="c-num">1</span>].Add(&amp;node3);
+graph[<span class="c-num">1</span>].Add(&amp;node4);
+graph[<span class="c-num">1</span>].Verify();
+graph[<span class="c-num">1</span>].Prepare();
+
+<span class="c-com">// We can run each graph to completion consecutively.</span>
+<span class="c-com">// But in this example, we interleave the execution of both graphs by running</span>
+<span class="c-com">// them in step mode.</span>
+<span class="c-com">// Since graphs are executed in steps, we have control on how to schedule the</span>
+<span class="c-com">// execution of these graphs or even interleaving graph execution with other</span>
+<span class="c-com">// tasks that are not related to graph.</span>
+<span class="c-key">while</span>(graph[<span class="c-num">0</span>].IsRunning() || graph[<span class="c-num">1</span>].IsRunning()) {
+   <span class="c-key">if</span>(graph[<span class="c-num">0</span>].IsRunning())
+      graph[<span class="c-num">0</span>].RunSingleStep();
+   <span class="c-key">if</span>(graph[<span class="c-num">1</span>].IsRunning())
+      graph[<span class="c-num">1</span>].RunSingleStep();
+}
+<span class="c-com">// Done. Result are now in tensor_output[0] and tensor_output[1]</span></code></pre>
+<h2 id="3-vision-stack">3. VISION STACK</h2>
+<p>ztachip has a library of graph nodes that perform many common vision processing tasks.</p>
+<p>These vision processing functions are very efficient and fast since they are implemented based on tensor programming as described in [1].</p>
+<p>This vision library is used under the graph framework as described in chapter 1.</p>
+<p>Vision stack provides the following vision processing acceleration:</p>
+<ul>
+<li>Edge detection using Canny Algorithm</li>
+<li>Color space conversion</li>
+<li>Tensor reshaping</li>
+<li>Image Gaussian blurring</li>
+<li>Feature detection using Harris-Corner Algorithm</li>
+<li>Motion detection with Optical-flow algorithm</li>
+<li>Image resizes</li>
+</ul>
+<h3 id="31-graphnodecanny">3.1 GraphNodeCanny</h3>
+<p>GraphNodeCanny is graph node implementing edge detection algorithm based on canny edge detector algorithm.</p>
+<h4 id="311-graphnodecannytensor-inputtensor-output">3.1.1 GraphNodeCanny(TENSOR <em>input,TENSOR </em>output)</h4>
+<p>Constructor for this graph node.</p>
+<p>Input</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input</td><td>Input image to perform edge detection</td></tr>
+<tr><td>output</td><td>Output tensor will be initialized to have the same width and height as input tensor but with the following tensor attributes<br>• DataType = TensorDataTypeUint8<br>• DataFormat = TensorFormatSplit<br>• ObjType = TensorObjTypeMonochromeSingleChannel</td></tr>
+</table>
+<h4 id="312-createtensor-inputtensor-output">3.1.2 Create(TENSOR <em>input,TENSOR </em>output)</h4>
+<p>Call to initialize graph node when default constructor was used.</p>
+<p>Parameters are like 2.1.1</p>
+<h4 id="313-void-setthresholdint-_lothresholdint-_hithreshold">3.1.3 void SetThreshold(int _loThreshold,int _hiThreshold)</h4>
+<p>Setting edge detection threshold</p>
+<p>Input</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>_loThreshold</td><td>_loThreshold must be &lt;= 255.<br>If pixel gradient id below _loThreshold than pixel is rejected as edge.<br>Default low threshold is 81.</td></tr>
+<tr><td>_hiThreshold</td><td>_hiThreshold must be &lt;= 255<br>If pixel gradient is above _hiThreshold than pixel is accepted as edge.<br>Default high threshold is 163.</td></tr>
+</table>
+<p>Output:</p>
+<p>None</p>
+<h4 id="314-void-getthresholdint-_lothresholdint-_hithreshold">3.1.4 void GetThreshold(int <em>_loThreshold,int </em>_hiThreshold)</h4>
+<p>Return current edge detection threshold</p>
+<h3 id="32-graphnodecolorandreshape">3.2 GraphNodeColorAndReshape</h3>
+<p>This graph node performs color space conversion and tensor reshaping.</p>
+<h4 id="321-graphnodecolorandreshape-tensor-input-tensor-output-tensorobjtype-_dstcolorspace-tensorformat-_dstformat-int-clip_x0-int-clip_y0-int-clip_w0-int-clip_h0-int-dst_x0-int-dst_y0-int-dst_w0-int-dst_h0">3.2.1 GraphNodeColorAndReshape( TENSOR <em>input, TENSOR </em>output, TensorObjType _dstColorSpace, TensorFormat _dstFormat, int clip_x=0, int clip_y=0, int clip_w=0, int clip_h=0, int dst_x=0, int dst_y=0, int dst_w=0, int dst_h=0)</h4>
+<p>Constructor for this graph node.</p>
+<p>Transform and copy input tensor to output tensor.</p>
+<p>Transform from a source tensor with a DataType/DataFormat to a destination tensor with a different DataType/DataFormat.</p>
+<p>Input</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input</td><td>Input tensor</td></tr>
+<tr><td>output</td><td>Output tensor</td></tr>
+<tr><td>_dstColorSpace</td><td>Object type of destination tensor</td></tr>
+<tr><td>_dstFormat</td><td>Data format layout of destination tensor</td></tr>
+<tr><td>clip_x</td><td rowspan="4">Identifies the region within input tensor to be used as source tensor.<br>clip_x and clip_y is the origin of the region.<br>clip_w and clip_h is the dimension of the region.</td></tr>
+<tr><td>clip_y</td></tr>
+<tr><td>clip_w</td></tr>
+<tr><td>clip_h</td></tr>
+<tr><td>dst_x</td><td rowspan="4">Identifies the region within output tensor to write result to.<br>dst_x and dst_y is the origin of the region.<br>dst_w and dst_h is the dimension of the region.</td></tr>
+<tr><td>dst_y</td></tr>
+<tr><td>dst_w</td></tr>
+<tr><td>dst_h</td></tr>
+</table>
+<h4 id="322-create-tensor-input-tensor-output-tensorobjtype-_dstcolorspace-tensorformat-_dstformat-int-clip_x0-int-clip_y0-int-clip_w0-int-clip_h0-int-dst_x0-int-dst_y0-int-dst_w0-int-dst_h0">3.2.2 Create( TENSOR <em>input, TENSOR </em>output, TensorObjType _dstColorSpace, TensorFormat _dstFormat, int clip_x=0, int clip_y=0, int clip_w=0, int clip_h=0, int dst_x=0, int dst_y=0, int dst_w=0, int dst_h=0)</h4>
+<p>Call to initialize graph node when default constructor was used.</p>
+<p>Parameters are like 2.2.1</p>
+<h3 id="33-graphnodegaussian">3.3 GraphNodeGaussian</h3>
+<p>This graph node performs image blurring using a Gaussian filter.</p>
+<h4 id="331-graphnodegaussiantensor-inputtensor-output">3.3.1 GraphNodeGaussian(TENSOR <em>input,TENSOR </em>output)</h4>
+<p>Constructor for this graph node.</p>
+<p>Input:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input</td><td>Input tensor to apply the gaussian filter.</td></tr>
+<tr><td>output</td><td>Output tensor.</td></tr>
+</table>
+<h4 id="332-ztastatus-createtensor-inputtensor-output">3.3.2 ZtaStatus Create(TENSOR <em>input,TENSOR </em>output)</h4>
+<p>Call to initialize graph node when default constructor was used.</p>
+<p>Parameters are like 2.3.1</p>
+<h4 id="333-void-setsigmafloat-_sigma">3.3.3 void SetSigma(float _sigma)</h4>
+<p>Set sigma value of the gaussian filter.</p>
+<h4 id="334-float-getsigma">3.3.4 float GetSigma()</h4>
+<p>Return current sigma value of the the gaussian filter.</p>
+<h3 id="34-graphnodeharris">3.4 GraphNodeHarris</h3>
+<p>This graph node performs Harris-Corner feature detection on an image.</p>
+<h4 id="341-graphnodeharristensor-inputtensor-output">3.4.1 GraphNodeHarris(TENSOR <em>input,TENSOR </em>output)</h4>
+<p>Constructor for this graph node.</p>
+<p>Input:</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input</td><td>Input tensor.</td></tr>
+<tr><td>output</td><td>Output tensor with width=input&#x27;s width, height=input&#x27;s height, dataType=int16.<br>Data elements are feature detection scores. zero for no detection.</td></tr>
+</table>
+<h4 id="342-ztastatus-createtensor-inputtensor-output">3.4.2 ZtaStatus Create(TENSOR <em>input,TENSOR </em>output)</h4>
+<p>Call to initialize graph node when default constructor was used.</p>
+<p>Parameters are like 2.4.1</p>
+<h3 id="35-graphnodeopticalflow">3.5 GraphNodeOpticalFlow</h3>
+<p>This graph node performs optical flow algorithm for motion detection on two images captured consecutively in time.</p>
+<h4 id="351-graphnodeopticalflowtensor-input1-tensor-x_gradient-tensor-y_gradient-tensor-t_gradient-tensor-x_vect-tensor-y_vect-tensor-display">3.5.1 GraphNodeOpticalFlow(TENSOR <em>input1, TENSOR </em>x_gradient, TENSOR <em>y_gradient, TENSOR </em>t_gradient, TENSOR <em>x_vect, TENSOR </em>y_vect, TENSOR *display)</h4>
+<p>Constructor for this graph node.</p>
+<p>Input</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input1</td><td>input1 is expected to be an alias tensor to an image buffer.<br>At every new execution, there must a new buffer submitted with the previous buffer still valid and unchanged.<br>This graph node compares current image buffer with the last image buffer for motion detection.</td></tr>
+<tr><td>x_gradient</td><td>buffer with dimension hxw of type int16<br>Holds the gradient change in x direction.</td></tr>
+<tr><td>y_gradient</td><td>buffer with dimension hxw of type int16<br>Holds the gradient change in y direction.</td></tr>
+<tr><td>t_gradient</td><td>buffer with dimension hxw of type int16<br>Holds the gradient change in time direction.</td></tr>
+<tr><td>x_vect</td><td>x component of motion vector</td></tr>
+<tr><td>y_vect</td><td>y component of motion vector</td></tr>
+<tr><td>display</td><td>Buffer with dimension 3xhxw intended for display purposes. If set to 0 then display will not be generated,<br>Pixel colour represents motion vector direction.<br>- red means movement to the right<br>- green means movement to the left<br>- blue means vertical movement.<br>Pixel intensity represents motion vector magnitude.</td></tr>
+</table>
+<h4 id="352-ztastatus-createtensor-input1-tensor-x_gradient-tensor-y_gradient-tensor-t_gradient-tensor-x_vect-tensor-y_vect-tensor-display">3.5.2 ZtaStatus Create(TENSOR <em>input1, TENSOR </em>x_gradient, TENSOR <em>y_gradient, TENSOR </em>t_gradient, TENSOR <em>x_vect, TENSOR </em>y_vect, TENSOR *display)</h4>
+<p>Call to initialize graph node when default constructor was used.</p>
+<p>Parameters are like 2.5.1</p>
+<h3 id="36-graphnoderesize">3.6 GraphNodeResize</h3>
+<p>This graph node performs image resize</p>
+<h4 id="361-graphnoderesizetensor-inputtensor-outputint-wint-h">3.6.1 GraphNodeResize(TENSOR <em>input,TENSOR </em>output,int w,int h)</h4>
+<p>Resize image</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>input</td><td>Input tensor to be resized</td></tr>
+<tr><td>output</td><td>Output tensor</td></tr>
+<tr><td>w</td><td>Width of image after resizing</td></tr>
+<tr><td>h</td><td>Height of image after resizing</td></tr>
+</table>
+<h4 id="362-ztastatus-createtensor-inputtensor-outputint-wint-h">3.6.2 ZtaStatus Create(TENSOR <em>input,TENSOR </em>output,int w,int h)</h4>
+<p>Call to initialize graph node when default constructor was used.</p>
+<p>Parameters are like 2.6.1</p>
+<h2 id="4-ai-stack">4. AI STACK</h2>
+<p>ztachip provides acceleration functions for the execution of Google&#x27;s TensorFlowLite model.</p>
+<p>AI stack is implemented as graph node.</p>
+<p>The following Neural Network Layers are supported</p>
+<ul>
+<li>Convolution</li>
+<li>ConvolutionDepthWise</li>
+<li>FCN</li>
+<li>Add</li>
+<li>Concatenation</li>
+<li>Logistics</li>
+<li>ObjectDetection</li>
+<li>PoolAverage</li>
+<li>Reshape</li>
+<li>Relu</li>
+</ul>
+<h3 id="41-tflitenn">4.1 TfliteNn</h3>
+<p>This is a graph node that would execute a TensorFlowLite model.</p>
+<p>It executes an AI model using the original TensorFlowLite trained model binary that we can be downloaded from Google website. No model retraining is required.</p>
+<h4 id="411-ztastatus-createconst-char-fnametensor-_input-int-numoutput">4.1.1 ZtaStatus Create(const char <em>fname,TENSOR </em>_input, int numOutput,...)</h4>
+<p>Load a TensorFlowLite model and prepare for inferencing.</p>
+<p>Input</p>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td>fname</td><td>TensorFlowLite model file name.<br>It has suffix *.tflite</td></tr>
+<tr><td>_input</td><td>Input tensor to the model.</td></tr>
+<tr><td>numOutput</td><td>Number of output tensors expected. After this parameter, we expect numOutput numbers of tensors to follow</td></tr>
+</table>
+<p>Output:</p>
+<ul>
+<li>ZtaStatusOk if successful</li>
+<li>ZtaStatusFail otherwise.</li>
+</ul>
+<h4 id="412-ztastatus-loadconst-char-fnametensor-_input-int-numoutput">4.1.2 ZtaStatus Load(const char <em>fname,TENSOR </em>_input, int numOutput,...)</h4>
+<p>Same as 2.7.1</p>
+<h4 id="413-ztastatus-unload">4.1.3 ZtaStatus Unload()</h4>
+<p>Unload and close the current TensorFlowLite model.</p>
+</div>
+</div></div></div>
+</body>
+</html>
