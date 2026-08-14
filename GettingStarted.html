@@ -163,6 +163,11 @@ body.nav-hidden .side { display:none; }
 <li><a href="#37-start-the-image-transfer">3.7 Start the Image Transfer</a></li>
 <li><a href="#38-run-the-program">3.8 Run the Program</a></li>
 </ul>
+<li><a href="#4-benchmark">4. Benchmark</a></li>
+<ul>
+<li><a href="#41-benchmark-results">4.1 Benchmark Results</a></li>
+<li><a href="#42-conclusion">4.2 Conclusion</a></li>
+</ul>
 </ul>
 </div><div class="main"><div class="navbar"><button class="navbtn navtoggle" onclick="navToggle()" title="Show or hide the contents" aria-label="Contents"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="2" rx="1"/><rect x="1" y="5" width="14" height="2" rx="1"/><rect x="1" y="9" width="14" height="2" rx="1"/><rect x="1" y="13" width="14" height="2" rx="1"/></svg></button><a class="navbtn" href="index.html" title="Home" aria-label="Home"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 0.7 7.6h1.9V14.6h4V10.4h2.8v4.2h4V7.6h1.9z"/></svg></a><span class="gap"></span><button class="navbtn" id="secprev" onclick="secStep(-1)" title="Previous section" aria-label="Previous section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.4 14.1 9.5 12.7 10.9 8 6.2 3.3 10.9 1.9 9.5z"/></svg></button><button class="navbtn" id="secnext" onclick="secStep(1)" title="Next section" aria-label="Next section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 12.6 1.9 6.5 3.3 5.1 8 9.8 12.7 5.1 14.1 6.5z"/></svg></button></div><section class="sec on"><h1 id="getting-started-running-a-visionai-demo-on-artix-7-fpga">Getting Started: Running a Vision/AI Demo on Artix-7 FPGA</h1>
 <p>This guide walks through everything needed to see ztachip running: building the software, building the FPGA image, and loading and running the vision and AI demos on a Digilent Arty A7 board.</p>
@@ -373,7 +378,37 @@ load</code></pre>
 <pre><code>continue</code></pre>
 <p>If running in bare-metal mode, press any button to move between different vision/LLM demos.</p>
 <p>If running in MicroPython mode, at the serial console, hit CTRL+E, then paste one of the Python programs from this <a href="https://github.com/ztachip/ztachip/blob/master/micropython/examples">folder</a> and hit CTRL+D to run. Then hit any button to stop and return to the Python console.</p>
-<p>A demonstration showing how to run the demo is available in this <a href="https://www.youtube.com/watch?v=ng0nCEYE6fc&amp;t=499s">video</a>.</p></section><nav class="pagerbar"><button class="pbtn" id="pgprev" onclick="secStep(-1)"><span class="arrow">&#9664;</span><span class="lbl" id="pgprevlbl">Previous</span></button><span class="pgcount" id="pgcount"></span><button class="pbtn" id="pgnext" onclick="secStep(1)"><span class="lbl" id="pgnextlbl">Next</span><span class="arrow">&#9654;</span></button></nav></div></div>
+<p>A demonstration showing how to run the demo is available in this <a href="https://www.youtube.com/watch?v=ng0nCEYE6fc&amp;t=499s">video</a>.</p>
+</section>
+<section class="sec"><h2 id="4-benchmark">4. Benchmark</h2>
+<p>Small LLM inference performance on edge devices is largely constrained by <strong>memory bandwidth</strong>. In these scenarios, additional compute capability provides limited benefit when processing cores spend most of their time waiting for model data to be transferred from memory.</p>
+<p>For this reason, a useful metric for comparing edge LLM implementations is:</p>
+<p><strong>Tokens per second (TPS) per GB/s of memory bandwidth</strong></p>
+</section>
+<section class="sec"><h3 id="41-benchmark-results">4.1 Benchmark Results</h3>
+<p>The following results compare <strong>ztachip running on the Arty platform</strong> with the Raspberry Pi 4 and Raspberry Pi 5.</p>
+<p>LLM inference performance can be divided into two main components:</p>
+<ul>
+<li><strong>Fixed component:</strong> Dominated by matrix multiplication and model-weight transfers. This represents the primary bottleneck and cost for many edge AI applications, where long chat histories and large context windows are less common.</li>
+<li><strong>Variable component:</strong> Dominated by attention mechanisms and softmax calculations across the context window. ztachip includes a dedicated FPU compute unit capable of processing context operations at rates that match the available DDR memory-transfer bandwidth, keeping this component primarily memory-bound.</li>
+</ul>
+<p>The comparison below focuses on the <strong>fixed-cost component</strong> by using shorter prompts and questions.</p>
+<p><em>Raspberry Pi benchmark data sourced from <a href="https://arxiv.org/html/2511.07425v1">arXiv:2511.07425v1</a>.</em></p>
+<table>
+<tr><th>Platform</th><th>Performance</th><th>Memory Bandwidth</th><th>Efficiency</th></tr>
+<tr><td><strong>Raspberry Pi 4</strong></td><td>11 TPS</td><td>12 GB/s</td><td>0.92 TPS/(GB/s)</td></tr>
+<tr><td><strong>Raspberry Pi 5</strong></td><td>32 TPS</td><td>17 GB/s</td><td>1.88 TPS/(GB/s)</td></tr>
+<tr><td><strong>ztachip (Arty)</strong></td><td>8 TPS</td><td>1.2 GB/s</td><td><strong>6.70 TPS/(GB/s)</strong></td></tr>
+</table>
+</section>
+<section class="sec"><h3 id="42-conclusion">4.2 Conclusion</h3>
+<p>The Raspberry Pi platforms achieve higher raw token-generation rates because they provide substantially higher overall hardware and memory-bandwidth resources.</p>
+<p>However, <strong>ztachip achieves significantly higher utilization of the available memory bandwidth</strong>:</p>
+<ul>
+<li><strong>7.2× more efficient</strong> than the Raspberry Pi 4</li>
+<li><strong>3.5× more efficient</strong> than the Raspberry Pi 5</li>
+</ul>
+<p>This efficiency is particularly important for low-cost and resource-constrained edge AI platforms, where memory bandwidth and power are often more limited than compute capability.</p></section><nav class="pagerbar"><button class="pbtn" id="pgprev" onclick="secStep(-1)"><span class="arrow">&#9664;</span><span class="lbl" id="pgprevlbl">Previous</span></button><span class="pgcount" id="pgcount"></span><button class="pbtn" id="pgnext" onclick="secStep(1)"><span class="lbl" id="pgnextlbl">Next</span><span class="arrow">&#9654;</span></button></nav></div></div>
 <script>
 function navToggle() { document.body.classList.toggle('nav-hidden'); }
 // on a phone the panel starts hidden, so the document is what you see first
