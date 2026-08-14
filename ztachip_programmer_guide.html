@@ -28,11 +28,6 @@ code { background:#e4e6e8; color:#1f2328; padding:1px 4px; border-radius:4px;
        font-family:'Cascadia Code',Consolas,'Liberation Mono',monospace;
        font-size:13px; }
 
-.c-com { color:#6a737d; font-style:italic; }
-.c-str { color:#032f62; }
-.c-key { color:#d73a49; }
-.c-num { color:#005cc5; }
-.c-pre { color:#e36209; }
 
 table { border-collapse:collapse; margin:8px 0 16px 0; }
 th, td { border:1px solid #c9ced4; padding:6px 10px; vertical-align:top; }
@@ -271,25 +266,25 @@ details > summary { cursor:pointer; }
 </table>
 <h5 id="2111-example-1">2.1.1.1 Example 1</h5>
 <p>Example below specifies a tensor that is a sub-set of a tensor 100x200 resided at memory location p. The tensor subset has dimension 20x10 spanning row 0-19 and column 20-29 of original tensor.</p>
-<pre><code>DDR(p,<span class="c-num">100</span>,<span class="c-num">200</span>)[<span class="c-num">0</span>:<span class="c-num">1</span>:<span class="c-num">19</span>][<span class="c-num">20</span>:<span class="c-num">1</span>:<span class="c-num">29</span>]</code></pre>
+<pre><code>DDR(p,100,200)[0:1:19][20:1:29]</code></pre>
 <h5 id="2112-example-2">2.1.1.2 Example 2</h5>
 <p>If stride of index range is ignored, then 1 is assumed</p>
 <p>Tensor definition below is identical to the one defined in example 1.</p>
-<pre><code>DDR(p,<span class="c-num">100</span>,<span class="c-num">200</span>)[<span class="c-num">0</span>:<span class="c-num">19</span>][<span class="c-num">20</span>:<span class="c-num">29</span>]</code></pre>
+<pre><code>DDR(p,100,200)[0:19][20:29]</code></pre>
 <h5 id="2113-example-3">2.1.1.3 Example 3</h5>
 <p>If begin of index range is ignored, then 0 is assumed</p>
 <p>Tensor definition below is identical to the one defined in example 1.</p>
-<pre><code>DDR(p,<span class="c-num">100</span>,<span class="c-num">200</span>)[:<span class="c-num">19</span>][:<span class="c-num">29</span>]</code></pre>
+<pre><code>DDR(p,100,200)[:19][:29]</code></pre>
 <h5 id="2114-example-4">2.1.1.4 Example 4</h5>
 <p>If end of index range is ignored, then end of dimension range is assumed.</p>
 <p>In example below, tensor spans from row index=0 to 99 and spans from column index=20 to 199.</p>
-<pre><code>DDR(p,<span class="c-num">100</span>,<span class="c-num">200</span>)[<span class="c-num">0</span>:][<span class="c-num">20</span>:]</code></pre>
+<pre><code>DDR(p,100,200)[0:][20:]</code></pre>
 <h4 id="212-tensor-data-objects-in-pcore-private-memory-space">2.1.2 Tensor data objects in PCORE private memory space</h4>
 <p>Tensors that are allocated in p-core private memory space have the following syntax</p>
 <pre><code>PCORE(dim,...)
      [start:stride:end]...[start:stride:end]
      .thread[start:stride:end]
-     .<span class="c-key">class</span>::variable[start:stride:end]...[start:stride:end]</code></pre>
+     .class::variable[start:stride:end]...[start:stride:end]</code></pre>
 <table>
 <tr><th>Name</th><th>Description</th></tr>
 <tr><td>dim</td><td>p-cores can be arranged as an 1-D array or 2D array. If dim is not specified, then a 1-D arrangement of all available p-cores is assumed.</td></tr>
@@ -302,15 +297,15 @@ details > summary { cursor:pointer; }
 </table>
 <h5 id="2121-example-1">2.1.2.1 Example 1</h5>
 <p>Example below, pcores are arranged as 1-D array of VLIW processors. The tensor spans all 8 p-cores. And at each p-core, we span all 16 threads. And at each thread we reference all elements of variable class::private_variable that is defined by p-core programs as a 2x8 array.</p>
-<pre><code>PCORE(<span class="c-num">8</span>)[<span class="c-num">0</span>:<span class="c-num">7</span>].thread[<span class="c-num">0</span>:<span class="c-num">15</span>].<span class="c-key">class</span>::private_variable[<span class="c-num">0</span>:<span class="c-num">1</span>][<span class="c-num">0</span>:<span class="c-num">7</span>]</code></pre>
+<pre><code>PCORE(8)[0:7].thread[0:15].class::private_variable[0:1][0:7]</code></pre>
 <h5 id="2122-example-2">2.1.2.2 Example 2</h5>
 <p>Example below is similar to previous example except for p-cores being arranged as 4x2 array of processors. Below we span all pcores by row and column indexing.</p>
-<pre><code>PCORE(<span class="c-num">4</span>,<span class="c-num">2</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>][<span class="c-num">0</span>:<span class="c-num">1</span>].thread[<span class="c-num">0</span>:<span class="c-num">15</span>].<span class="c-key">class</span>::private_variable[<span class="c-num">0</span>:<span class="c-num">1</span>][<span class="c-num">0</span>:<span class="c-num">7</span>]</code></pre>
+<pre><code>PCORE(4,2)[0:3][0:1].thread[0:15].class::private_variable[0:1][0:7]</code></pre>
 <h4 id="213-tensor-data-objects-in-p-core-shared-memory-space">2.1.3 Tensor data objects in p-core shared memory space</h4>
 <p>Tensors that are allocated in p-core shared memory space are similar to tensor in p-core private memory space except that the thread dimension is now omitted.</p>
 <pre><code>PCORE(dim,...)
      [start:stride:end]...[start:stride:end]
-     .<span class="c-key">class</span>::variable[start:stride:end]...[start:stride:end]</code></pre>
+     .class::variable[start:stride:end]...[start:stride:end]</code></pre>
 <table>
 <tr><th>Name</th><th>Description</th></tr>
 <tr><td>dim</td><td>p-cores can be arranged as an 1-D array or 2D array.<br>If dim is not specified, then a 1-D arrangement of all available p-cores is assumed.</td></tr>
@@ -322,7 +317,7 @@ details > summary { cursor:pointer; }
 </table>
 <h5 id="2131-example-1">2.1.3.1 Example 1</h5>
 <p>Example below, pcores are arranged as 1-D array of processors. The referenced tensor spans all 8 p-cores. And at each pcore we reference all elements of variable class::shared_variable that is defined in p-core programs as a 2x8 array. Note that we don&#x27;t span the thread dimension since shared memory space has no thread dimension.</p>
-<pre><code>PCORE(<span class="c-num">8</span>)[<span class="c-num">0</span>:<span class="c-num">7</span>].<span class="c-key">class</span>::shared_variable[<span class="c-num">0</span>:<span class="c-num">1</span>][<span class="c-num">0</span>:<span class="c-num">7</span>]</code></pre>
+<pre><code>PCORE(8)[0:7].class::shared_variable[0:1][0:7]</code></pre>
 <h4 id="214-tensor-data-objects-in-scratch-memory-space">2.1.4 Tensor data objects in SCRATCH memory space</h4>
 <p>ztachip has an internal SRAM memory block, and we call this memory region SCRATCH memory space.</p>
 <p>SCRATCH purpose is to provide general memory storage.</p>
@@ -342,96 +337,96 @@ details > summary { cursor:pointer; }
 <p>Tensor variables are tensor alias. They are faster to reference in tensor programs.</p>
 <p>Tensor variable name must start with character &#x27;$&#x27;.</p>
 <p>Example below is an example of a tensor variable declaration and definition.</p>
-<pre><code><span class="c-com">// First declare the variable</span>
+<pre><code>// First declare the variable
 &gt; VAR $coef_pcore;
 
-<span class="c-com">// Then assign variable with a tensor definition.</span>
-&gt; $coef_pcore := PCORE(<span class="c-num">8</span>)[<span class="c-num">0</span>:<span class="c-num">7</span>].convolution::coef[<span class="c-num">0</span>:<span class="c-num">1</span>][<span class="c-num">0</span>:<span class="c-num">7</span>];</code></pre>
+// Then assign variable with a tensor definition.
+&gt; $coef_pcore := PCORE(8)[0:7].convolution::coef[0:1][0:7];</code></pre>
 <p>Whereever $coef_pcore being referenced, the expression representing the variable will be substituted in its place.</p>
 <p>Tensor variables can also have an argument. The argument is specified when tensor variables are being referenced. &#x27;$&#x27; is tensor variable&#x27;s argument place holder.</p>
 <h4 id="221-tensor-variables---example-1">2.2.1 Tensor variables - example 1</h4>
 <p>If a tensor variable $coef_ddr is defined as</p>
 <pre><code>&gt; VAR $coef_pcore;
-&gt; $coef_ddr := MEM(coef,<span class="c-num">100</span>,<span class="c-num">200</span>)[$][<span class="c-num">0</span>:<span class="c-num">199</span>];</code></pre>
+&gt; $coef_ddr := MEM(coef,100,200)[$][0:199];</code></pre>
 <p>Then</p>
 <pre><code>$coef_ddr[jj]</code></pre>
 <p>is the same as below after substituting tensor variable argument $ with jj.</p>
-<pre><code>MEM(coef,<span class="c-num">100</span>,<span class="c-num">200</span>)[jj][<span class="c-num">0</span>:<span class="c-num">199</span>];</code></pre>
+<pre><code>MEM(coef,100,200)[jj][0:199];</code></pre>
 <h4 id="222-tensor-variables-example-2">2.2.2 Tensor variables – example 2</h4>
 <p>If a tensor variable $coef_ddr is defined as</p>
 <pre><code>&gt; VAR $coef_pcore;
-&gt; $coef_ddr := MEM(coef,<span class="c-num">100</span>,<span class="c-num">200</span>)[$][<span class="c-num">0</span>:<span class="c-num">199</span>];</code></pre>
+&gt; $coef_ddr := MEM(coef,100,200)[$][0:199];</code></pre>
 <p>Then</p>
-<pre><code>$coef_ddr[<span class="c-num">0</span>:<span class="c-num">19</span>]</code></pre>
+<pre><code>$coef_ddr[0:19]</code></pre>
 <p>is the same as below after substituting tensor variable argument $ with [0:19].</p>
-<pre><code>MEM(coef,<span class="c-num">100</span>,<span class="c-num">200</span>)[<span class="c-num">0</span>:<span class="c-num">19</span>][<span class="c-num">0</span>:<span class="c-num">199</span>];</code></pre>
+<pre><code>MEM(coef,100,200)[0:19][0:199];</code></pre>
 <h3 id="23-tensor-data-transfer-instructions">2.3 Tensor data transfer instructions</h3>
 <p>These instructions are inserted to tensor programs with special syntax line begins with &#x27;&gt;&#x27;</p>
 <p>These instructions move tensors from one memory space to another.</p>
 <p>In addition to tensor memory transfer, these instructions can also perform many functions such as tensor reshape, dimension resize, data remapping...</p>
 <h4 id="231-tensor-data-transfer-from-ddr-to-pcore-private-memory-space">2.3.1 Tensor data transfer from DDR to PCORE private memory space</h4>
-<pre><code>&gt;PCORE[<span class="c-num">0</span>:<span class="c-num">1</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">1</span>].myclass::var[<span class="c-num">0</span>:<span class="c-num">1</span>] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">7</span>];</code></pre>
+<pre><code>&gt;PCORE[0:1].THREAD[0:1].myclass::var[0:1] &lt;= DDR(p)[0:7];</code></pre>
 <p>Example above transfers data from a tensor resided in external DDR memory to a tensor resided in pcore&#x27;s private memory space named myclass::var.</p>
 <p>The result of the transfer is shown below</p>
-<pre><code>PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::var[<span class="c-num">0</span>] = p[<span class="c-num">0</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::var[<span class="c-num">1</span>] = p[<span class="c-num">1</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">1</span>].myclass::var[<span class="c-num">0</span>] = p[<span class="c-num">2</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">1</span>].myclass::var[<span class="c-num">1</span>] = p[<span class="c-num">3</span>]
-PCORE[<span class="c-num">1</span>].THREAD[<span class="c-num">0</span>].myclass::var[<span class="c-num">0</span>] = p[<span class="c-num">4</span>]
-PCORE[<span class="c-num">1</span>].THREAD[<span class="c-num">0</span>].myclass::var[<span class="c-num">1</span>] = p[<span class="c-num">5</span>]
-PCORE[<span class="c-num">1</span>].THREAD[<span class="c-num">1</span>].myclass::var[<span class="c-num">0</span>] = p[<span class="c-num">6</span>]
-PCORE[<span class="c-num">1</span>].THREAD[<span class="c-num">1</span>].myclass::var[<span class="c-num">1</span>] = p[<span class="c-num">7</span>]</code></pre>
+<pre><code>PCORE[0].THREAD[0].myclass::var[0] = p[0]
+PCORE[0].THREAD[0].myclass::var[1] = p[1]
+PCORE[0].THREAD[1].myclass::var[0] = p[2]
+PCORE[0].THREAD[1].myclass::var[1] = p[3]
+PCORE[1].THREAD[0].myclass::var[0] = p[4]
+PCORE[1].THREAD[0].myclass::var[1] = p[5]
+PCORE[1].THREAD[1].myclass::var[0] = p[6]
+PCORE[1].THREAD[1].myclass::var[1] = p[7]</code></pre>
 <h4 id="232-tensor-data-transfer-from-ddr-to-pcore-shared-memory-space">2.3.2 Tensor data transfer from DDR to PCORE shared memory space.</h4>
-<pre><code>&gt;PCORE[<span class="c-num">0</span>:<span class="c-num">1</span>].myclass::shared_var[<span class="c-num">0</span>:<span class="c-num">1</span>] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">3</span>];</code></pre>
+<pre><code>&gt;PCORE[0:1].myclass::shared_var[0:1] &lt;= DDR(p)[0:3];</code></pre>
 <p>Example above transfers data from a tensor resided in external DDR memory to a tensor resided in pcore&#x27;s shared memory space named myclass::shared_var. Tensors in PCORE shared memory space have no thread dimension.</p>
 <p>The result of the transfer is shown below</p>
-<pre><code>PCORE[<span class="c-num">0</span>].myclass::shared_var[<span class="c-num">0</span>] = p[<span class="c-num">0</span>]
-PCORE[<span class="c-num">0</span>].myclass::shared_var[<span class="c-num">1</span>] = p[<span class="c-num">1</span>]
-PCORE[<span class="c-num">1</span>].myclass::shared_var[<span class="c-num">0</span>] = p[<span class="c-num">2</span>]
-PCORE[<span class="c-num">1</span>].myclass::shared_var[<span class="c-num">1</span>] = p[<span class="c-num">3</span>]</code></pre>
+<pre><code>PCORE[0].myclass::shared_var[0] = p[0]
+PCORE[0].myclass::shared_var[1] = p[1]
+PCORE[1].myclass::shared_var[0] = p[2]
+PCORE[1].myclass::shared_var[1] = p[3]</code></pre>
 <h4 id="233-tensor-data-transfer-from-ddr-to-tensor-operators-parameters">2.3.3 Tensor data transfer from DDR to tensor operator&#x27;s parameters</h4>
 <p>Like C/C++ functions, tensor operators are functions with function parameters declared.</p>
 <p>Tensor operator parameters are themselves tensors that reside in pcore private memory space.</p>
 <p>Parameters of different operators are overlapped in memory allocation. Therefore, tensor operator parameter&#x27;s content will be overwritten when a different tensor operator being invoked.</p>
 <p>Tensor operator parameters will be explained at more details in chapter 3.</p>
 <p>Example1:</p>
-<pre><code>&gt;PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::my_op.parm &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">63</span>];</code></pre>
+<pre><code>&gt;PCORE(4)[0:3].THREAD[0:15].myclass::my_op.parm &lt;= DDR(p)[0:63];</code></pre>
 <p>Example above set parameter parm of tensor operator my_class::my_op with data from DDR memory.</p>
 <p>parm1 is viewed as a tensor of dimension 4x16</p>
 <p>Example2:</p>
-<pre><code>&gt;PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::my_op.vparm[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">511</span>];</code></pre>
+<pre><code>&gt;PCORE(4)[0:3].THREAD[0:15].myclass::my_op.vparm[0:7] &lt;= DDR(p)[0:511];</code></pre>
 <p>Example above set parameter parm1 of tensor operator myclass::my_op with data from DDR memory.</p>
 <p>In this example, in the pcore program, vparm is declared as a vector of width 8, therefore parm1 is viewed as a tensor of dimension 4x16x8</p>
 <h4 id="234-tensor-data-transfer-from-tensor-operators-parameters-to-ddr">2.3.4 Tensor data transfer from tensor operator&#x27;s parameters to DDR</h4>
 <p>Similar to previous section, but now the transfer direction is from tensor operator parameters to DDR memory space.</p>
 <p>Tensor operator parameters will be explained at more details in chapter 3.</p>
 <p>Example1:</p>
-<pre><code>&gt;DDR(p)[<span class="c-num">0</span>:<span class="c-num">63</span>] &lt;= PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::my_op.z;</code></pre>
+<pre><code>&gt;DDR(p)[0:63] &lt;= PCORE(4)[0:3].THREAD[0:15].myclass::my_op.z;</code></pre>
 <p>Example above transfers parameter z of tensor operator myclass::my_op to DDR memory.</p>
 <p>In this example, z is viewed as a tensor of dimension 4x16</p>
 <p>Example2:</p>
-<pre><code>&gt;DDR(p)[<span class="c-num">0</span>:<span class="c-num">511</span>] &lt;= PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::my_op.vz[<span class="c-num">0</span>:<span class="c-num">7</span>];</code></pre>
+<pre><code>&gt;DDR(p)[0:511] &lt;= PCORE(4)[0:3].THREAD[0:15].myclass::my_op.vz[0:7];</code></pre>
 <p>Example above transfers tensor operator parameter vz to DDR memory.</p>
 <p>In this example, in the pcore program, vz is declared as vector with width 8, then vz is viewed as a tensor of dimension 4x16x8</p>
 <h4 id="235-tensor-data-transfer-from-ddr-to-scratch">2.3.5 Tensor data transfer from DDR to SCRATCH</h4>
 <p>Example below shows the data transfer of a tensor in DDR space to a tensor in SCRATCH space.</p>
-<pre><code>&gt;SCRATCH(<span class="c-num">0</span>,<span class="c-num">256</span>)[:] &lt;= DDR(p,<span class="c-num">256</span>)[:];</code></pre>
+<pre><code>&gt;SCRATCH(0,256)[:] &lt;= DDR(p,256)[:];</code></pre>
 <h4 id="236-tensor-data-transfer-from-scratch-to-ddr">2.3.6 Tensor data transfer from SCRATCH to DDR</h4>
 <p>Example below shows the data transfer of a tensor in SCRATCH space to a tensor in DDR space.</p>
-<pre><code>&gt;DDR(p,<span class="c-num">256</span>)[:] &lt;= SCRATCH(<span class="c-num">0</span>,<span class="c-num">256</span>)[:];</code></pre>
+<pre><code>&gt;DDR(p,256)[:] &lt;= SCRATCH(0,256)[:];</code></pre>
 <h4 id="237-tensor-data-transfer-from-scratch-to-ddr">2.3.7 Tensor data transfer from SCRATCH to DDR</h4>
 <h4 id="238-setting-tensor-operators-global-parameters">2.3.8 Setting tensor operator&#x27;s global parameters</h4>
 <p>Tensor operator parameters are normally unique and private among pcores and p-threads.</p>
 <p>However, tensor operator parameters can be specified to have a global scope.</p>
 <p>With global scope, all pcores and all p-threads would share the same parameter.</p>
 <p>Tensor operator parameters will be explained at more details in chapter 3.</p>
-<pre><code>&gt;myclass::my_op.kk &lt;= INT16(<span class="c-num">2</span>);</code></pre>
+<pre><code>&gt;myclass::my_op.kk &lt;= INT16(2);</code></pre>
 <p>Example above set parameter kk of tensor operator myclass::my_op to 2. This parameter is shared among all pcores and among all p-threads.</p>
 <h4 id="239-broadcast-transfer-to-pcore-memory-space">2.3.9 Broadcast transfer to PCORE memory space.</h4>
 <p>All pcores may receive the same broadcast data by specifying &#x27;*&#x27; as the PCORE index range.</p>
 <h5 id="2391-example">2.3.9.1 Example</h5>
 <p>Example below broadcast data to all p-cores.</p>
-<pre><code>&gt; PCORE(<span class="c-num">8</span>)[*].thread[<span class="c-num">0</span>:<span class="c-num">15</span>].<span class="c-key">class</span>::var[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">127</span>];</code></pre>
+<pre><code>&gt; PCORE(8)[*].thread[0:15].class::var[0:7] &lt;= DDR(p)[0:127];</code></pre>
 <h4 id="2310-multi-cast-transfer-to-pcore-memory-space">2.3.10 Multi-cast transfer to PCORE memory space.</h4>
 <p>When pcores are arranged in a 2-D array, all pcores belonged to same row or column can receive the same multi-cast data.</p>
 <p>Multi-cast is allowed only when dimensions of pcore array have sizes in power of 2.</p>
@@ -440,70 +435,70 @@ PCORE[<span class="c-num">1</span>].myclass::shared_var[<span class="c-num">1</s
 <p>In example below, pcores are arranged in a 4x2 array.</p>
 <p>All pcores belonged to the same row receive the same multi-cast data.</p>
 <p>In example below, multi-cast transfer is identified with character &#x27;*&#x27; in the row index of pcore array.</p>
-<pre><code>&gt; PCORE(<span class="c-num">4</span>,<span class="c-num">2</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>][*].thread[<span class="c-num">0</span>:<span class="c-num">15</span>].<span class="c-key">class</span>::var[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">511</span>];</code></pre>
+<pre><code>&gt; PCORE(4,2)[0:3][*].thread[0:15].class::var[0:7] &lt;= DDR(p)[0:511];</code></pre>
 <h5 id="23102-example-2">2.3.10.2 Example 2</h5>
 <p>In example below, pcores are arranged in a 4x2 array.</p>
 <p>All pcores belonged to the same column receive the same multi-cast data.</p>
 <p>In example below, multi-cast transfer is identified with character &#x27;*&#x27; in the column index of pcore array.</p>
-<pre><code>&gt; PCORE(<span class="c-num">4</span>,<span class="c-num">2</span>)[*][<span class="c-num">0</span>:<span class="c-num">1</span>].thread[<span class="c-num">0</span>:<span class="c-num">15</span>].<span class="c-key">class</span>::var[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">255</span>];</code></pre>
+<pre><code>&gt; PCORE(4,2)[*][0:1].thread[0:15].class::var[0:7] &lt;= DDR(p)[0:255];</code></pre>
 <h4 id="2311-tensor-reshaping">2.3.11 Tensor reshaping</h4>
-<pre><code>&gt;PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">2</span>].myclass::var[<span class="c-num">0</span>:<span class="c-num">3</span>] &lt;= DDR(p,<span class="c-num">100</span>,<span class="c-num">3</span>,<span class="c-num">2</span>)[<span class="c-num">0</span>][<span class="c-num">0</span>:<span class="c-num">2</span>][<span class="c-num">0</span>:<span class="c-num">3</span>];</code></pre>
+<pre><code>&gt;PCORE[0].THREAD[0:2].myclass::var[0:3] &lt;= DDR(p,100,3,2)[0][0:2][0:3];</code></pre>
 <p>Example above transfers data from DDR tensor data object but the DDR dimension indexes are going out-of-bound in some cases.</p>
 <p>Tensor data associated with out-of-bound dimension index are substituted with zero for read operation and skipped for write operation.</p>
 <p>The result of the transfer is listed below</p>
-<pre><code>PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::var[<span class="c-num">0</span>] = p[<span class="c-num">0</span>][<span class="c-num">0</span>][<span class="c-num">0</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::var[<span class="c-num">1</span>] = p[<span class="c-num">0</span>][<span class="c-num">0</span>][<span class="c-num">1</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::var[<span class="c-num">2</span>] = p[<span class="c-num">0</span>][<span class="c-num">0</span>][<span class="c-num">2</span>] &lt;== Out-of-bound index. Substituted <span class="c-key">with</span> zero.
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::var[<span class="c-num">3</span>] = p[<span class="c-num">0</span>][<span class="c-num">0</span>][<span class="c-num">3</span>] &lt;== Out-of-bound index. Substituted <span class="c-key">with</span> zero.
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">1</span>].myclass::var[<span class="c-num">0</span>] = p[<span class="c-num">0</span>][<span class="c-num">1</span>][<span class="c-num">0</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">1</span>].myclass::var[<span class="c-num">1</span>] = p[<span class="c-num">0</span>][<span class="c-num">1</span>][<span class="c-num">1</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">1</span>].myclass::var[<span class="c-num">2</span>] = p[<span class="c-num">0</span>][<span class="c-num">1</span>][<span class="c-num">2</span>] &lt;== Out-of-bound index. Substituted <span class="c-key">with</span> zero.
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">1</span>].myclass::var[<span class="c-num">3</span>] = p[<span class="c-num">0</span>][<span class="c-num">1</span>][<span class="c-num">3</span>] &lt;== Out-of-bound index. Substituted <span class="c-key">with</span> zero.
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">2</span>].myclass::var[<span class="c-num">0</span>] = p[<span class="c-num">0</span>][<span class="c-num">2</span>][<span class="c-num">0</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">2</span>].myclass::var[<span class="c-num">1</span>] = p[<span class="c-num">0</span>][<span class="c-num">2</span>][<span class="c-num">1</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">2</span>].myclass::var[<span class="c-num">2</span>] = p[<span class="c-num">0</span>][<span class="c-num">2</span>][<span class="c-num">2</span>] &lt;== Out-of-bound index. Substituted <span class="c-key">with</span> zero.
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">2</span>].myclass::var[<span class="c-num">3</span>] = p[<span class="c-num">0</span>][<span class="c-num">2</span>][<span class="c-num">3</span>] &lt;== Out-of-bound index. Substituted <span class="c-key">with</span> zero.</code></pre>
+<pre><code>PCORE[0].THREAD[0].myclass::var[0] = p[0][0][0]
+PCORE[0].THREAD[0].myclass::var[1] = p[0][0][1]
+PCORE[0].THREAD[0].myclass::var[2] = p[0][0][2] &lt;== Out-of-bound index. Substituted with zero.
+PCORE[0].THREAD[0].myclass::var[3] = p[0][0][3] &lt;== Out-of-bound index. Substituted with zero.
+PCORE[0].THREAD[1].myclass::var[0] = p[0][1][0]
+PCORE[0].THREAD[1].myclass::var[1] = p[0][1][1]
+PCORE[0].THREAD[1].myclass::var[2] = p[0][1][2] &lt;== Out-of-bound index. Substituted with zero.
+PCORE[0].THREAD[1].myclass::var[3] = p[0][1][3] &lt;== Out-of-bound index. Substituted with zero.
+PCORE[0].THREAD[2].myclass::var[0] = p[0][2][0]
+PCORE[0].THREAD[2].myclass::var[1] = p[0][2][1]
+PCORE[0].THREAD[2].myclass::var[2] = p[0][2][2] &lt;== Out-of-bound index. Substituted with zero.
+PCORE[0].THREAD[2].myclass::var[3] = p[0][2][3] &lt;== Out-of-bound index. Substituted with zero.</code></pre>
 <h4 id="2312-setting-out-of-bound-access-values">2.3.12 Setting Out-of-bound access values</h4>
 <p>During tensor reshaping, out-of-bound values are substituted with zero values by default.</p>
 <p>However, different value can be specified instead with the use of PAD keyword.</p>
 <p>The example below, data transfer of out-of-bound items will have values of 0xff.</p>
-<pre><code>&gt;PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">2</span>].myclass::var[<span class="c-num">0</span>:<span class="c-num">3</span>] &lt;= PAD(0xff) DDR(p,<span class="c-num">100</span>,<span class="c-num">3</span>,<span class="c-num">2</span>)[<span class="c-num">0</span>][<span class="c-num">0</span>:<span class="c-num">2</span>][<span class="c-num">0</span>:<span class="c-num">3</span>];</code></pre>
+<pre><code>&gt;PCORE[0].THREAD[0:2].myclass::var[0:3] &lt;= PAD(0xff) DDR(p,100,3,2)[0][0:2][0:3];</code></pre>
 <h4 id="2313-dimension-casting">2.3.13 Dimension casting</h4>
 <p>You can cast the dimension of the components of pcore tensor to different dimension.</p>
 <p>Example:</p>
-<pre><code>&gt;PCORE(<span class="c-num">8</span>)[<span class="c-num">0</span>:<span class="c-num">7</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::myvar[<span class="c-num">0</span>:<span class="c-num">15</span>] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">8</span>*<span class="c-num">16</span>*<span class="c-num">16</span>-<span class="c-num">1</span>];</code></pre>
+<pre><code>&gt;PCORE(8)[0:7].THREAD[0:15].myclass::myvar[0:15] &lt;= DDR(p)[0:8*16*16-1];</code></pre>
 <p>Now recast dimension of thread component from vector of 16 to array of 4x4. And recast myvar dimension from vector of 16 to array of 4x4. Note that the access pattern of the casted components is also changed from 1-D indexing to 2-D indexing access pattern.</p>
-<pre><code>&gt;PCORE(<span class="c-num">8</span>)[<span class="c-num">0</span>:<span class="c-num">7</span>].THREAD(<span class="c-num">4</span>,<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>][<span class="c-num">0</span>:<span class="c-num">3</span>].myclass::myvar(<span class="c-num">4</span>,<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>][<span class="c-num">0</span>:<span class="c-num">3</span>] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">8</span>*<span class="c-num">16</span>*<span class="c-num">16</span>-<span class="c-num">1</span>];</code></pre>
+<pre><code>&gt;PCORE(8)[0:7].THREAD(4,4)[0:3][0:3].myclass::myvar(4,4)[0:3][0:3] &lt;= DDR(p)[0:8*16*16-1];</code></pre>
 <h4 id="2314-data-reordering">2.3.14 Data reordering</h4>
 <p>By default, the tensor data access order starts with index going from right to left.</p>
 <p>However, the order can be changed from the default by using FOR directive. The order starts with index without a corresponding FOR directive going from right to left and then the order continues with index with a corresponding FOR directive but in the order of the FOR directives going from right to left.</p>
 <p>In example below, the access pattern starts with PCORE component indexing and then J for thread component indexing and then K for myvar component indexing.</p>
-<pre><code>&gt;FOR(K=<span class="c-num">0</span>:<span class="c-num">3</span>) FOR(J=<span class="c-num">0</span>:<span class="c-num">1</span>) PCORE[<span class="c-num">0</span>:<span class="c-num">2</span>].THREAD[J].myclass::myvar[K] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">2</span>*<span class="c-num">3</span>*<span class="c-num">4</span>-<span class="c-num">1</span>];</code></pre>
+<pre><code>&gt;FOR(K=0:3) FOR(J=0:1) PCORE[0:2].THREAD[J].myclass::myvar[K] &lt;= DDR(p)[0:2*3*4-1];</code></pre>
 <p>The result of the transfer above is listed below</p>
-<pre><code>PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::myvar[<span class="c-num">0</span>] = p[<span class="c-num">0</span>]
-PCORE[<span class="c-num">1</span>].THREAD[<span class="c-num">0</span>].myclass::myvar[<span class="c-num">0</span>] = p[<span class="c-num">1</span>]
-PCORE[<span class="c-num">2</span>].THREAD[<span class="c-num">0</span>].myclass::myvar[<span class="c-num">0</span>] = p[<span class="c-num">2</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">1</span>].myclass::myvar[<span class="c-num">0</span>] = p[<span class="c-num">3</span>]
-PCORE[<span class="c-num">1</span>].THREAD[<span class="c-num">1</span>].myclass::myvar[<span class="c-num">0</span>] = p[<span class="c-num">4</span>]
-PCORE[<span class="c-num">2</span>].THREAD[<span class="c-num">1</span>].myclass::myvar[<span class="c-num">0</span>] = p[<span class="c-num">5</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::myvar[<span class="c-num">1</span>] = p[<span class="c-num">6</span>]
-PCORE[<span class="c-num">1</span>].THREAD[<span class="c-num">0</span>].myclass::myvar[<span class="c-num">1</span>] = p[<span class="c-num">7</span>]
-PCORE[<span class="c-num">2</span>].THREAD[<span class="c-num">0</span>].myclass::myvar[<span class="c-num">1</span>] = p[<span class="c-num">8</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">1</span>].myclass::myvar[<span class="c-num">1</span>] = p[<span class="c-num">9</span>]
-PCORE[<span class="c-num">1</span>].THREAD[<span class="c-num">1</span>].myclass::myvar[<span class="c-num">1</span>] = p[<span class="c-num">10</span>]
-PCORE[<span class="c-num">2</span>].THREAD[<span class="c-num">1</span>].myclass::myvar[<span class="c-num">1</span>] = p[<span class="c-num">11</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::myvar[<span class="c-num">2</span>] = p[<span class="c-num">12</span>]
-PCORE[<span class="c-num">1</span>].THREAD[<span class="c-num">0</span>].myclass::myvar[<span class="c-num">2</span>] = p[<span class="c-num">13</span>]
-PCORE[<span class="c-num">2</span>].THREAD[<span class="c-num">0</span>].myclass::myvar[<span class="c-num">2</span>] = p[<span class="c-num">14</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">1</span>].myclass::myvar[<span class="c-num">2</span>] = p[<span class="c-num">15</span>]
-PCORE[<span class="c-num">1</span>].THREAD[<span class="c-num">1</span>].myclass::myvar[<span class="c-num">2</span>] = p[<span class="c-num">16</span>]
-PCORE[<span class="c-num">2</span>].THREAD[<span class="c-num">1</span>].myclass::myvar[<span class="c-num">2</span>] = p[<span class="c-num">17</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::myvar[<span class="c-num">3</span>] = p[<span class="c-num">18</span>]
-PCORE[<span class="c-num">1</span>].THREAD[<span class="c-num">0</span>].myclass::myvar[<span class="c-num">3</span>] = p[<span class="c-num">19</span>]
-PCORE[<span class="c-num">2</span>].THREAD[<span class="c-num">0</span>].myclass::myvar[<span class="c-num">3</span>] = p[<span class="c-num">20</span>]
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">1</span>].myclass::myvar[<span class="c-num">3</span>] = p[<span class="c-num">21</span>]
-PCORE[<span class="c-num">1</span>].THREAD[<span class="c-num">1</span>].myclass::myvar[<span class="c-num">3</span>] = p[<span class="c-num">22</span>]
-PCORE[<span class="c-num">2</span>].THREAD[<span class="c-num">1</span>].myclass::myvar[<span class="c-num">3</span>] = p[<span class="c-num">23</span>]</code></pre>
+<pre><code>PCORE[0].THREAD[0].myclass::myvar[0] = p[0]
+PCORE[1].THREAD[0].myclass::myvar[0] = p[1]
+PCORE[2].THREAD[0].myclass::myvar[0] = p[2]
+PCORE[0].THREAD[1].myclass::myvar[0] = p[3]
+PCORE[1].THREAD[1].myclass::myvar[0] = p[4]
+PCORE[2].THREAD[1].myclass::myvar[0] = p[5]
+PCORE[0].THREAD[0].myclass::myvar[1] = p[6]
+PCORE[1].THREAD[0].myclass::myvar[1] = p[7]
+PCORE[2].THREAD[0].myclass::myvar[1] = p[8]
+PCORE[0].THREAD[1].myclass::myvar[1] = p[9]
+PCORE[1].THREAD[1].myclass::myvar[1] = p[10]
+PCORE[2].THREAD[1].myclass::myvar[1] = p[11]
+PCORE[0].THREAD[0].myclass::myvar[2] = p[12]
+PCORE[1].THREAD[0].myclass::myvar[2] = p[13]
+PCORE[2].THREAD[0].myclass::myvar[2] = p[14]
+PCORE[0].THREAD[1].myclass::myvar[2] = p[15]
+PCORE[1].THREAD[1].myclass::myvar[2] = p[16]
+PCORE[2].THREAD[1].myclass::myvar[2] = p[17]
+PCORE[0].THREAD[0].myclass::myvar[3] = p[18]
+PCORE[1].THREAD[0].myclass::myvar[3] = p[19]
+PCORE[2].THREAD[0].myclass::myvar[3] = p[20]
+PCORE[0].THREAD[1].myclass::myvar[3] = p[21]
+PCORE[1].THREAD[1].myclass::myvar[3] = p[22]
+PCORE[2].THREAD[1].myclass::myvar[3] = p[23]</code></pre>
 <h4 id="2315-concurrent-transfer">2.3.15 Concurrent transfer</h4>
 <p>pcores are VLIW vector processors that operate on data in vector units. Therefore, to be efficient, ztachip requires data to be in vector format.</p>
 <p>However, this restriction may not match application data format. And transferring scalar data is not efficient since transfer is done on one scalar element at a time instead of a whole vector at a time.</p>
@@ -513,67 +508,67 @@ PCORE[<span class="c-num">2</span>].THREAD[<span class="c-num">1</span>].myclass
 <p>CONCURRENT directive applies only to pcore tensors.</p>
 <p>However, concurrent transfers are only allowed for the 2 scenarios described in the following sub-sections.</p>
 <h5 id="23151-tensor-concurrent-transfer-scenario-1">2.3.15.1 Tensor concurrent transfer – scenario 1.</h5>
-<pre><code>&gt;FOR(I=<span class="c-num">0</span>:<span class="c-num">7</span>) PCORE(<span class="c-num">8</span>)[<span class="c-num">0</span>:<span class="c-num">7</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::myvar(<span class="c-num">8</span>,<span class="c-num">8</span>)[:][I] &lt;= DDR(p,<span class="c-num">1024</span>,<span class="c-num">8</span>)[<span class="c-num">0</span>:<span class="c-num">1023</span>][<span class="c-num">0</span>:<span class="c-num">7</span>];</code></pre>
+<pre><code>&gt;FOR(I=0:7) PCORE(8)[0:7].THREAD[0:15].myclass::myvar(8,8)[:][I] &lt;= DDR(p,1024,8)[0:1023][0:7];</code></pre>
 <p>We show below the accessing pattern resulting from tensor transfer instruction above. Note that it takes 8 clocks to set a vector unit from DDR tensor to pcore memory space since data access in vector mode to pcore memory space is not possible.</p>
-<pre><code>PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::myvar(<span class="c-num">8</span>,<span class="c-num">8</span>)[<span class="c-num">0</span>][<span class="c-num">0</span>] &lt;= p[<span class="c-num">0</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::myvar(<span class="c-num">8</span>,<span class="c-num">8</span>)[<span class="c-num">1</span>][<span class="c-num">0</span>] &lt;= p[<span class="c-num">1</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::myvar(<span class="c-num">8</span>,<span class="c-num">8</span>)[<span class="c-num">2</span>][<span class="c-num">0</span>] &lt;= p[<span class="c-num">2</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::myvar(<span class="c-num">8</span>,<span class="c-num">8</span>)[<span class="c-num">3</span>][<span class="c-num">0</span>] &lt;= p[<span class="c-num">3</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::myvar(<span class="c-num">8</span>,<span class="c-num">8</span>)[<span class="c-num">4</span>][<span class="c-num">0</span>] &lt;= p[<span class="c-num">4</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::myvar(<span class="c-num">8</span>,<span class="c-num">8</span>)[<span class="c-num">5</span>][<span class="c-num">0</span>] &lt;= p[<span class="c-num">5</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::myvar(<span class="c-num">8</span>,<span class="c-num">8</span>)[<span class="c-num">6</span>][<span class="c-num">0</span>] &lt;= p[<span class="c-num">6</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>].myclass::myvar(<span class="c-num">8</span>,<span class="c-num">8</span>)[<span class="c-num">7</span>][<span class="c-num">0</span>] &lt;= p[<span class="c-num">7</span>];
+<pre><code>PCORE[0].THREAD[0].myclass::myvar(8,8)[0][0] &lt;= p[0];
+PCORE[0].THREAD[0].myclass::myvar(8,8)[1][0] &lt;= p[1];
+PCORE[0].THREAD[0].myclass::myvar(8,8)[2][0] &lt;= p[2];
+PCORE[0].THREAD[0].myclass::myvar(8,8)[3][0] &lt;= p[3];
+PCORE[0].THREAD[0].myclass::myvar(8,8)[4][0] &lt;= p[4];
+PCORE[0].THREAD[0].myclass::myvar(8,8)[5][0] &lt;= p[5];
+PCORE[0].THREAD[0].myclass::myvar(8,8)[6][0] &lt;= p[6];
+PCORE[0].THREAD[0].myclass::myvar(8,8)[7][0] &lt;= p[7];
   :
   :</code></pre>
 <p>By adding CONCURRENT directive, the transfer is now rearranged and interleaved automatically among all the pcores so that the 8-clock access cycles are now overlapped between all the pcores.</p>
 <p>This way transfer above can still occur in vector mode at rate of 1 vector per clock.</p>
 <p>The transfer now becomes...</p>
-<pre><code>&gt;CONCURRENT FOR(I=<span class="c-num">0</span>:<span class="c-num">7</span>) PCORE(<span class="c-num">8</span>)[<span class="c-num">0</span>:<span class="c-num">7</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::myvar(<span class="c-num">8</span>,<span class="c-num">8</span>)[:][I] &lt;= DDR(p,<span class="c-num">1024</span>,<span class="c-num">8</span>)[<span class="c-num">0</span>:<span class="c-num">1023</span>][<span class="c-num">0</span>:<span class="c-num">7</span>];</code></pre>
+<pre><code>&gt;CONCURRENT FOR(I=0:7) PCORE(8)[0:7].THREAD[0:15].myclass::myvar(8,8)[:][I] &lt;= DDR(p,1024,8)[0:1023][0:7];</code></pre>
 <p>This type of concurrent transfers is very useful since it is a very common scenario when your data are not vectors but you like to group scalar data as elements of vectors for pcores to process them simultaneously in vector mode.</p>
 <h5 id="23152-tensor-concurrent-transfer-scenario-2">2.3.15.2 Tensor concurrent transfer – scenario 2</h5>
-<pre><code>&gt;FOR(I=<span class="c-num">0</span>:<span class="c-num">7</span>) FOR(J=<span class="c-num">0</span>:<span class="c-num">7</span>) PCORE(<span class="c-num">8</span>)[<span class="c-num">0</span>:<span class="c-num">7</span>].THREAD(<span class="c-num">2</span>,<span class="c-num">8</span>)[:][:].myclass::myvar[J] &lt;= DDR(p,<span class="c-num">1024</span>,<span class="c-num">8</span>)[<span class="c-num">0</span>:<span class="c-num">1023</span>][<span class="c-num">0</span>:<span class="c-num">7</span>];</code></pre>
+<pre><code>&gt;FOR(I=0:7) FOR(J=0:7) PCORE(8)[0:7].THREAD(2,8)[:][:].myclass::myvar[J] &lt;= DDR(p,1024,8)[0:1023][0:7];</code></pre>
 <p>We show below the accessing pattern resulting from tensor transfer instruction above. Note that it takes 8 clocks to set a vector unit from DDR tensor to pcore memory space.</p>
-<pre><code>PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>][<span class="c-num">0</span>].myclass::myvar[<span class="c-num">0</span>] &lt;= p[<span class="c-num">0</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>][<span class="c-num">1</span>].myclass::myvar[<span class="c-num">0</span>] &lt;= p[<span class="c-num">1</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>][<span class="c-num">2</span>].myclass::myvar[<span class="c-num">0</span>] &lt;= p[<span class="c-num">2</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>][<span class="c-num">3</span>].myclass::myvar[<span class="c-num">0</span>] &lt;= p[<span class="c-num">3</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>][<span class="c-num">4</span>].myclass::myvar[<span class="c-num">0</span>] &lt;= p[<span class="c-num">4</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>][<span class="c-num">5</span>].myclass::myvar[<span class="c-num">0</span>] &lt;= p[<span class="c-num">5</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>][<span class="c-num">6</span>].myclass::myvar[<span class="c-num">0</span>] &lt;= p[<span class="c-num">6</span>];
-PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>][<span class="c-num">7</span>].myclass::myvar[<span class="c-num">0</span>] &lt;= p[<span class="c-num">7</span>];
+<pre><code>PCORE[0].THREAD[0][0].myclass::myvar[0] &lt;= p[0];
+PCORE[0].THREAD[0][1].myclass::myvar[0] &lt;= p[1];
+PCORE[0].THREAD[0][2].myclass::myvar[0] &lt;= p[2];
+PCORE[0].THREAD[0][3].myclass::myvar[0] &lt;= p[3];
+PCORE[0].THREAD[0][4].myclass::myvar[0] &lt;= p[4];
+PCORE[0].THREAD[0][5].myclass::myvar[0] &lt;= p[5];
+PCORE[0].THREAD[0][6].myclass::myvar[0] &lt;= p[6];
+PCORE[0].THREAD[0][7].myclass::myvar[0] &lt;= p[7];
 :
 :</code></pre>
 <p>By adding CONCURRENT directive, the transfer is rearranged and interleaved among all the pcores so that the 8-clock access cycles are now overlapped between all the pcores.</p>
 <p>This way transfer can still occur in vector mode at rate of 1 vector per clock.</p>
 <p>The transfer now becomes...</p>
-<pre><code>&gt;CONCURRENT FOR(I=<span class="c-num">0</span>:<span class="c-num">7</span>) FOR(J=<span class="c-num">0</span>:<span class="c-num">7</span>) PCORE(<span class="c-num">8</span>)[<span class="c-num">0</span>:<span class="c-num">7</span>].THREAD(<span class="c-num">2</span>,<span class="c-num">8</span>)[:][:].myclass::myvar[J] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">8191</span>];</code></pre>
+<pre><code>&gt;CONCURRENT FOR(I=0:7) FOR(J=0:7) PCORE(8)[0:7].THREAD(2,8)[:][:].myclass::myvar[J] &lt;= DDR(p)[0:8191];</code></pre>
 <h5 id="23153-concurrent-transfer-with-scatter">2.3.15.3 Concurrent transfer with SCATTER</h5>
 <p>Concurrent transfer can also be initiated with SCATTER keyword.</p>
 <p>When CONCURRENT keyword is specified then the tensor transfer is being reordered automatically such that data access to PCORE memory space happen at the same time on all PCOREs.</p>
 <p>But with SCATTER keyword, the tensor transfer is not being reordered automatically but must be programmed correctly according to example below.</p>
 <p>Example below is found in SW/apps/llm/kernel/llm.m, THREAD indexing is the most inner-loop and PCORE indexing being just before THREAD indexing. This is necessary so that data fetching from different PCOREs can be performed simultaneously on all PCORES at same time.</p>
-<pre><code>&gt; FOR(J=<span class="c-num">0</span>:cnt2/NUM_PCORE-<span class="c-num">1</span>) FOR(L=<span class="c-num">0</span>:cnt4-<span class="c-num">1</span>) FOR(K=<span class="c-num">0</span>:NUM_PCORE-<span class="c-num">1</span>) FOR(I=<span class="c-num">0</span>:cnt3-<span class="c-num">1</span>) DTYPE(INT16)SCRATCH((<span class="c-key">uint32_t</span>)ws-&gt;sram_x2,NUM_PCORE,DOT_PRODUCT_N_BATCH/NUM_PCORE,DOT_PRODUCT_K_BATCH/<span class="c-num">4</span>,<span class="c-num">4</span>)[K][J][L][I]
+<pre><code>&gt; FOR(J=0:cnt2/NUM_PCORE-1) FOR(L=0:cnt4-1) FOR(K=0:NUM_PCORE-1) FOR(I=0:cnt3-1) DTYPE(INT16)SCRATCH((uint32_t)ws-&gt;sram_x2,NUM_PCORE,DOT_PRODUCT_N_BATCH/NUM_PCORE,DOT_PRODUCT_K_BATCH/4,4)[K][J][L][I]
 &gt; &lt;=
-&gt; FOR(K=<span class="c-num">0</span>:cnt2/NUM_PCORE-<span class="c-num">1</span>) FOR(L=<span class="c-num">0</span>:cnt4-<span class="c-num">1</span>) FOR(J=<span class="c-num">0</span>:NUM_PCORE-<span class="c-num">1</span>) FOR(I=<span class="c-num">0</span>:cnt3-<span class="c-num">1</span>) SCATTER DTYPE(INT16) PCORE[J].THREAD[I].llm_dotproduct::x[L][K];</code></pre>
+&gt; FOR(K=0:cnt2/NUM_PCORE-1) FOR(L=0:cnt4-1) FOR(J=0:NUM_PCORE-1) FOR(I=0:cnt3-1) SCATTER DTYPE(INT16) PCORE[J].THREAD[I].llm_dotproduct::x[L][K];</code></pre>
 <h4 id="2316-tensor-transfer-with-boundary-check-disabled">2.3.16 Tensor transfer with boundary check disabled.</h4>
 <p>Normally the dimension index is bounded by the tensor dimension. If index is out-of-bound, then a read operation is padded with zero and a write operation is skipped.</p>
 <p>However, you can disable this behaviour by adding &#x27;+&#x27; after tensor dimension.</p>
 <p>Example below shows DDR tensor that are accessed with index being out-of-bound.</p>
-<pre><code>&gt;PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">2</span>].myclass::myfunc.var[<span class="c-num">0</span>:<span class="c-num">3</span>] &lt;= DDR(p,<span class="c-num">100</span>,<span class="c-num">2</span>,<span class="c-num">2</span>)[<span class="c-num">0</span>][<span class="c-num">0</span>:<span class="c-num">2</span>][<span class="c-num">0</span>:<span class="c-num">3</span>];</code></pre>
+<pre><code>&gt;PCORE[0].THREAD[0:2].myclass::myfunc.var[0:3] &lt;= DDR(p,100,2,2)[0][0:2][0:3];</code></pre>
 <p>For example p[0][2][2] and p[0][2][3] are both out-of-bound.</p>
 <p>Now we disable boundary check on DDR tensor by adding a &#x27;+&#x27; after the dimension that we would like boundary check to be disabled.</p>
-<pre><code>&gt;PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">2</span>].myclass::myfunc.var[<span class="c-num">0</span>:<span class="c-num">3</span>] &lt;= DDR(p,<span class="c-num">100</span>,<span class="c-num">2</span>+,<span class="c-num">2</span>+)[<span class="c-num">0</span>][<span class="c-num">0</span>:<span class="c-num">2</span>][<span class="c-num">0</span>:<span class="c-num">3</span>];</code></pre>
+<pre><code>&gt;PCORE[0].THREAD[0:2].myclass::myfunc.var[0:3] &lt;= DDR(p,100,2+,2+)[0][0:2][0:3];</code></pre>
 <p>Now boundary check of the last 2 dimensions of DDR tensor is disabled. Read/Write access to out-of-bound index is carried out as if the index is valid.</p>
 <h4 id="2317-tensor-transfer-with-overlay-dimension">2.3.17 Tensor transfer with overlay dimension</h4>
 <p>Tensor can be defined to have an overlapping dimension definition.</p>
 <p>This is useful in-order to add additional boundary checks on the tensor read/write access.</p>
 <h5 id="23171-tensor-transfer-with-overlapped-dimension---example-1">2.3.17.1 Tensor transfer with overlapped dimension - Example 1</h5>
-<pre><code>DDR(p,<span class="c-num">1000</span>(<span class="c-num">100</span>,<span class="c-num">200</span>))[:][:]</code></pre>
+<pre><code>DDR(p,1000(100,200))[:][:]</code></pre>
 <p>Tensor above is defined as dimension 100x200 but also constrained as 1-D dimension 1000.</p>
 <p>Boundary check is performed on both dimension definitions.</p>
 <p>This tensor is being recognized in a tensor data transfer operation as a 100x200 tensor. The other dimension definition of 1000 is only for boundary check purposes.</p>
 <h5 id="23172-tensor-transfer-with-overlapped-dimension---example-2">2.3.17.2 Tensor transfer with overlapped dimension - Example 2</h5>
-<pre><code>DDR(p,<span class="c-num">32</span>,<span class="c-num">152</span>(<span class="c-num">10</span>,<span class="c-num">16</span>))[:][:]</code></pre>
+<pre><code>DDR(p,32,152(10,16))[:][:]</code></pre>
 <p>Tensor above is defined as dimension 32x10x16 but also as dimension 32x152</p>
 <p>Boundary check is performed on both dimension definitions.</p>
 <p>This tensor is being recognized in a tensor data transfer operation as a 32x10x16 tensor. The other dimension definition of 32x152 is only for boundary check purposes.</p>
@@ -583,7 +578,7 @@ PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>][<span c
 <p>Any out-of-bound write accesses are skipped.</p>
 <p>But you can set different padding values for out-of-bound read accesses with PAD keyword.</p>
 <p>In example below, any out-of-bound read accesses from DDR tensor are padded with 0xff instead of zero.</p>
-<pre><code>&gt;PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">2</span>].myclass::myfunc.var[<span class="c-num">0</span>:<span class="c-num">3</span>] &lt;= PAD(0xff) DDR(p,<span class="c-num">100</span>,<span class="c-num">2</span>,<span class="c-num">2</span>)[<span class="c-num">0</span>][<span class="c-num">0</span>:<span class="c-num">2</span>][<span class="c-num">0</span>:<span class="c-num">3</span>];</code></pre>
+<pre><code>&gt;PCORE[0].THREAD[0:2].myclass::myfunc.var[0:3] &lt;= PAD(0xff) DDR(p,100,2,2)[0][0:2][0:3];</code></pre>
 <h4 id="2319-tensor-transfer-data-types">2.3.19 Tensor transfer data types</h4>
 <p>DTYPE directive specifies the data type of the tensor used during a data transfer operation.</p>
 <p>Tensors data transfer can have the following data types</p>
@@ -596,17 +591,17 @@ PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>][<span c
 <p>When applied to a tensor in DDR memory space, DTYPE directive implies the data type of the tensor.</p>
 <p>When applied to a tensor from pcore memory space, since pcore memory data types are always INT16, DTYPE directive implies a data conversion when data are read or written to pcore memory space.</p>
 <p>Below is an example of tensor data transfer in UINT8 data format.</p>
-<pre><code>DTYPE(UINT8) PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">2</span>].myclass::var[<span class="c-num">0</span>:<span class="c-num">3</span>] &lt;= DTYPE(UINT8) DDR(p,<span class="c-num">100</span>,<span class="c-num">2</span>,<span class="c-num">2</span>)[<span class="c-num">0</span>][<span class="c-num">0</span>:<span class="c-num">2</span>][<span class="c-num">0</span>:<span class="c-num">3</span>];</code></pre>
+<pre><code>DTYPE(UINT8) PCORE[0].THREAD[0:2].myclass::var[0:3] &lt;= DTYPE(UINT8) DDR(p,100,2,2)[0][0:2][0:3];</code></pre>
 <p>or statement below will also have the same effects.</p>
-<pre><code><span class="c-key">int</span> fmt=UINT8;
+<pre><code>int fmt=UINT8;
 
-DTYPE(fmt) PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">2</span>].myclass::var[<span class="c-num">0</span>:<span class="c-num">3</span>] &lt;= DTYPE(fmt) DDR(p,<span class="c-num">100</span>,<span class="c-num">2</span>,<span class="c-num">2</span>)[<span class="c-num">0</span>][<span class="c-num">0</span>:<span class="c-num">2</span>][<span class="c-num">0</span>:<span class="c-num">3</span>];</code></pre>
+DTYPE(fmt) PCORE[0].THREAD[0:2].myclass::var[0:3] &lt;= DTYPE(fmt) DDR(p,100,2,2)[0][0:2][0:3];</code></pre>
 <h4 id="2320-tensor-data-transfer-in-repeat-mode">2.3.20 Tensor data transfer in REPEAT mode</h4>
 <p>Data transfer may run in repeat mode when REPEAT directive is specified.</p>
 <p>REPEAT keyword applies to source tensor only.</p>
 <p>When specified, data access from source tensor will be repeated until the destination tensor received all the requested amount of data.</p>
 <p>For example, below, var variables for all pcore and p-threads are filled with the same vector values from DDR(p)[0:3].</p>
-<pre><code>PCORE[<span class="c-num">0</span>:<span class="c-num">7</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::var[<span class="c-num">0</span>:<span class="c-num">3</span>] &lt;= REPEAT DDR(p)[<span class="c-num">0</span>:<span class="c-num">3</span>];</code></pre>
+<pre><code>PCORE[0:7].THREAD[0:15].myclass::var[0:3] &lt;= REPEAT DDR(p)[0:3];</code></pre>
 <h4 id="2321-tensor-data-remap">2.3.21 Tensor data remap</h4>
 <p>Transfer to/from PCORE memory space can go through a data remapping process.</p>
 <p>A stream processor performs lookup/interpolation translation from input values to output values as data are retrieved from or written to pcore&#x27;s memory space.</p>
@@ -614,35 +609,35 @@ DTYPE(fmt) PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</spa
 <p>Procedures to create and load these remap tables will be covered in later sections.</p>
 <p>There can be up to 4 different remap tables active at same time.</p>
 <h5 id="23211-tensor-data-remap-example-1">2.3.21.1 Tensor data remap – Example 1</h5>
-<pre><code>&gt; REMAP(<span class="c-num">0</span>) PCORE(NP)[<span class="c-num">0</span>:NP-<span class="c-num">1</span>].THREAD[<span class="c-num">0</span>:NT-<span class="c-num">1</span>].convolution.input[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DDR(pin)[<span class="c-num">0</span>:NP*NT*<span class="c-num">8</span>-<span class="c-num">1</span>];</code></pre>
+<pre><code>&gt; REMAP(0) PCORE(NP)[0:NP-1].THREAD[0:NT-1].convolution.input[0:7] &lt;= DDR(pin)[0:NP*NT*8-1];</code></pre>
 <p>In the example above, data just before being written to pcore&#x27;s memory space are being remapped by table 0</p>
 <h5 id="23212-tensor-data-remap-example-2">2.3.21.2 Tensor data remap – Example 2</h5>
-<pre><code>&gt; DDR(pout)[<span class="c-num">0</span>:NP*NT*<span class="c-num">8</span>-<span class="c-num">1</span>] &lt;= REMAP(<span class="c-num">1</span>) PCORE(NP)[<span class="c-num">0</span>:NP-<span class="c-num">1</span>].THREAD[<span class="c-num">0</span>:NT-<span class="c-num">1</span>].convolution.output[<span class="c-num">0</span>:<span class="c-num">7</span>];</code></pre>
+<pre><code>&gt; DDR(pout)[0:NP*NT*8-1] &lt;= REMAP(1) PCORE(NP)[0:NP-1].THREAD[0:NT-1].convolution.output[0:7];</code></pre>
 <p>In the example above, data retrieved from pcore&#x27;s memory space are being remapped by remap table 1</p>
 <h4 id="2322-barrier">2.3.22 BARRIER</h4>
 <p>Tensor data transfers may be executed out of order.</p>
 <p>However, when BARRIER directive is specified, then all transfers up to that point must be completed before any instructions after BARRIER can be executed.</p>
 <p>Example below, BARRIER is introduced to ensure data retrieval from myvar is completed before setting myvar with new values.</p>
-<pre><code>&gt;DDR(p)[<span class="c-num">0</span>:<span class="c-num">8</span>*<span class="c-num">16</span>*<span class="c-num">16</span>-<span class="c-num">1</span>] &lt;= PCORE(<span class="c-num">8</span>)[:].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::myvar[<span class="c-num">0</span>:<span class="c-num">15</span>];
+<pre><code>&gt;DDR(p)[0:8*16*16-1] &lt;= PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15];
 
 &gt;BARRIER;
 
-&gt;PCORE(<span class="c-num">8</span>)[:].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::myvar[<span class="c-num">0</span>:<span class="c-num">15</span>] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">8</span>*<span class="c-num">16</span>*<span class="c-num">16</span>-<span class="c-num">1</span>];</code></pre>
+&gt;PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15] &lt;= DDR(p)[0:8*16*16-1];</code></pre>
 <h4 id="2323-latest">2.3.23 LATEST</h4>
 <p>When LATEST directive is specified with a source tensor, then all pending writes to that source tensor must be completed first before the tensor can be used as source tensor for a data transfer operation.</p>
 <p>For example, below, the LATEST directive ensures that there are no outstanding write transactions to PCORE memory space before it can proceed with the instruction.</p>
-<pre><code>&gt;PCORE(<span class="c-num">8</span>)[:].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::myvar[<span class="c-num">0</span>:<span class="c-num">15</span>] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">8</span>*<span class="c-num">16</span>*<span class="c-num">16</span>-<span class="c-num">1</span>];
+<pre><code>&gt;PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15] &lt;= DDR(p)[0:8*16*16-1];
 
-&gt;DDR(p)[<span class="c-num">0</span>:<span class="c-num">8</span>*<span class="c-num">16</span>*<span class="c-num">16</span>-<span class="c-num">1</span>] &lt;= LATEST PCORE(<span class="c-num">8</span>)[:].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::myvar[<span class="c-num">0</span>:<span class="c-num">15</span>];</code></pre>
+&gt;DDR(p)[0:8*16*16-1] &lt;= LATEST PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15];</code></pre>
 <h4 id="2324-constant-filler">2.3.24 CONSTANT FILLER</h4>
 <p>You may fill destination tensor with a constant value.</p>
 <p>Constant may have types UINT8,INT8 or INT16.</p>
 <p>Example below fills pcore&#x27;s myvar variables with constant unsigned 8-bit value 0xAA.</p>
-<pre><code>&gt;DTYPE(UINT8) PCORE(<span class="c-num">8</span>)[:].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::myvar[<span class="c-num">0</span>:<span class="c-num">15</span>] &lt;= UINT8(0xAA);</code></pre>
+<pre><code>&gt;DTYPE(UINT8) PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15] &lt;= UINT8(0xAA);</code></pre>
 <p>Example below fills pcore&#x27;s myvar variables with constant signed 8-bit value 0x12.</p>
-<pre><code>&gt;DTYPE(INT8) PCORE(<span class="c-num">8</span>)[:].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::myvar[<span class="c-num">0</span>:<span class="c-num">15</span>] &lt;= INT8(0x12);</code></pre>
+<pre><code>&gt;DTYPE(INT8) PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15] &lt;= INT8(0x12);</code></pre>
 <p>Example below fills pcore&#x27;s myvar variables with constant signed 16-bit value 0x123.</p>
-<pre><code>&gt;DTYPE(INT16) PCORE(<span class="c-num">8</span>)[:].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::myvar[<span class="c-num">0</span>:<span class="c-num">15</span>] &lt;= INT16(0x123);</code></pre>
+<pre><code>&gt;DTYPE(INT16) PCORE(8)[:].THREAD[0:15].myclass::myvar[0:15] &lt;= INT16(0x123);</code></pre>
 <h3 id="24-tensor-operator-execution">2.4 Tensor operator execution</h3>
 <p>Tensor operators are functions defined in pcore programs. They perform numerical calculation on a set of tensors reside in pcore memory space. Tensor operators will be described in more details at later sections.</p>
 <p>tensor programs invoke tensor operators using the syntax described in the following sub-sections.</p>
@@ -652,12 +647,12 @@ DTYPE(fmt) PCORE[<span class="c-num">0</span>].THREAD[<span class="c-num">0</spa
 <p>Example below invokes a tensor operator defined as covolution::exe in pcore program</p>
 <pre><code>&gt; EXE_LOCKSTEP(convolution::exe);</code></pre>
 <p>Example below invokes the tensor operator but the execution is limited only to 4 pcores.</p>
-<pre><code>&gt; EXE_LOCKSTEP(convolution::exe,<span class="c-num">4</span>);</code></pre>
+<pre><code>&gt; EXE_LOCKSTEP(convolution::exe,4);</code></pre>
 <p>Example below invokes tensor operator but the execution is limited only to 4 p-cores and 8 p-threads per pcore.</p>
-<pre><code>&gt; EXE_LOCKSTEP(convolution::exe,<span class="c-num">4</span>,<span class="c-num">8</span>);</code></pre>
+<pre><code>&gt; EXE_LOCKSTEP(convolution::exe,4,8);</code></pre>
 <p>Example below invokes tensor operator in 2 steps. First a function pointer is computed and assigned to a 32-bit integer variable and then tensor operator is invoked via this function pointer. Example below will have similar effects as previous example.</p>
-<pre><code><span class="c-key">uint32_t</span> func;
-func=ztaBuildKernelFunc($convolution::exe,<span class="c-num">4</span>,<span class="c-num">8</span>);
+<pre><code>uint32_t func;
+func=ztaBuildKernelFunc($convolution::exe,4,8);
 &gt; EXE_LOCKSTEP(func);</code></pre>
 <p>ztaBuildKernelFunc will be covered in more details at later sections.</p>
 <h3 id="25-fpu-operators">2.5 FPU operators</h3>
@@ -669,7 +664,7 @@ func=ztaBuildKernelFunc($convolution::exe,<span class="c-num">4</span>,<span cla
 <h4 id="251-fpu-operators-definitions">2.5.1 FPU operators definitions</h4>
 <h5 id="2511-general-syntax">2.5.1.1 General syntax</h5>
 <p>FPU operators are issued from mcore programs with the following general syntax</p>
-<pre><code>FPU.[V].XXX.[YYY](https:<span class="c-com">//github.com/ztachip/ztachip/blob/master/Documentation/R=REP,P1=(type)V2[:STRIDE],P2=(type)V2[:STRIDE],...);</span></code></pre>
+<pre><code>FPU.[V].XXX.[YYY](https://github.com/ztachip/ztachip/blob/master/Documentation/R=REP,P1=(type)V2[:STRIDE],P2=(type)V2[:STRIDE],...);</code></pre>
 <table>
 <tr><th>Name</th><th>Description</th></tr>
 <tr><td>V</td><td>This FPU instruction is executed in vector mode.<br>Number of elements in a vector is configured as fpu_gen_max_c in HW/src/config.vhd.<br>When this parameters not present, then this FPU operation operates in scalar mode.</td></tr>
@@ -708,86 +703,86 @@ func=ztaBuildKernelFunc($convolution::exe,<span class="c-num">4</span>,<span cla
 <p>Syntax</p>
 <pre><code>&gt;FPU.MAC(N=n,Y=y,A=a,X1=x1,X2=x2,C=c);</code></pre>
 <p>performs the arithmetic below</p>
-<pre><code>y[i] = a[i] + x1[i]*x2[i]*c; i=<span class="c-num">0</span>..n-<span class="c-num">1</span></code></pre>
+<pre><code>y[i] = a[i] + x1[i]*x2[i]*c; i=0..n-1</code></pre>
 <h6 id="25121-fpuvmacabs">2.5.1.2.1 FPU.[V].MAC.ABS</h6>
 <p>ABS operator is applied to the results.</p>
 <p>Syntax</p>
 <pre><code>&gt;FPU.MAC.ABS(N=n,Y=y,A=a,X1=x1,X2=x2,C=c);</code></pre>
 <p>performs the arithmetic below</p>
-<pre><code>y[i] = ABS(a[i] + x1[i]*x2[i]*c); i=<span class="c-num">0</span>..n-<span class="c-num">1</span></code></pre>
+<pre><code>y[i] = ABS(a[i] + x1[i]*x2[i]*c); i=0..n-1</code></pre>
 <h6 id="25122-fpuvmacfloor">2.5.1.2.2 FPU.[V].MAC.FLOOR</h6>
 <p>FLOOR operator is applied to the results.</p>
 <p>Syntax</p>
 <pre><code>&gt;FPU.MAC.FLOOR(N=n,Y=y,A=a,X1=x1,X2=x2,C=c);</code></pre>
 <p>performs the arithmetic below</p>
-<pre><code>y[i] = FLOOR(ABS(a[i] + x1[i]*x2[i]*c)); i=<span class="c-num">0</span>..n-<span class="c-num">1</span></code></pre>
+<pre><code>y[i] = FLOOR(ABS(a[i] + x1[i]*x2[i]*c)); i=0..n-1</code></pre>
 <h5 id="2513-fpuvreciprocal">2.5.1.3 FPU.[V].RECIPROCAL</h5>
 <p>Syntax:</p>
 <pre><code>&gt;FPU.RECIPROCAL(N=n,Y=y,X=x);</code></pre>
 <p>Approximate the arithmetic below</p>
-<pre><code>y[i] = <span class="c-num">1</span>/x[i]; i=<span class="c-num">0</span>..n-<span class="c-num">1</span></code></pre>
+<pre><code>y[i] = 1/x[i]; i=0..n-1</code></pre>
 <p>This is normally used to provide the first approximation to Taylor expansion to y=1/x</p>
 <h5 id="2514-fpuvexp">2.5.1.4 FPU.[V].EXP</h5>
 <p>Syntax:</p>
 <pre><code>&gt;FPU.EXP(N=n,Y=y,X=x);</code></pre>
 <p>performs the approximation to arithmetic below</p>
-<pre><code>y[i] = exp(x[i]); i=<span class="c-num">0</span>..n-<span class="c-num">1</span></code></pre>
+<pre><code>y[i] = exp(x[i]); i=0..n-1</code></pre>
 <p>Note: x must be int8 or int8* data type.</p>
 <p>This is normally used to provide the first approximation to Taylor expansion to y=exp(x)</p>
 <h5 id="2515-fpuvfma">2.5.1.5 FPU.[V].FMA</h5>
 <p>Syntax:</p>
 <pre><code>&gt;FPU.FMA(N=n,Y=y,A=a,X1=x1,X2=x2);</code></pre>
 <p>performs the arithmetic below</p>
-<pre><code>y = a+SUM(x1[i]*y[i]); i=<span class="c-num">0</span>..n-<span class="c-num">1</span></code></pre>
+<pre><code>y = a+SUM(x1[i]*y[i]); i=0..n-1</code></pre>
 <h5 id="2516-fpuvsum">2.5.1.6 FPU.[V].SUM</h5>
 <p>Syntax:</p>
 <pre><code>&gt;FPU.SUM(N=n,Y=y,A=a,X=x);</code></pre>
 <p>performs the arithmetic below</p>
-<pre><code>y = a+SUM(x[i]); i=<span class="c-num">0</span>..n-<span class="c-num">1</span></code></pre>
+<pre><code>y = a+SUM(x[i]); i=0..n-1</code></pre>
 <h5 id="2517-fpuvmax">2.5.1.7 FPU.[V].MAX</h5>
 <p>Syntax:</p>
 <pre><code>&gt;FPU.MAX(N=n,Y=y,A=a,X=x);</code></pre>
 <p>performs the arithmetic below</p>
-<pre><code>y = MAX(a,MAX(x[i])); i=<span class="c-num">0</span>..n-<span class="c-num">1</span></code></pre>
+<pre><code>y = MAX(a,MAX(x[i])); i=0..n-1</code></pre>
 <h6 id="25171-fpuvmax-by-group">2.5.1.7.1 FPU.[V].MAX by group</h6>
 <p>Find a maximum value per sub-group in a group</p>
 <p>Syntax:</p>
 <pre><code>&gt;FPU.MAX(N=n,Y=y,G=g,X=x);</code></pre>
 <p>performs the arithmetic below</p>
-<pre><code>y[i] = MAX(x[i][j]); i=<span class="c-num">0</span>..n/g;j=<span class="c-num">0</span>..g-<span class="c-num">1</span>;</code></pre>
+<pre><code>y[i] = MAX(x[i][j]); i=0..n/g;j=0..g-1;</code></pre>
 <h4 id="252-fpu-memory-accessexecution-overlay">2.5.2 FPU memory-access/execution overlay</h4>
 <p>FPU operators use SCRATCH space for input and output data. Therefore data must be moved between DDR or PCORE memory space to/from SCRATCH memory space before FPU operators may start.</p>
 <p>FPU instructions are pending until all previous access to SCRATCH memory space, but only accesses associated with the same HART context as FPU&#x27;s HART context, are completed.</p>
 <p>Example below show method to overlap between FPU execution and memory transfer overhead.</p>
-<pre><code><span class="c-com">// This function is called for each HART context with pid=0 for first HART and</span>
-<span class="c-com">// pid=1 for second HART.</span>
+<pre><code>// This function is called for each HART context with pid=0 for first HART and
+// pid=1 for second HART.
 
-<span class="c-key">static</span> hart_func(<span class="c-key">void</span> *_req,<span class="c-key">int</span> pid)
+static hart_func(void *_req,int pid)
 {
-   <span class="c-com">// Copy data input to SCRATCH</span>
-   <span class="c-com">// Assign different SCRATCH space for each HART.</span>
+   // Copy data input to SCRATCH
+   // Assign different SCRATCH space for each HART.
 
    &gt;SCRATCH(...) &lt;= DDR(...);
 
-   <span class="c-com">// Now execute the some FPU operations.</span>
+   // Now execute the some FPU operations.
    &gt;FPU(...);
 
-   <span class="c-com">// Dont wait for FPU to be completed, switch to the other HART to do its memory</span>
-   <span class="c-com">// operations while FPU is busy.</span>
-   <span class="c-com">// There is no conflict if each HART uses different SCRATCH memory region.</span>
+   // Dont wait for FPU to be completed, switch to the other HART to do its memory
+   // operations while FPU is busy.
+   // There is no conflict if each HART uses different SCRATCH memory region.
 
    ztaTaskYield();
 
-   <span class="c-com">// The other HART context gives control back.</span>
-   <span class="c-com">// If FPU execution is done then move results to DDR memory.</span>
+   // The other HART context gives control back.
+   // If FPU execution is done then move results to DDR memory.
 
    DDR(...) &lt;= SCRATCH(...);
 }
 
-<span class="c-key">void</span> my_kernel()
+void my_kernel()
 {
-   <span class="c-com">// Launch the 2 HART</span>
-   ztaDualHartExecute(hart_func,<span class="c-num">0</span>);
+   // Launch the 2 HART
+   ztaDualHartExecute(hart_func,0);
 }</code></pre>
 <h4 id="253-fpu-grouping">2.5.3 FPU grouping</h4>
 <p>FPU operators may be grouped together so that they appear as a single instruction for mcore dispatcher.</p>
@@ -799,17 +794,17 @@ func=ztaBuildKernelFunc($convolution::exe,<span class="c-num">4</span>,<span cla
 &gt;FPU.FMA(N=n,Y=y2,A=a2,X1=x1,X2=x2)...;
 &gt;FPU.FMA(N=n,Y=y3,A=a3,X1=x1,X2=x2);</code></pre>
 <p>Example 2:</p>
-<pre><code><span class="c-com">// Since all 3 FPU operators appear as single instruction, mcore dispatcher is</span>
-<span class="c-com">// able to execute the last instruction even FPU execution has not been completed.</span>
-<span class="c-com">// If we don&#x27;t group the FPU operators, mcore dispatcher will not be able to see</span>
-<span class="c-com">// the last instruction since each of the FPU operators takes one instruction slot</span>
-<span class="c-com">// and the last instruction will be too deep into the instruction queue for mcore</span>
-<span class="c-com">// dispatcher to see.</span>
-<span class="c-com">// This is important for better concurrency and better performance.</span>
+<pre><code>// Since all 3 FPU operators appear as single instruction, mcore dispatcher is
+// able to execute the last instruction even FPU execution has not been completed.
+// If we don&#x27;t group the FPU operators, mcore dispatcher will not be able to see
+// the last instruction since each of the FPU operators takes one instruction slot
+// and the last instruction will be too deep into the instruction queue for mcore
+// dispatcher to see.
+// This is important for better concurrency and better performance.
 &gt;FPU.FMA(N=n,Y=y1,A=a1,X1=x1,X2=x2)...;
 &gt;FPU.FMA(N=n,Y=y2,A=a2,X1=x1,X2=x2)...;
 &gt;FPU.FMA(N=n,Y=y3,A=a3,X1=x1,X2=x2);
-&gt;PCORE(...) &lt;= DDR(...); <span class="c-com">// This instruction is executed even FPU still busy</span></code></pre>
+&gt;PCORE(...) &lt;= DDR(...); // This instruction is executed even FPU still busy</code></pre>
 <h3 id="26-host-supporting-functions">2.6 HOST SUPPORTING FUNCTIONS</h3>
 <p>Functions described in following sections are functions running on host processors in-order to support ztachip execution framework.</p>
 <h4 id="261-void-ztainit">2.6.1 void ztaInit()</h4>
@@ -848,8 +843,8 @@ func=ztaBuildKernelFunc($convolution::exe,<span class="c-num">4</span>,<span cla
 <p>Return value:</p>
 <p>Function pointer to the tensor operator.</p>
 <p>Example below shows how tensor operator is invoked via function pointer generated by this function.</p>
-<pre><code><span class="c-key">uint32_t</span> func;
-func=ztaBuildKernelFunc($convolution::exe,<span class="c-num">4</span>,<span class="c-num">8</span>);
+<pre><code>uint32_t func;
+func=ztaBuildKernelFunc($convolution::exe,4,8);
 &gt; EXE_LOCKSTEP(func);</code></pre>
 <h4 id="265-void-ztaallocsharedmemint-_size">2.6.5 void *ztaAllocSharedMem(int _size)</h4>
 <p>Allocates memory that will be used to share data between ztachip and host processor.</p>
@@ -889,20 +884,20 @@ func=ztaBuildKernelFunc($convolution::exe,<span class="c-num">4</span>,<span cla
 <p>First function set negative value to zero.</p>
 <p>Second function returns the absolute value of the input.</p>
 <pre><code>:
-P =  ztaBuildSpuBundle(<span class="c-num">2</span>,remap1,<span class="c-num">0</span>,<span class="c-num">0</span>,<span class="c-num">0</span>,remap2,<span class="c-num">0</span>,<span class="c-num">0</span>,<span class="c-num">0</span>);
+P =  ztaBuildSpuBundle(2,remap1,0,0,0,remap2,0,0,0);
 :
 
-<span class="c-key">int16_t</span> remap1(<span class="c-key">int16_t</span> input,<span class="c-key">void</span> *pparm,<span class="c-key">uint32_t</span> parm,<span class="c-key">uint32_t</span> parm2) {
-   <span class="c-key">if</span>(input &lt; <span class="c-num">0</span>)
-      <span class="c-key">return</span> <span class="c-num">0</span>;
-   <span class="c-key">else</span>
-      <span class="c-key">return</span> input;
+int16_t remap1(int16_t input,void *pparm,uint32_t parm,uint32_t parm2) {
+   if(input &lt; 0)
+      return 0;
+   else
+      return input;
 }
-<span class="c-key">int16_t</span> remap2(<span class="c-key">int16_t</span> input,<span class="c-key">void</span> *pparm,<span class="c-key">uint32_t</span> parm,<span class="c-key">uint32_t</span> parm2) {
-   <span class="c-key">if</span>(input &lt; <span class="c-num">0</span>)
-      <span class="c-key">return</span> -input;
-   <span class="c-key">else</span>
-      <span class="c-key">return</span> input;
+int16_t remap2(int16_t input,void *pparm,uint32_t parm,uint32_t parm2) {
+   if(input &lt; 0)
+      return -input;
+   else
+      return input;
 }</code></pre>
 <h4 id="268-void-ztainitpcoreuint16_t-_image">2.6.8 void ztaInitPcore(uint16_t *_image)</h4>
 <p>This function uploads pcore code images to pcore processors.</p>
@@ -997,21 +992,21 @@ P =  ztaBuildSpuBundle(<span class="c-num">2</span>,remap1,<span class="c-num">0
 <p>There are 3 tensors x,y,z associated with vector_math object. These tensors have 3 dimensions since they span all the pcores, and then span all the 16 p-threads for each pcore, and at each p-thread there is a vector variable of width 8 defined. If there are 4 pcores available, then x,y,z are tensors of dimension 4x16x8</p>
 <p>Tensor program can then assign tensor x,y with data from external memory. And then tensor program can save results from tensor z back to external memory.</p>
 <p>Tensor program can then invoke tensor operators vector_math::add and vector_math::subtract.</p>
-<pre><code><span class="c-com">// vector_math.p</span>
+<pre><code>// vector_math.p
 
-<span class="c-key">class</span> vector_math;
+class vector_math;
 
 vint16 vector_math::x;
 vint16 vector_math::y;
 vint16 vector_math::z;
 
-<span class="c-com">// Tensor operator for vector addition</span>
-_kernel_ <span class="c-key">void</span> vector_math::add()
+// Tensor operator for vector addition
+_kernel_ void vector_math::add()
 {
     z=x+y;
 }
-<span class="c-com">// Tensor operator for vector subtraction</span>
-_kernel_ <span class="c-key">void</span> vector_math::subtract()
+// Tensor operator for vector subtraction
+_kernel_ void vector_math::subtract()
 {
     z=x-y;
 }</code></pre>
@@ -1019,7 +1014,7 @@ _kernel_ <span class="c-key">void</span> vector_math::subtract()
 <p>All tensor operators and variables are grouped under object classes.</p>
 <p>Each class must be declared at beginning of the file.</p>
 <p>Example:</p>
-<pre><code><span class="c-key">class</span> vector_math; <span class="c-com">// Defines object class vector_math.</span></code></pre>
+<pre><code>class vector_math; // Defines object class vector_math.</code></pre>
 <h3 id="34-memory-layout">3.4 Memory layout</h3>
 <p>Different object classes are overplayed in memory allocation.</p>
 <p>Which means only one object class can be in use at a time.</p>
@@ -1030,85 +1025,85 @@ _kernel_ <span class="c-key">void</span> vector_math::subtract()
 <h5 id="3511-int16">3.5.1.1 int16</h5>
 <p>Scalar of 12-bit or 16-bit integer depending on ztachip configuration. This data type is used for math operations with vector ALU.</p>
 <p><em>Example:</em></p>
-<pre><code>int16 myclass::x; <span class="c-com">// variable of type int16 and belonged to object class myclass.</span></code></pre>
+<pre><code>int16 myclass::x; // variable of type int16 and belonged to object class myclass.</code></pre>
 <h5 id="3512-vint16">3.5.1.2 vint16</h5>
 <p>vector of 12-bit or 16-bit integers depending on ztachip configuration. This data type is used with vector ALU for math operations.</p>
 <p><em>Example:</em></p>
-<pre><code>vint16 myclass::x; <span class="c-com">// variable of type vint16 and belonged to class myclass.</span></code></pre>
+<pre><code>vint16 myclass::x; // variable of type vint16 and belonged to class myclass.</code></pre>
 <h5 id="3513-int32">3.5.1.3 int32</h5>
 <p>32-bit integer type. Variables of this type are used to hold accumulator computing values.</p>
 <p><em>Example:</em></p>
-<pre><code>int32 myclass::_A; <span class="c-com">// _A is a 32bit accumulator.</span></code></pre>
+<pre><code>int32 myclass::_A; // _A is a 32bit accumulator.</code></pre>
 <h5 id="3514-vint32">3.5.1.4 vint32</h5>
 <p>vector of 32-bit integer type. Variables of this type are used to hold accumulator computing values.</p>
 <p><em>Example:</em></p>
-<pre><code>vint32 myclass::_A; <span class="c-com">// _A is a vector of 32bit accumulator.</span></code></pre>
+<pre><code>vint32 myclass::_A; // _A is a vector of 32bit accumulator.</code></pre>
 <h5 id="3515-int">3.5.1.5 int</h5>
 <p>scalar 12-bit integer. This data type is used with scalar ALU. Variable of this type is normally not used for computation purposes but rather used for tasks such as loop index, array index, pointer...</p>
 <p><em>Example:</em></p>
-<pre><code><span class="c-key">int</span> myclass::i; <span class="c-com">// i is variable of type int and belonged to class myclass.</span></code></pre>
+<pre><code>int myclass::i; // i is variable of type int and belonged to class myclass.</code></pre>
 <h5 id="3516-int16">3.5.1.6 int16 *</h5>
 <p>pointer to an int16 variables.</p>
 <p><em>Example:</em></p>
-<pre><code>int16 * *myclass::p; <span class="c-com">// p is variable of type int16* and belonged to class myclass.</span></code></pre>
+<pre><code>int16 * *myclass::p; // p is variable of type int16* and belonged to class myclass.</code></pre>
 <h5 id="3517-vint16">3.5.1.7 vint16 *</h5>
 <p>Pointer to a vint16 variable.</p>
 <p><em>Example:</em></p>
-<pre><code>vint16 *myclass::p; <span class="c-com">// p is variable of type int16 * and belonged to class myclass.</span></code></pre>
+<pre><code>vint16 *myclass::p; // p is variable of type int16 * and belonged to class myclass.</code></pre>
 <h4 id="352-variable-types">3.5.2 Variable types</h4>
 <h5 id="3521-private-variables">3.5.2.1 Private variables</h5>
 <p>There is an instance of the variable allocated for each thread.</p>
 <p><em>Example1:</em></p>
-<pre><code><span class="c-com">// separate instance of my_private_variable are allocated for each p-thread</span>
+<pre><code>// separate instance of my_private_variable are allocated for each p-thread
 int16 myclass::my_private_variable;</code></pre>
 <p>If we have 4 pcores and there are 16 p-threads per pcore, tensor program would see the variable above as a tensor below:</p>
-<pre><code>int16 my_private_variable[<span class="c-num">4</span>][<span class="c-num">16</span>];</code></pre>
+<pre><code>int16 my_private_variable[4][16];</code></pre>
 <p>Example below shows how tensor program can set values to this tensor.</p>
-<pre><code>&gt;PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::my_private_variable &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">63</span>];</code></pre>
+<pre><code>&gt;PCORE(4)[0:3].THREAD[0:15].myclass::my_private_variable &lt;= DDR(p)[0:63];</code></pre>
 <p>Example2:</p>
-<pre><code><span class="c-com">// separate instance of my_private_variable are allocated for each p-thread</span>
+<pre><code>// separate instance of my_private_variable are allocated for each p-thread
 vint16 myclass::my_private_variable;</code></pre>
 <p>If we have 4 pcores and there are 16 p-threads per pcore and vector width is 8, then tensor program would see the variable above as a tensor below:</p>
-<pre><code>int16 my_private_variable[<span class="c-num">4</span>][<span class="c-num">16</span>][<span class="c-num">8</span>];</code></pre>
+<pre><code>int16 my_private_variable[4][16][8];</code></pre>
 <p>Example below shows how tensor program can set values to this tensor.</p>
-<pre><code>&gt;PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].myclass::my_private_variable[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">511</span>];</code></pre>
+<pre><code>&gt;PCORE(4)[0:3].THREAD[0:15].myclass::my_private_variable[0:7] &lt;= DDR(p)[0:511];</code></pre>
 <h5 id="3522-shared-variables">3.5.2.2 Shared variables</h5>
 <p>There is only one instance of the variable per pcore. The variable is shared among all the p-threads within the same pcore processor.</p>
 <p>Shared variables are preceded with keyword <code>_share</code></p>
 <p><em>Example1:</em></p>
-<pre><code><span class="c-com">// my_shared_variable is shared among all the p-threads in the same PCORE.</span>
+<pre><code>// my_shared_variable is shared among all the p-threads in the same PCORE.
 _share int16 myclass::my_shared_variable;</code></pre>
 <p>If we have 4 pcores, tensor program would see the variable above as a tensor below:</p>
-<pre><code>int16 my_shared_variable[<span class="c-num">4</span>];</code></pre>
+<pre><code>int16 my_shared_variable[4];</code></pre>
 <p>Example below shows how tensor program can set values to this tensor.</p>
-<pre><code>&gt;PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].myclass::my_shared_variable &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">3</span>];</code></pre>
+<pre><code>&gt;PCORE(4)[0:3].myclass::my_shared_variable &lt;= DDR(p)[0:3];</code></pre>
 <p>Example2:</p>
-<pre><code><span class="c-com">// my_shared_variable is shared among all the p-threads in the same PCORE.</span>
+<pre><code>// my_shared_variable is shared among all the p-threads in the same PCORE.
 _share vint16 myclass::my_shared_variable;</code></pre>
 <p>If we have 4 pcores and vector width is 8 then tensor program would see the variable above as a tensor below:</p>
-<pre><code>int16 my_shared_variable[<span class="c-num">4</span>][<span class="c-num">8</span>];</code></pre>
+<pre><code>int16 my_shared_variable[4][8];</code></pre>
 <p>Example below shows how tensor program can set values to this tensor.</p>
-<pre><code>&gt;PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].myclass::my_shared_variable[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">31</span>];</code></pre>
+<pre><code>&gt;PCORE(4)[0:3].myclass::my_shared_variable[0:7] &lt;= DDR(p)[0:31];</code></pre>
 <h5 id="3523-parameter-variables">3.5.2.3 Parameter variables</h5>
 <p>Tensor operators can have variables as function parameters.</p>
 <p>Example1:</p>
-<pre><code>_kernel_ <span class="c-key">void</span> vector_math::add(int16 x,int16 y,int16 z)
+<pre><code>_kernel_ void vector_math::add(int16 x,int16 y,int16 z)
 {
     z=x+y;
 }</code></pre>
 <p>x,y,z in example above are tensors declared as tensor operator parameters.</p>
 <p>If we have 4 pcores and 16 threads per pcore, then x,y,z are tensors with dimension 4x16</p>
 <p>And x is set from tensor program as followed:</p>
-<pre><code>&gt;PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].vector_math::add.x &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">63</span>];</code></pre>
+<pre><code>&gt;PCORE(4)[0:3].THREAD[0:15].vector_math::add.x &lt;= DDR(p)[0:63];</code></pre>
 <p><em>Example2:</em></p>
-<pre><code>_kernel_ <span class="c-key">void</span> vector_math::add(vint16 x,vint16 y,vint16 z)
+<pre><code>_kernel_ void vector_math::add(vint16 x,vint16 y,vint16 z)
 {
     z=x+y;
 }</code></pre>
 <p>x,y,z in example above are tensors declared as tensor operator parameter.</p>
 <p>If we have 4 pcores with 16 threads per pcore and vint16 are vector type with width=8, then x,y,z are tensors with dimension 4x16x8</p>
 <p>And x can be set from tensor program as followed:</p>
-<pre><code>&gt;PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].vector_math::add.x[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DDR(p)[<span class="c-num">0</span>:<span class="c-num">63</span>];</code></pre>
+<pre><code>&gt;PCORE(4)[0:3].THREAD[0:15].vector_math::add.x[0:7] &lt;= DDR(p)[0:63];</code></pre>
 <h5 id="3524-global-variables">3.5.2.4 Global variables</h5>
 <p>Variables of global scope are defined as function parameters with prefix _global.</p>
 <p>All pcores and p-threads shared the same global variables.</p>
@@ -1116,20 +1111,20 @@ _share vint16 myclass::my_shared_variable;</code></pre>
 <p>Global variables can be set by tensor programs as described in 2.3.5</p>
 <p>Global variables can only be of int type.</p>
 <p>Example:</p>
-<pre><code>_kernel_ <span class="c-key">void</span> vector_math::add(_global <span class="c-key">int</span> kk)
+<pre><code>_kernel_ void vector_math::add(_global int kk)
 {
     z[kk] = x[kk]+y[kk];
 }</code></pre>
 <p>In example above, parameter kk of tensor operator vector_math::add is shared among all pcores and p-threads.</p>
 <p>And tensor program would set parameter kk as followed:</p>
-<pre><code>&gt; vector_add::add.kk &lt;= INT16(<span class="c-num">2</span>); <span class="c-com">// Set kk=2</span></code></pre>
+<pre><code>&gt; vector_add::add.kk &lt;= INT16(2); // Set kk=2</code></pre>
 <h3 id="36-tensor-operators">3.6 Tensor operators</h3>
 <p>Tensor operators are functions that can be invoked by tensor programs. These functions have a void return type and preceded with keyword <code>_kernel_</code></p>
 <p>Tensor operators must be defined as an operation of a class as defined in 3.4</p>
 <p>They may optionally have an input parameter list. Parameter list are temporary variables that have a lifetime of the function call only.</p>
 <p>When another function being called, the parameter list of the new functions may overwrite the parameter variables of the previous function call.</p>
 <p>For example:</p>
-<pre><code>_kernel_ <span class="c-key">void</span> matrix::my_function(vint16 x,vint16 y)
+<pre><code>_kernel_ void matrix::my_function(vint16 x,vint16 y)
 {
      z=x+y;
 }</code></pre>
@@ -1141,63 +1136,63 @@ _share vint16 myclass::my_shared_variable;</code></pre>
 <p>Example:</p>
 <pre><code>vint16 x,y;
 
-_VMASK=<span class="c-num">1</span>;  <span class="c-com">// enables only the first lane of the vector ALU.</span>
-x=y;       <span class="c-com">// equivalent to x[0]=y[0];</span>
+_VMASK=1;  // enables only the first lane of the vector ALU.
+x=y;       // equivalent to x[0]=y[0];
 
-_VMASK=<span class="c-num">3</span>;  <span class="c-com">// enables the first and second lane of vector ALU.</span>
-x=y;       <span class="c-com">// Equivalent to x[0]=y[0];x[1]=y[1];</span>
+_VMASK=3;  // enables the first and second lane of vector ALU.
+x=y;       // Equivalent to x[0]=y[0];x[1]=y[1];
 
-_VMASK=-<span class="c-num">1</span>; <span class="c-com">// Enable all lanes</span>
-x=y;       <span class="c-com">// Equivalent to x[0]=y[0];x[1]=y[1];...;x[7]=y[7];</span></code></pre>
+_VMASK=-1; // Enable all lanes
+x=y;       // Equivalent to x[0]=y[0];x[1]=y[1];...;x[7]=y[7];</code></pre>
 <h3 id="38-comparison-operators">3.8 COMPARISON OPERATORS</h3>
 <p>Since p-cores are all executed in lock-step mode, comparison operators described in subsequent sections are alternative ways to have conditional execution.</p>
 <h4 id="381-gev1v2">3.8.1 GE(v1,v2)</h4>
 <p>Test for v1 &gt;= v2. Result is an integer where each bit corresponds to condition being true for the vector lane.</p>
 <p>Return value is an int type. The result is normally assigned to _VMASK.</p>
 <p>Example:</p>
-<pre><code><span class="c-com">// Doing element wise comparison of vector v1 and v2</span>
+<pre><code>// Doing element wise comparison of vector v1 and v2
 _VMASK=GE(v1,v2);
-<span class="c-com">// Set v1 elements to v2 elements if v1 element if greater or equal to v2 element.</span>
+// Set v1 elements to v2 elements if v1 element if greater or equal to v2 element.
 v1=v2;</code></pre>
 <h4 id="382-gtv1v2">3.8.2 GT(v1,v2)</h4>
 <p>Test for v1 &gt; v2. Result is an integer where each bit corresponds to condition being true for the vector lane.</p>
 <p>Return value is an int type. The result is normally assigned to _VMASK.</p>
 <p>For example:</p>
-<pre><code><span class="c-com">// Doing element wise comparison of vector v1 and v2</span>
+<pre><code>// Doing element wise comparison of vector v1 and v2
 _VMASK=GT(v1,v2);
-<span class="c-com">// Set v1 elements to v2 elements if v1 element if greater than v2 element.</span>
+// Set v1 elements to v2 elements if v1 element if greater than v2 element.
 v1=v2;</code></pre>
 <h4 id="383-lev1v2">3.8.3 LE(v1,v2)</h4>
 <p>Test for v1 &lt;= v2. Result is an integer where each bit corresponds to condition being true for the vector lane.</p>
 <p>Return value is an int type. The result is normally assigned to _VMASK.</p>
 <p>For example:</p>
-<pre><code><span class="c-com">// Doing element wise comparison of vector v1 and v2</span>
+<pre><code>// Doing element wise comparison of vector v1 and v2
 _VMASK=LE(v1,v2);
-<span class="c-com">// Set v1 elements to v2 elements if v1 element if less than or equal to v2 element.</span>
+// Set v1 elements to v2 elements if v1 element if less than or equal to v2 element.
 v1=v2;</code></pre>
 <h4 id="384-ltv1v2">3.8.4 LT(v1,v2)</h4>
 <p>Test for v1 &lt; v2. Result is an integer where each bit corresponds to condition being true for the vector lane.</p>
 <p>Return value is an int type. The result is normally assigned to _VMASK.</p>
 <p>For example:</p>
-<pre><code><span class="c-com">// Doing element wise comparison of vector v1 and v2</span>
+<pre><code>// Doing element wise comparison of vector v1 and v2
 _VMASK=LT(v1,v2);
-<span class="c-com">// Set v1 elements to v2 elements if v1 element if less than v2 element.</span>
+// Set v1 elements to v2 elements if v1 element if less than v2 element.
 v1=v2;</code></pre>
 <h4 id="385-eqv1v2">3.8.5 EQ(v1,v2)</h4>
 <p>Test for v1 == v2. Result is an integer where each bit corresponds to condition being true for the vector lane.</p>
 <p>Return value is an int type. The result is normally assigned to _VMASK.</p>
 <p>For example:</p>
-<pre><code><span class="c-com">// Doing element wise comparison of vector v1 and v2</span>
+<pre><code>// Doing element wise comparison of vector v1 and v2
 _VMASK=EQ(v1,v2);
-<span class="c-com">// Set v1 elements to v2 elements if v1 element if is equalled to v2 element.</span>
+// Set v1 elements to v2 elements if v1 element if is equalled to v2 element.
 v1=v2;</code></pre>
 <h4 id="386-nev1v2">3.8.6 NE(v1,v2)</h4>
 <p>Test for v1 != v2. Result is an integer where each bit corresponds to condition being true for the vector lane.</p>
 <p>Return value is an int type. The result is normally assigned to _VMASK.</p>
 <p>For example:</p>
-<pre><code><span class="c-com">// Doing element wise comparison of vector v1 and v2</span>
+<pre><code>// Doing element wise comparison of vector v1 and v2
 _VMASK=NE(v1,v2);
-<span class="c-com">// Set v1 elements to v2 elements if v1 element not equal to v2 element.</span>
+// Set v1 elements to v2 elements if v1 element not equal to v2 element.
 v1=v2;</code></pre>
 <h3 id="39-floating-point-operators">3.9 FLOATING POINT OPERATORS</h3>
 <h4 id="391-conv_float">3.9.1 CONV_FLOAT</h4>
@@ -1206,12 +1201,12 @@ v1=v2;</code></pre>
 <p>The generated 16-bit float format is proprietary with the format below</p>
 <pre><code>Format: SEEEEMMMMMMMMMMM
 S: sign bit
-E: <span class="c-num">4</span>-bit exponent
-M : <span class="c-num">11</span>-bit mantissa
-IF E=<span class="c-num">0</span>
+E: 4-bit exponent
+M : 11-bit mantissa
+IF E=0
     number = 0MMMMMMMMMMM
 ELSE
-    number = 1MMMMMMMMMMM x <span class="c-num">2</span>**(EEEE)</code></pre>
+    number = 1MMMMMMMMMMM x 2**(EEEE)</code></pre>
 <h3 id="310-subfield-operators">3.10 SUBFIELD OPERATORS</h3>
 <h4 id="3101-n0-n1">3.10.1 N0-N1</h4>
 <p>This function extracts a nibble value from a word int16</p>
@@ -1266,40 +1261,40 @@ ELSE
 <li>pcore program implemented in example.p</li>
 </ul>
 <h4 id="611-tensor-program-code-examplem">6.1.1 Tensor program code (example.m)</h4>
-<pre><code><span class="c-com">// This file contains the pcore binary image generated when example.p being compiled.</span>
-<span class="c-com">#include &quot;example.p.img&quot;</span>
+<pre><code>// This file contains the pcore binary image generated when example.p being compiled.
+#include &quot;example.p.img&quot;
 
-<span class="c-key">void</span> do_vector_add(<span class="c-key">int16_t</span> *x,<span class="c-key">int16_t</span> *y,<span class="c-key">int16_t</span> *z,<span class="c-key">int</span> len) {
-   <span class="c-key">uint32_t</span> resp;
-   <span class="c-com">// Load pcore binary image</span>
+void do_vector_add(int16_t *x,int16_t *y,int16_t *z,int len) {
+   uint32_t resp;
+   // Load pcore binary image
    ztaInitPcore(zta_pcore_img);
-   <span class="c-key">for</span>(i=<span class="c-num">0</span>;i &lt; len;i += <span class="c-num">512</span>) {
-      <span class="c-com">// Load x tensor from DDR memory to pcore memory space</span>
-      &gt;DTYPE(INT16)PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].example::x[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DTYPE(INT16)DDR(x,len)[i:i+<span class="c-num">511</span>];
-      <span class="c-com">// Load y tensor from DDR memory to pcore memory space</span>
-      &gt;DTYPE(INT16)PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].example::y[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DTYPE(INT16)DDR(y,len)[i:i+<span class="c-num">511</span>];
-      <span class="c-com">// Execute tensor operator example::add</span>
+   for(i=0;i &lt; len;i += 512) {
+      // Load x tensor from DDR memory to pcore memory space
+      &gt;DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::x[0:7] &lt;= DTYPE(INT16)DDR(x,len)[i:i+511];
+      // Load y tensor from DDR memory to pcore memory space
+      &gt;DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::y[0:7] &lt;= DTYPE(INT16)DDR(y,len)[i:i+511];
+      // Execute tensor operator example::add
       &gt;EXE_LOCKSTEP(example::add);
-      <span class="c-com">// Save result tensor z from pcore memory space to DDR memory.</span>
-      DTYPE(INT16)DDR(z,len)[i:i+<span class="c-num">511</span>] &lt;= DTYPE(INT16)PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].example::z[<span class="c-num">0</span>:<span class="c-num">7</span>];
+      // Save result tensor z from pcore memory space to DDR memory.
+      DTYPE(INT16)DDR(z,len)[i:i+511] &lt;= DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::z[0:7];
    }
-   <span class="c-com">// The job is all submitted at this point but not necessarily executed yet.</span>
-   ztaJobDone(<span class="c-num">0</span>);
-   <span class="c-com">// Wait for ztachip to indicate that the execution is completed.</span>
-   <span class="c-key">while</span>(!ztaReadResponse(&amp;resp));
+   // The job is all submitted at this point but not necessarily executed yet.
+   ztaJobDone(0);
+   // Wait for ztachip to indicate that the execution is completed.
+   while(!ztaReadResponse(&amp;resp));
 }</code></pre>
 <h4 id="612-pcore-program-code-examplep">6.1.2 pcore program code (example.p)</h4>
-<pre><code><span class="c-com">// Declare class</span>
-<span class="c-key">class</span> example;
-<span class="c-com">// x tensor allocated in pcore private memory space</span>
+<pre><code>// Declare class
+class example;
+// x tensor allocated in pcore private memory space
 vint16_t example::x;
-<span class="c-com">// y tensor allocated in pcore private memory space</span>
+// y tensor allocated in pcore private memory space
 vint16_t example::y;
-<span class="c-com">// z tensor allocated in pcore private memory space</span>
+// z tensor allocated in pcore private memory space
 vint16_t example::z;
 
-<span class="c-com">// Tensor operator for vector addition</span>
-_kernel_ <span class="c-key">void</span> example::add() {
+// Tensor operator for vector addition
+_kernel_ void example::add() {
    z=x+y;
 }</code></pre>
 <h3 id="62-example-running-dual-tensor-threads">6.2 Example running dual tensor-threads</h3>
@@ -1312,110 +1307,110 @@ _kernel_ <span class="c-key">void</span> example::add() {
 <li>pcore program implemented in example.p</li>
 </ul>
 <h4 id="621-examplem">6.2.1 example.m</h4>
-<pre><code><span class="c-com">// This file contains the pcore binary image generated when example.p being compiled.</span>
-<span class="c-com">#include &quot;example.p.img&quot;</span>
+<pre><code>// This file contains the pcore binary image generated when example.p being compiled.
+#include &quot;example.p.img&quot;
 
-<span class="c-key">typedef</span> <span class="c-key">struct</span> {
-   <span class="c-key">int16_t</span> *x;
-   <span class="c-key">int16_t</span> *y;
-   <span class="c-key">int16_t</span> *z;
-   <span class="c-key">int</span> len;
+typedef struct {
+   int16_t *x;
+   int16_t *y;
+   int16_t *z;
+   int len;
 } REQUEST;
 
-<span class="c-key">void</span> do_vector_add(<span class="c-key">int16_t</span> *x,<span class="c-key">int16_t</span> *y,<span class="c-key">int16_t</span> *z,<span class="c-key">int</span> len) {
+void do_vector_add(int16_t *x,int16_t *y,int16_t *z,int len) {
    REQUEST req = {x,y,z,len};
-   <span class="c-com">// Load pcore binary image</span>
+   // Load pcore binary image
    ztaInitPcore(zta_pcore_img);
-   <span class="c-com">// Launch dual threads with each emitting tensor instructions to one of the 2 tensor-threads</span>
+   // Launch dual threads with each emitting tensor instructions to one of the 2 tensor-threads
    ztaDualHartExecute(thread_entry_point,&amp;req);
-   <span class="c-com">// The job is all submitted at this point but not necessarily executed yet.</span>
+   // The job is all submitted at this point but not necessarily executed yet.
    ztaJobDone(_req_id);
-   <span class="c-com">// Wait for ztachip to indicate that the execution is completed.</span>
-   <span class="c-key">while</span>(!ztaReadResponse(&amp;resp));
+   // Wait for ztachip to indicate that the execution is completed.
+   while(!ztaReadResponse(&amp;resp));
 }
 
-<span class="c-com">// Thread entry function. We have 2 threads matching the 2 tensor threads.</span>
-<span class="c-key">void</span> thread_entry_point(<span class="c-key">void</span> *p,<span class="c-key">int</span> pid) {
+// Thread entry function. We have 2 threads matching the 2 tensor threads.
+void thread_entry_point(void *p,int pid) {
    REQUEST *req=(REQUEST *)p;
-   <span class="c-com">// First thread takes the first half of vector, second thread takes bottom half</span>
-   <span class="c-key">for</span>(i=(pid==<span class="c-num">0</span>)?<span class="c-num">0</span>:req-&gt;len/<span class="c-num">2</span>;i &lt; (pid==<span class="c-num">0</span>)?req-&gt;len/<span class="c-num">2</span>:req-&gt;len;i += <span class="c-num">512</span>) {
-      <span class="c-com">// Load x,y tensors from DDR memory to pcore memory space</span>
-      &gt;DTYPE(INT16)PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].example::x[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DTYPE(INT16)DDR(x)[i:i+<span class="c-num">511</span>];
-      &gt;DTYPE(INT16)PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].example::y[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DTYPE(INT16)DDR(y)[i:i+<span class="c-num">511</span>];
-      <span class="c-com">// Execute tensor operator example::add</span>
+   // First thread takes the first half of vector, second thread takes bottom half
+   for(i=(pid==0)?0:req-&gt;len/2;i &lt; (pid==0)?req-&gt;len/2:req-&gt;len;i += 512) {
+      // Load x,y tensors from DDR memory to pcore memory space
+      &gt;DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::x[0:7] &lt;= DTYPE(INT16)DDR(x)[i:i+511];
+      &gt;DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::y[0:7] &lt;= DTYPE(INT16)DDR(y)[i:i+511];
+      // Execute tensor operator example::add
       &gt;EXE_LOCKSTEP(example::add);
-      <span class="c-com">// Yield control for the other thread to take control</span>
+      // Yield control for the other thread to take control
       ztaTaskYield();
-      <span class="c-com">// Save result tensor z from pcore memory space to DDR memory.</span>
-      <span class="c-com">// First thread saves first half of vector result, second thread saves bottom half of vector result</span>
-      &gt;DTYPE(INT16)DDR(z,(pid==<span class="c-num">0</span>)?req-&gt;len/<span class="c-num">2</span>:req-&gt;len)[i:i+<span class="c-num">511</span>] &lt;=
-      &gt;DTYPE(INT16)PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].example::z[<span class="c-num">0</span>:<span class="c-num">7</span>];
+      // Save result tensor z from pcore memory space to DDR memory.
+      // First thread saves first half of vector result, second thread saves bottom half of vector result
+      &gt;DTYPE(INT16)DDR(z,(pid==0)?req-&gt;len/2:req-&gt;len)[i:i+511] &lt;=
+      &gt;DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::z[0:7];
    }
 }</code></pre>
 <h4 id="622-pcore-program-code-examplep">6.2.2 pcore program code (example.p)</h4>
-<pre><code><span class="c-com">// Declare class</span>
-<span class="c-key">class</span> example;
-<span class="c-com">// x tensor allocated in pcore private memory space</span>
+<pre><code>// Declare class
+class example;
+// x tensor allocated in pcore private memory space
 vint16_t example::x;
-<span class="c-com">// y tensor allocated in pcore private memory space</span>
+// y tensor allocated in pcore private memory space
 vint16_t example::y;
-<span class="c-com">// z tensor allocated in pcore private memory space</span>
+// z tensor allocated in pcore private memory space
 vint16_t example::z;
 
-<span class="c-com">// Tensor operator for vector addition</span>
-_kernel_ <span class="c-key">void</span> example::add() {
+// Tensor operator for vector addition
+_kernel_ void example::add() {
    z=x+y;
 }</code></pre>
 <h3 id="63-example-of-using-tensor-data-remap-function">6.3 Example of using tensor data-remap function.</h3>
 <p>This example also performs vector addition like previous examples. However, we also divide the result by 3. The division step is performed by tensor data-remapping.</p>
 <h4 id="631-tensor-program-code-examplem">6.3.1 Tensor program code (example.m)</h4>
-<pre><code><span class="c-com">// This file contains the pcore binary image generated when example.p being compiled.</span>
-<span class="c-com">#include &quot;example.p.img&quot;</span>
+<pre><code>// This file contains the pcore binary image generated when example.p being compiled.
+#include &quot;example.p.img&quot;
 
-<span class="c-com">// Remap function. Divide input by 2</span>
-<span class="c-key">int16_t</span> remap_func(<span class="c-key">int16_t</span> <span class="c-key">in</span>,<span class="c-key">void</span> *,<span class="c-key">uint32_t</span>,<span class="c-key">uint32_t</span>) {
-   <span class="c-key">return</span> <span class="c-key">in</span>/<span class="c-num">3</span>;
+// Remap function. Divide input by 2
+int16_t remap_func(int16_t in,void *,uint32_t,uint32_t) {
+   return in/3;
 }
 
-<span class="c-key">void</span> do_vector_add(<span class="c-key">int16_t</span> *x,<span class="c-key">int16_t</span> *y,<span class="c-key">int16_t</span> *z,<span class="c-key">int</span> len) {
-   <span class="c-key">uint32_t</span> resp;
-   <span class="c-key">void</span> *lookup;
-   <span class="c-com">// Load pcore binary image</span>
+void do_vector_add(int16_t *x,int16_t *y,int16_t *z,int len) {
+   uint32_t resp;
+   void *lookup;
+   // Load pcore binary image
    ztaInitPcore(zta_pcore_img);
-   <span class="c-com">// Build lookup table</span>
-   lookup=ztaBuildSpuBundle(<span class="c-num">1</span>,remap_func,<span class="c-num">0</span>,<span class="c-num">0</span>,<span class="c-num">0</span>);
-   <span class="c-com">// Load lookup table</span>
+   // Build lookup table
+   lookup=ztaBuildSpuBundle(1,remap_func,0,0,0);
+   // Load lookup table
    ztaInitStream(lookup);
 
-   <span class="c-key">for</span>(i=<span class="c-num">0</span>;i &lt; len;i += <span class="c-num">512</span>) {
-      <span class="c-com">// Load x tensor from DDR memory to pcore memory space</span>
-      &gt;DTYPE(INT16)PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].example::x[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DTYPE(INT16)DDR(x,len)[i:i+<span class="c-num">511</span>];
-      <span class="c-com">// Load y tensor from DDR memory to pcore memory space</span>
-      &gt;DTYPE(INT16)PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].example::y[<span class="c-num">0</span>:<span class="c-num">7</span>] &lt;= DTYPE(INT16)DDR(y,len)[i:i+<span class="c-num">511</span>];
-      <span class="c-com">// Execute tensor operator example::add</span>
+   for(i=0;i &lt; len;i += 512) {
+      // Load x tensor from DDR memory to pcore memory space
+      &gt;DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::x[0:7] &lt;= DTYPE(INT16)DDR(x,len)[i:i+511];
+      // Load y tensor from DDR memory to pcore memory space
+      &gt;DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::y[0:7] &lt;= DTYPE(INT16)DDR(y,len)[i:i+511];
+      // Execute tensor operator example::add
       &gt;EXE_LOCKSTEP(example::add);
-      <span class="c-com">// Save result tensor z from pcore memory space to DDR memory.</span>
-      <span class="c-com">// Also performing data-remapping of the result using REMAP directive.</span>
-      DTYPE(INT16)DDR(z,len)[i:i+<span class="c-num">511</span>] &lt;= REMAP(<span class="c-num">0</span>)DTYPE(INT16)PCORE(<span class="c-num">4</span>)[<span class="c-num">0</span>:<span class="c-num">3</span>].THREAD[<span class="c-num">0</span>:<span class="c-num">15</span>].example::z[<span class="c-num">0</span>:<span class="c-num">7</span>];
+      // Save result tensor z from pcore memory space to DDR memory.
+      // Also performing data-remapping of the result using REMAP directive.
+      DTYPE(INT16)DDR(z,len)[i:i+511] &lt;= REMAP(0)DTYPE(INT16)PCORE(4)[0:3].THREAD[0:15].example::z[0:7];
    }
-   <span class="c-com">// The job is all submitted at this point but not necessarily executed yet.</span>
-   ztaJobDone(<span class="c-num">0</span>);
-   <span class="c-com">// Wait for ztachip to indicate that the execution is completed.</span>
-   <span class="c-key">while</span>(!ztaReadResponse(&amp;resp));
+   // The job is all submitted at this point but not necessarily executed yet.
+   ztaJobDone(0);
+   // Wait for ztachip to indicate that the execution is completed.
+   while(!ztaReadResponse(&amp;resp));
    ztaFreeSharedMem(lookup);
 }</code></pre>
 <h4 id="632-pcore-program-code-examplep">6.3.2 pcore program code (example.p)</h4>
-<pre><code><span class="c-com">// Declare class</span>
-<span class="c-key">class</span> example;
-<span class="c-com">// x tensor allocated in pcore private memory space</span>
+<pre><code>// Declare class
+class example;
+// x tensor allocated in pcore private memory space
 vint16_t example::x;
-<span class="c-com">// y tensor allocated in pcore private memory space</span>
+// y tensor allocated in pcore private memory space
 vint16_t example::y;
-<span class="c-com">// z tensor allocated in pcore private memory space</span>
+// z tensor allocated in pcore private memory space
 vint16_t example::z;
 
-<span class="c-com">// Tensor operator for vector addition</span>
-_kernel_ <span class="c-key">void</span> example::add() {
+// Tensor operator for vector addition
+_kernel_ void example::add() {
    z=x+y;
 }</code></pre>
 <h3 id="64-more-examples">6.4 More examples</h3>

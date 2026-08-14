@@ -28,11 +28,6 @@ code { background:#e4e6e8; color:#1f2328; padding:1px 4px; border-radius:4px;
        font-family:'Cascadia Code',Consolas,'Liberation Mono',monospace;
        font-size:13px; }
 
-.c-com { color:#6a737d; font-style:italic; }
-.c-str { color:#032f62; }
-.c-key { color:#d73a49; }
-.c-num { color:#005cc5; }
-.c-pre { color:#e36209; }
 
 table { border-collapse:collapse; margin:8px 0 16px 0; }
 th, td { border:1px solid #c9ced4; padding:6px 10px; vertical-align:top; }
@@ -249,7 +244,7 @@ details > summary { cursor:pointer; }
 <p><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/stream.vhd">stream</a> performs data mapping on data just before it is written to pcore&#x27;s memory space.</p>
 <p><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/stream.vhd">stream</a> also performs data mapping on data just after it is read from pcore&#x27;s memory space.</p>
 <p>The data mapping is realized using the formula below</p>
-<pre><code>y = lookup_quotient[x[<span class="c-num">11</span>:<span class="c-num">5</span>]] + x[<span class="c-num">4</span>:<span class="c-num">0</span>]* lookup_remainder[x[<span class="c-num">4</span>:<span class="c-num">0</span>]]</code></pre>
+<pre><code>y = lookup_quotient[x[11:5]] + x[4:0]* lookup_remainder[x[4:0]]</code></pre>
 <p>Effectively, the formula above provides a multi-point linear-interpolation between input and output.</p>
 <p>stream provides up to 4 different data-mapping functions at the same time. The parameter stream_id_in selects which data mapping to be performed.</p>
 <p>stream is very commonly used in AI applications to perform activation functions as data being written back to memory.</p>
@@ -292,7 +287,7 @@ details > summary { cursor:pointer; }
 <p><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/register_bank.vhd">register_bank</a>.</p>
 <p>Since all the functions above are simultaneously performed in one single VLIW instruction, the instruction pipeline is as long as 14 clocks. However, with hardware multi-threading execution, each stage of the execution pipeline is occupied by different threads. Therefore we have an effective execution rate of one VLIW instruction per clock per pcore.</p>
 <p>For example, the code below is compiled into one single VLIW instruction. All data operations and arithmetic calculation together take just one clock of execution and also without any memory stall cycles. This same code using traditional RISCV instructions would take up to 10 RISCV instructions that may also incur memory stall cycles in addition.</p>
-<pre><code>z[i++] = x[i+<span class="c-num">2</span>]+y[i+<span class="c-num">3</span>];</code></pre>
+<pre><code>z[i++] = x[i+2]+y[i+3];</code></pre>
 <h2 id="7-ztachipcorepcoreregister_bank">7. ztachip.core.pcore.register_bank</h2>
 <p>This component implements pcore internal memory</p>
 <p>pcore&#x27;s internal memory is partitioned into 2 pages with each page assigned to one of the two tensor processor&#x27;s threads. This is an important concept for ztachip since it allows for one thread to access its internal memory while the other thread is performing tensor operator execution using the other internal memory&#x27;s page. This allows for a memory operation to be overlapped with tensor operator execution.</p>
@@ -303,34 +298,34 @@ details > summary { cursor:pointer; }
 <li>Shared data: Data is shared among all 16 threads but within the same pcore. Shared memory words are allocated from the bottom up as shown in the picture below.</li>
 </ul>
 <pre><code>+-------------------------+
-+ Thread1.Private word<span class="c-com">#0  |</span>
++ Thread1.Private word#0  |
 +-------------------------+
-+ Thread2.Private word<span class="c-com">#0  |</span>
-+-------------------------+
-           :
-           :
-+-------------------------+
-+ Thread16.Private word<span class="c-com">#0 |</span>
-+-------------------------+
-+ Thread1.Private word<span class="c-com">#1  |</span>
-+-------------------------+
-+ Thread2.Private word<span class="c-com">#1  |</span>
++ Thread2.Private word#0  |
 +-------------------------+
            :
            :
 +-------------------------+
-+ Thread16.Private word<span class="c-com">#1 |</span>
++ Thread16.Private word#0 |
++-------------------------+
++ Thread1.Private word#1  |
++-------------------------+
++ Thread2.Private word#1  |
 +-------------------------+
            :
            :
 +-------------------------+
-+ Shared           word<span class="c-com">#3 |</span>
++ Thread16.Private word#1 |
 +-------------------------+
-+ Shared           word<span class="c-com">#2 |</span>
+           :
+           :
 +-------------------------+
-+ Shared           word<span class="c-com">#1 |</span>
++ Shared           word#3 |
 +-------------------------+
-+ Shared           word<span class="c-com">#0 |</span>
++ Shared           word#2 |
++-------------------------+
++ Shared           word#1 |
++-------------------------+
++ Shared           word#0 |
 +-------------------------+</code></pre>
 <h2 id="8-ztachipcorepcoreinstr_decoder2">8. ztachip.core.pcore.instr_decoder2</h2>
 <p>This is the main component that decodes the computing components of VLIW instructions</p>
@@ -343,44 +338,44 @@ details > summary { cursor:pointer; }
 <p>all VLIW processors are running in lockstep therefore sharing the same branching operation. ztachip currently does not support yet thread branching/divergence as commonly implemented in GPU, therefore all threads must have the same branching condition. However you can still perform the equivalent of branching with conditional execution using VMASK register as described in next section. Most AI/Vision processing tasks however are mostly predictable computing with minimum or no branching.</p>
 <p>VLIW instructions are 128 bit long and have the following format</p>
 <pre><code>MU                 -- pcore.alu instruction
-   oc         <span class="c-num">5</span>    -- opcode
-   save       <span class="c-num">1</span>    -- Save alu.y_out=&gt;xregister_file
+   oc         5    -- opcode
+   save       1    -- Save alu.y_out=&gt;xregister_file
    x3              -- x3 parameter;map to alu.xscalar_in
-      vector  <span class="c-num">1</span>    -- <span class="c-num">1</span> <span class="c-key">if</span> parameter <span class="c-key">is</span> vector,<span class="c-num">0</span> <span class="c-key">if</span> scalar
-      addr    <span class="c-num">12</span>   -- Internal memory address of x3
-      attr    <span class="c-num">4</span>    -- Attribute
+      vector  1    -- 1 if parameter is vector,0 if scalar
+      addr    12   -- Internal memory address of x3
+      attr    4    -- Attribute
    x1              -- x1 parameter;map to alu.x1_in
-      vector  <span class="c-num">1</span>    -- <span class="c-num">1</span> <span class="c-key">if</span> parameter <span class="c-key">is</span> vector,<span class="c-num">0</span> <span class="c-key">if</span> scalar
-      addr    <span class="c-num">12</span>   -- Internal memory address of x1
-      attr    <span class="c-num">4</span>    -- Attribute
+      vector  1    -- 1 if parameter is vector,0 if scalar
+      addr    12   -- Internal memory address of x1
+      attr    4    -- Attribute
    x2              -- x2 parameter;map to alu.x2_in
-      vector  <span class="c-num">1</span>    -- <span class="c-num">1</span> <span class="c-key">if</span> parameter <span class="c-key">is</span> vector,<span class="c-num">0</span> <span class="c-key">if</span> scalar
-      addr    <span class="c-num">12</span>   -- Internal memory address of x2
-      attr    <span class="c-num">4</span>    -- Attribute
+      vector  1    -- 1 if parameter is vector,0 if scalar
+      addr    12   -- Internal memory address of x2
+      attr    4    -- Attribute
    y               -- y parameter;map to alu.y*_out
-      vector  <span class="c-num">1</span>    -- <span class="c-num">1</span> <span class="c-key">if</span> parameter <span class="c-key">is</span> vector,<span class="c-num">0</span> <span class="c-key">if</span> scalar
-      addr    <span class="c-num">12</span>   -- Internal memory address of y
-      attr    <span class="c-num">4</span>    -- Attribute
+      vector  1    -- 1 if parameter is vector,0 if scalar
+      addr    12   -- Internal memory address of y
+      attr    4    -- Attribute
 IMU                -- pcore.ialu instruction
-   oc         <span class="c-num">5</span>    -- opcode
-   x1         <span class="c-num">4</span>    -- x1 parameter; map to ialu.x1_in
-   x2         <span class="c-num">4</span>    -- x2 parameter; map to ialu.x2_in
-   y          <span class="c-num">4</span>    -- y parameter; map to ialu.y_out
-   <span class="c-key">const</span>      <span class="c-num">13</span>   -- Constant field
+   oc         5    -- opcode
+   x1         4    -- x1 parameter; map to ialu.x1_in
+   x2         4    -- x2 parameter; map to ialu.x2_in
+   y          4    -- y parameter; map to ialu.y_out
+   const      13   -- Constant field
 CTRL
-   oc         <span class="c-num">5</span>    -- Branching opcode based on IMU.y value
-   addr       <span class="c-num">11</span>   -- Code address to jump to</code></pre>
+   oc         5    -- Branching opcode based on IMU.y value
+   addr       11   -- Code address to jump to</code></pre>
 <p>MU.attr field above provides many ways for parameters to reference memory.</p>
 <p>Table below shows different addressing options for parameters.</p>
 <p>where IREG is ialu&#x27;s register file and MEM is pcore&#x27;s internal memory.</p>
 <pre><code>ATTR  DESCRIPTION                  MEMORY ACCESS PATTERN
 ===========================================================
 11RR  Access via pointer+index     MEM[IREG[addr]+IREG[RR]]
-<span class="c-num">1011</span>  Access via pointer           MEM[IREG[addr]]
-<span class="c-num">1000</span>  Access shared memory         MEM[addr]
-<span class="c-num">1001</span>  Access <span class="c-key">private</span> memory        MEM[addr]
+1011  Access via pointer           MEM[IREG[addr]]
+1000  Access shared memory         MEM[addr]
+1001  Access private memory        MEM[addr]
 00RR  Access shared memory+index   MEM[addr+IREG[RR]]
-01RR  Access <span class="c-key">private</span> memory+index  MEM[addr+IREG[RR]]
+01RR  Access private memory+index  MEM[addr+IREG[RR]]
 </code></pre>
 <h2 id="9-ztachipcorepcoreialu">9. ztachip.core.pcore.ialu</h2>
 <p>This component is responsible for the scalar integer calculation of VLIW instruction described above.</p>
@@ -398,22 +393,22 @@ CTRL
 <li>Enable/disable vector lanes.</li>
 </ul>
 <p>For example</p>
-<pre><code><span class="c-com">// i is an integer operation used for loop counter</span>
-<span class="c-key">for</span>(i=<span class="c-num">0</span>;i &lt; <span class="c-num">10</span>;i++) {
+<pre><code>// i is an integer operation used for loop counter
+for(i=0;i &lt; 10;i++) {
    :
    :
 }</code></pre>
-<pre><code><span class="c-com">// i is an integer used for array indexing and address calculation</span>
+<pre><code>// i is an integer used for array indexing and address calculation
 z[i]=x[i]+y[i];</code></pre>
-<pre><code><span class="c-com">// p is an integer used for pointer reference to memory</span>
-<span class="c-com">// Both integers p and i are used for memory reference and</span>
-<span class="c-com">// address calculation below</span>
-p=&amp;mem[<span class="c-num">0</span>];
-p[i]=<span class="c-num">10</span>;</code></pre>
-<pre><code><span class="c-com">// VMASK=3 means only element#0 and element#1 of vector z are</span>
-<span class="c-com">// being updated after the vector calculation</span>
-VMASK=<span class="c-num">3</span>;
-z=x+<span class="c-num">2</span>; <span class="c-com">// Only the first 2 elements of z are written back to memory.</span></code></pre>
+<pre><code>// p is an integer used for pointer reference to memory
+// Both integers p and i are used for memory reference and
+// address calculation below
+p=&amp;mem[0];
+p[i]=10;</code></pre>
+<pre><code>// VMASK=3 means only element#0 and element#1 of vector z are
+// being updated after the vector calculation
+VMASK=3;
+z=x+2; // Only the first 2 elements of z are written back to memory.</code></pre>
 <h2 id="10-ztachipcorepcorealu">10. ztachip.core.pcore.alu</h2>
 <p><img src="media/Documentation_images_hw_alu.png" alt="hw_alu"></p>
 <h3 id="101-interfaces">10.1 Interfaces</h3>
@@ -440,12 +435,12 @@ z=x+<span class="c-num">2</span>; <span class="c-com">// Only the first 2 elemen
 <li>Casting the 32-bit result to 12 bit result. Value is clipped if it is overflowed or underflowed after casting.</li>
 </ul>
 <p>With the above blocks, the following opcodes are supported</p>
-<pre><code>  COMPARE_LT       : y2_out=(y_out &lt; <span class="c-num">0</span>)?<span class="c-num">1</span>:<span class="c-num">0</span>
-  COMPARE_LE       : y2_out=(y_out &lt;= <span class="c-num">0</span>)?<span class="c-num">1</span>:<span class="c-num">0</span>
-  COMPARE_GT       : y2_out=(y_out &gt; <span class="c-num">0</span>)?<span class="c-num">1</span>:<span class="c-num">0</span>
-  COMPARE_GE       : y2_out=(y_out &gt;= <span class="c-num">0</span>)?<span class="c-num">1</span>:<span class="c-num">0</span>
-  COMPARE_EQ       : y2_out=(y_out==<span class="c-num">0</span>)?<span class="c-num">1</span>:<span class="c-num">0</span>
-  COMPARE_NE       : y2_out=(y_out!=<span class="c-num">0</span>)?<span class="c-num">1</span>:<span class="c-num">0</span>
+<pre><code>  COMPARE_LT       : y2_out=(y_out &lt; 0)?1:0
+  COMPARE_LE       : y2_out=(y_out &lt;= 0)?1:0
+  COMPARE_GT       : y2_out=(y_out &gt; 0)?1:0
+  COMPARE_GE       : y2_out=(y_out &gt;= 0)?1:0
+  COMPARE_EQ       : y2_out=(y_out==0)?1:0
+  COMPARE_NE       : y2_out=(y_out!=0)?1:0
   MULTIPLY         : y_out=x1*x2
   ADD              : y_out=x1+x2
   SUBTRACT         : y_out=x1-x2

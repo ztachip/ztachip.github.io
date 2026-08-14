@@ -28,11 +28,6 @@ code { background:#e4e6e8; color:#1f2328; padding:1px 4px; border-radius:4px;
        font-family:'Cascadia Code',Consolas,'Liberation Mono',monospace;
        font-size:13px; }
 
-.c-com { color:#6a737d; font-style:italic; }
-.c-str { color:#032f62; }
-.c-key { color:#d73a49; }
-.c-num { color:#005cc5; }
-.c-pre { color:#e36209; }
 
 table { border-collapse:collapse; margin:8px 0 16px 0; }
 th, td { border:1px solid #c9ced4; padding:6px 10px; vertical-align:top; }
@@ -341,44 +336,44 @@ details > summary { cursor:pointer; }
 <h4 id="232-example-of-implementing-a-graph-node">2.3.2 Example of implementing a graph node.</h4>
 <p>Below is an example that shows how a new graph node is implemented.</p>
 <p>GraphNode primary function is to provide wrapper functions for a tensor program so that tensor program can be invoked as part of a graph execution.</p>
-<pre><code><span class="c-com">// Declare a new graph node. It is derived from GraphNode</span>
-<span class="c-key">class</span> MyGraphNode : <span class="c-key">public</span> GraphNode {
+<pre><code>// Declare a new graph node. It is derived from GraphNode
+class MyGraphNode : public GraphNode {
    MyGraphNode();
    ~MyGraphNode();
-   ZtaStatus Create(TENSOR *<span class="c-key">in</span>,TENSOR *out);
+   ZtaStatus Create(TENSOR *in,TENSOR *out);
    ZtaStatus Prepare() {}
    ZtaStatus Verify() {}
-   ZtaStatus Execute(<span class="c-key">int</span> queue,<span class="c-key">bool</span> stepMode);
-<span class="c-key">private</span>:
+   ZtaStatus Execute(int queue,bool stepMode);
+private:
    TENSOR *m_in;
    TENSOR *m_out;
 }
 
-<span class="c-com">// Initialize this node.</span>
-ZtaStatus MyGraphNode ::Create(TENSOR *<span class="c-key">in</span>,TENSOR *out) {
-   <span class="c-com">// In this example, output tensor has same format as input tensor</span>
-   m_in=<span class="c-key">in</span>;
+// Initialize this node.
+ZtaStatus MyGraphNode ::Create(TENSOR *in,TENSOR *out) {
+   // In this example, output tensor has same format as input tensor
+   m_in=in;
    m_out=out;
    m_out-&gt;Clone(m_in);
-   <span class="c-key">return</span> ZtaStatusOk;
+   return ZtaStatusOk;
 }
-<span class="c-com">// Verify this node.</span>
+// Verify this node.
 ZtaStatus MyGraphNode ::Verify() {
-   <span class="c-key">return</span> ZtaStatusOk;
+   return ZtaStatusOk;
 }
-<span class="c-com">// Prepare for new execution run.</span>
+// Prepare for new execution run.
 ZtaStatus MyGraphNode ::Prepare() {
-   <span class="c-key">return</span> ZtaStatusOk;
+   return ZtaStatusOk;
 }
 
-<span class="c-com">// Execute this node</span>
-ZtaStatus MyGraphNode ::Execute(<span class="c-key">int</span> queue,stepMode) {
-   <span class="c-com">// Get a job id and run the tensor program</span>
+// Execute this node
+ZtaStatus MyGraphNode ::Execute(int queue,stepMode) {
+   // Get a job id and run the tensor program
    my_tensor_program(GetJobId(queue),
-                    (<span class="c-key">uint8_t</span> *)m_in-&gt;GetBuf(),
-                    (<span class="c-key">uint8_t</span> *)m_out-&gt;GetBuf(),
+                    (uint8_t *)m_in-&gt;GetBuf(),
+                    (uint8_t *)m_out-&gt;GetBuf(),
                     m_in-&gt;GetBufLen());
-   <span class="c-key">return</span> ZtaStatusOk;
+   return ZtaStatusOk;
 }</code></pre>
 <h3 id="24-graph">2.4 Graph</h3>
 <p>Object of this class implements a flow of execution of multiple steps with each step are performed by a graph node.</p>
@@ -437,79 +432,79 @@ ZtaStatus MyGraphNode ::Execute(<span class="c-key">int</span> queue,stepMode) {
 <p>Return true if graph is currently busy, false if graph is idle and ready to accept a new execution run.</p>
 <h4 id="242-example-running-a-single-graph">2.4.2 Example running a single graph</h4>
 <p>Example below shows how a single graph is created and executed.</p>
-<pre><code><span class="c-com">// Declare graph,node and tensor objects</span>
+<pre><code>// Declare graph,node and tensor objects
 Graph graph;
 Task1GraphNode node1;
 Task2GraphNode node2;
 TENSOR tensor_input,tensor_output,tensor_temp;
 
-<span class="c-com">// Initialize tensor_input dimension and content from a bitmap image</span>
-tensor_input.CreateWithBitmap(<span class="c-str">&quot;bitmap.bmp&quot;</span>);
+// Initialize tensor_input dimension and content from a bitmap image
+tensor_input.CreateWithBitmap(&quot;bitmap.bmp&quot;);
 
-<span class="c-com">// Initialize and attach graph nodes to the graph</span>
-<span class="c-com">// node1 executes first, then node1 passes its output to node2 via tensor_temp,</span>
-<span class="c-com">// then node2 is the final stage of the graph.</span>
-<span class="c-com">// input to the graph is the tensor_input.</span>
-<span class="c-com">// output of the graph is the tensor_output.</span>
+// Initialize and attach graph nodes to the graph
+// node1 executes first, then node1 passes its output to node2 via tensor_temp,
+// then node2 is the final stage of the graph.
+// input to the graph is the tensor_input.
+// output of the graph is the tensor_output.
 node1.Create(&amp;tensor_input,&amp;tensor_temp);
 node2.Create(&amp;tensor_temp,&amp;tensor_output);
 graph.Add(&amp;node1);
 graph.Add(&amp;node2);
 
-<span class="c-com">// Verify the graph</span>
+// Verify the graph
 graph.Verify();
 
-<span class="c-com">// Prepare for execution</span>
+// Prepare for execution
 graph.Prepare();
 
-<span class="c-com">// Execute the graph till completion</span>
+// Execute the graph till completion
 graph.RunUntilCompletion();
 
-<span class="c-com">// Done. Result is now in tensor_output</span></code></pre>
+// Done. Result is now in tensor_output</code></pre>
 <h4 id="243-example-running-multiple-graphs">2.4.3 Example running multiple graphs</h4>
 <p>Example below shows how to create and execute multiple graphs simultaneously</p>
 <p>This is like previous example except that there are 2 instances of the graph.</p>
-<pre><code><span class="c-com">// Declare graph,node and tensor objects</span>
-Graph graph[<span class="c-num">2</span>];
+<pre><code>// Declare graph,node and tensor objects
+Graph graph[2];
 Task1GraphNode node1;
 Task2GraphNode node2;
 Task3GraphNode node3;
 Task4GraphNode node4;
-TENSOR tensor_input[<span class="c-num">2</span>],tensor_output[<span class="c-num">2</span>],tensor_temp[<span class="c-num">2</span>];
+TENSOR tensor_input[2],tensor_output[2],tensor_temp[2];
 
-<span class="c-com">// Initialize tensor_input dimension and content from a bitmap image</span>
-tensor_input[<span class="c-num">0</span>].CreateWithBitmap(<span class="c-str">&quot;bitmap1.bmp&quot;</span>);
-tensor_input[<span class="c-num">1</span>].CreateWithBitmap(<span class="c-str">&quot;bitmap2.bmp&quot;</span>);
+// Initialize tensor_input dimension and content from a bitmap image
+tensor_input[0].CreateWithBitmap(&quot;bitmap1.bmp&quot;);
+tensor_input[1].CreateWithBitmap(&quot;bitmap2.bmp&quot;);
 
-<span class="c-com">// Create first graph</span>
-node1.Create(&amp;tensor_input[<span class="c-num">0</span>],&amp;tensor_temp[<span class="c-num">0</span>]);
-node2.Create(&amp;tensor_temp[<span class="c-num">0</span>],&amp;tensor_output[<span class="c-num">0</span>]);
-graph[<span class="c-num">0</span>].Add(&amp;node1);
-graph[<span class="c-num">0</span>].Add(&amp;node2);
-graph[<span class="c-num">0</span>].Verify();
-graph[<span class="c-num">0</span>].Prepare();
+// Create first graph
+node1.Create(&amp;tensor_input[0],&amp;tensor_temp[0]);
+node2.Create(&amp;tensor_temp[0],&amp;tensor_output[0]);
+graph[0].Add(&amp;node1);
+graph[0].Add(&amp;node2);
+graph[0].Verify();
+graph[0].Prepare();
 
-<span class="c-com">// Create second graph</span>
-node3.Create(&amp;tensor_input[<span class="c-num">1</span>],&amp;tensor_temp[<span class="c-num">1</span>]);
-node4.Create(&amp;tensor_temp[<span class="c-num">1</span>],&amp;tensor_output[<span class="c-num">1</span>]);
-graph[<span class="c-num">1</span>].Add(&amp;node3);
-graph[<span class="c-num">1</span>].Add(&amp;node4);
-graph[<span class="c-num">1</span>].Verify();
-graph[<span class="c-num">1</span>].Prepare();
+// Create second graph
+node3.Create(&amp;tensor_input[1],&amp;tensor_temp[1]);
+node4.Create(&amp;tensor_temp[1],&amp;tensor_output[1]);
+graph[1].Add(&amp;node3);
+graph[1].Add(&amp;node4);
+graph[1].Verify();
+graph[1].Prepare();
 
-<span class="c-com">// We can run each graph to completion consecutively.</span>
-<span class="c-com">// But in this example, we interleave the execution of both graphs by running</span>
-<span class="c-com">// them in step mode.</span>
-<span class="c-com">// Since graphs are executed in steps, we have control on how to schedule the</span>
-<span class="c-com">// execution of these graphs or even interleaving graph execution with other</span>
-<span class="c-com">// tasks that are not related to graph.</span>
-<span class="c-key">while</span>(graph[<span class="c-num">0</span>].IsRunning() || graph[<span class="c-num">1</span>].IsRunning()) {
-   <span class="c-key">if</span>(graph[<span class="c-num">0</span>].IsRunning())
-      graph[<span class="c-num">0</span>].RunSingleStep();
-   <span class="c-key">if</span>(graph[<span class="c-num">1</span>].IsRunning())
-      graph[<span class="c-num">1</span>].RunSingleStep();
+// We can run each graph to completion consecutively.
+// But in this example, we interleave the execution of both graphs by running
+// them in step mode.
+// Since graphs are executed in steps, we have control on how to schedule the
+// execution of these graphs or even interleaving graph execution with other
+// tasks that are not related to graph.
+while(graph[0].IsRunning() || graph[1].IsRunning()) {
+   if(graph[0].IsRunning())
+      graph[0].RunSingleStep();
+   if(graph[1].IsRunning())
+      graph[1].RunSingleStep();
 }
-<span class="c-com">// Done. Result are now in tensor_output[0] and tensor_output[1]</span></code></pre>
+// Done. Result are now in tensor_output[0] and tensor_output[1]</code></pre>
 <h2 id="3-vision-stack">3. VISION STACK</h2>
 <p>ztachip has a library of graph nodes that perform many common vision processing tasks.</p>
 <p>These vision processing functions are very efficient and fast since they are implemented based on tensor programming as described in [1].</p>
