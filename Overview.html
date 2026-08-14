@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>1. Abstract</title>
+<title>ztachip Technical Overview</title>
 <style>
 :root { color-scheme: light; }
 body { margin:0; background:#ffffff; color:#24292f;
@@ -60,18 +60,27 @@ details > summary { cursor:pointer; }
 <body>
 <div class="layout"><div class="side">
 <a class="home" href="index.html">&#8592; Home</a>
-<div class="plate">1. Abstract</div>
+<div class="plate">ztachip Technical Overview</div>
 <b>Contents</b>
+<ul>
+<li><a href="#1-abstract">1. Abstract</a></li>
+<li><a href="#2-challenges">2. Challenges</a></li>
+<li><a href="#3-dsa-with-ztachip">3. DSA with ztachip</a></li>
+<li><a href="#4-what-are-provided-with-ztachip">4. What are provided with ztachip</a></li>
+<li><a href="#5-results">5. Results</a></li>
 <ul>
 <li><a href="#51-domain-coverage">5.1 Domain coverage</a></li>
 <li><a href="#52-performance-and-power-consumption">5.2 Performance and power consumption</a></li>
 </ul>
-</div><div class="main"><h1 id="1-abstract">1. Abstract</h1>
+<li><a href="#6-future-developments">6. Future developments</a></li>
+</ul>
+</div><div class="main"><h1 id="ztachip-technical-overview">ztachip Technical Overview</h1>
+<h2 id="1-abstract">1. Abstract</h2>
 <p>The recent explosion in AI creates an almost limitless demand for computing power. AI workload is especially challenging since it is demanding in both computing power and memory bandwidth.</p>
 <p>In addition, AI deployed at the edge also demands very low power.</p>
 <p>It is generally agreed in the computing community that the way forward is that we need a special architecture for this kind of workload. This is formally known as Domain-Specific-Architecture (DSA).</p>
 <p>ztachip is one such DSA particularly optimized for vision and AI workload.</p>
-<h1 id="2-challenges">2. Challenges</h1>
+<h2 id="2-challenges">2. Challenges</h2>
 <p>DSA also presents many challenges including</p>
 <p>1. DSA is designed for a special set of applications in exchange for higher efficiencies. However, we would like the DSA domain to be as diverse as possible while still benefiting from a more efficient hardware implementation.</p>
 <p>2. DSA implies both a special hardware and software architecture for a particular domain of applications. How can we present DSA concepts without requiring users to have cross-disciplined knowledge? It will be difficult to find software engineers that are also knowledgeable in hardware design.</p>
@@ -79,7 +88,7 @@ details > summary { cursor:pointer; }
 <p><img src="media/Documentation_images_systolic.bmp" alt="systolic"></p>
 <p>However, SA is also very difficult to program. Users of SA often rely on prebuilt libraries provided by hardware vendors. Training/research AI workload that requires custom algorithm implementation is therefore not suitable for SA.</p>
 <p>SA is also not flexible enough to adapt to a wider range of applications. For example, most ASICs with SA still require a powerful CPU and GPU to perform other tasks such as vision preprocessing. For many edge AI applications involving vision, the vision preprocessing steps are often just as computing intensive as the AI steps.</p>
-<h1 id="3-dsa-with-ztachip">3. DSA with ztachip</h1>
+<h2 id="3-dsa-with-ztachip">3. DSA with ztachip</h2>
 <p>ztachip is an opensourse DSA architecture. It is a novel architecture as far as we know.</p>
 <p>The primary objective for ztachip is to provide DSA that covers a wide range of applications and not just for AI. DSA programming with ztachip should also be intuitive and simple.</p>
 <p>ztachip targets applications that can be expressed as a sequence of tensor operations. Tensor operations include data operation and computing operation. Data operations involving tensors may also involve complex operations such as tensor transpose, tensor dimension resize, data remapping, etc...</p>
@@ -105,7 +114,7 @@ TENSOR_B &lt;= DATA_TRANSFORMATION &lt;= TENSOR_A
 <li>Tensor computing involves only with internal memory, greatly simplifying</li>
 </ul>
 <p>the hardware design since there is no memory stall cycles to contend with.</p>
-<h1 id="4-what-are-provided-with-ztachip">4. What are provided with ztachip</h1>
+<h2 id="4-what-are-provided-with-ztachip">4. What are provided with ztachip</h2>
 <p>ztachip provides the following DSA components:</p>
 <ul>
 <li>Hardware stack with all the RTL source codes that can be ported to different</li>
@@ -120,9 +129,9 @@ TENSOR_B &lt;= DATA_TRANSFORMATION &lt;= TENSOR_A
 </ul>
 <p>for TensorFlow without retraining is also provided.</p>
 <p><img src="media/Documentation_images_dsa_component.bmp" alt="dsa_component"></p>
-<h1 id="5-results">5. Results</h1>
+<h2 id="5-results">5. Results</h2>
 <p>The 2 metrics of interest are domain coverage and performance.</p>
-<h2 id="51-domain-coverage">5.1 Domain coverage</h2>
+<h3 id="51-domain-coverage">5.1 Domain coverage</h3>
 <p>For domain coverage, ztachip&#x27;s DSL has been proven on a wide range of applications, from transformer models through to vision preprocessing and classic AI tasks.</p>
 <ul>
 <li>Transformer models for LLM (Large Language Model) and VLM (Vision Language Model) inference.</li>
@@ -136,12 +145,12 @@ TENSOR_B &lt;= DATA_TRANSFORMATION &lt;= TENSOR_A
 <li>Optical flow algorithm to detect motion</li>
 <li>Image resizing</li>
 </ul>
-<h2 id="52-performance-and-power-consumption">5.2 Performance and power consumption</h2>
+<h3 id="52-performance-and-power-consumption">5.2 Performance and power consumption</h3>
 <p>Performance is also very promising. Using the popular Mobinet-SSD AI model as a reference point, ztachip achieves a performance of 10fps at a 20GOPS of hardware computing resource.</p>
 <p>Compared with Nvidia Jetson Nano, it has a performance of 40fps but with a computing hardware resource at 500GOPS.</p>
 <p>Therefore ztachip has a 6x better computing resource utilization than Nvidia in this case, resulting in much lower power consumption.</p>
 <p>Memory requirements for ztachip are also much lower due to the efficient use of memory.</p>
-<h1 id="6-future-developments">6. Future developments</h1>
+<h2 id="6-future-developments">6. Future developments</h2>
 <p>ztachip current implementation operates on vector data types (8 x 8/12/16-bit).</p>
 <p>The logical next step is for native support of matrix data types (8 x 8 x 8/12/16-bit).</p>
 <p>ALU (Arithmetic Logical Units) sub-system is extended from a 8 unit wide vector of ALU units to a 8x8 matrix of ALU units. This will provide an 8x improvement in computing density when bus width is limited to 8 data elements. An improvement of 32x from current implementation is possible when bus width is extended to 16 data elements.</p>
