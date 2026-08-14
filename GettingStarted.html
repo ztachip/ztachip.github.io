@@ -65,6 +65,9 @@ details > summary { cursor:pointer; }
         transition:border-color .15s, box-shadow .15s, transform .15s; }
 .card:hover { border-color:#0a6abf; box-shadow:0 4px 14px rgba(10,37,69,.10);
         transform:translateY(-2px); }
+/* the starting point, picked out from the reference guides */
+.card.start { background:#e8f7ec; border-color:#9fd3ae; }
+.card.start:hover { border-color:#2f8f4e; box-shadow:0 4px 14px rgba(47,143,78,.18); }
 .card .t { display:block; color:#0a4a8f; font-weight:700; font-size:17px;
         margin-bottom:7px; }
 .card .d { display:block; color:#41484f; font-size:14px; line-height:1.55; }
@@ -167,6 +170,11 @@ body.nav-hidden .side { display:none; }
 <li><a href="#391-benchmark-results">3.9.1 Benchmark Results</a></li>
 <li><a href="#392-conclusion">3.9.2 Conclusion</a></li>
 </ul>
+</ul>
+<li><a href="#4-porting-ztachip-to-other-fpgas-asics-and-socs">4. Porting ztachip to Other FPGAs, ASICs, and SoCs</a></li>
+<ul>
+<li><a href="#41-porting-the-hardware-stack">4.1 Porting the Hardware Stack</a></li>
+<li><a href="#42-porting-the-software-stack">4.2 Porting the Software Stack</a></li>
 </ul>
 </ul>
 </div><div class="main"><div class="navbar"><button class="navbtn navtoggle" onclick="navToggle()" title="Show or hide the contents" aria-label="Contents"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="2" rx="1"/><rect x="1" y="5" width="14" height="2" rx="1"/><rect x="1" y="9" width="14" height="2" rx="1"/><rect x="1" y="13" width="14" height="2" rx="1"/></svg></button><a class="navbtn" href="index.html" title="Home" aria-label="Home"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 0.7 7.6h1.9V14.6h4V10.4h2.8v4.2h4V7.6h1.9z"/></svg></a><span class="gap"></span><button class="navbtn" id="secprev" onclick="secStep(-1)" title="Previous section" aria-label="Previous section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.4 14.1 9.5 12.7 10.9 8 6.2 3.3 10.9 1.9 9.5z"/></svg></button><button class="navbtn" id="secnext" onclick="secStep(1)" title="Next section" aria-label="Next section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 12.6 1.9 6.5 3.3 5.1 8 9.8 12.7 5.1 14.1 6.5z"/></svg></button></div><section class="sec on"><h1 id="getting-started-running-a-visionai-demo-on-artix-7-fpga">Getting Started: Running a Vision/AI Demo on Artix-7 FPGA</h1>
@@ -406,7 +414,28 @@ load</code></pre>
 <li><strong>7.2× more efficient</strong> than the Raspberry Pi 4</li>
 <li><strong>3.5× more efficient</strong> than the Raspberry Pi 5</li>
 </ul>
-<p>This efficiency is particularly important for low-cost and resource-constrained edge AI platforms, where memory bandwidth and power are often more limited than compute capability.</p></section><nav class="pagerbar"><button class="pbtn" id="pgprev" onclick="secStep(-1)"><span class="arrow">&#9664;</span><span class="lbl" id="pgprevlbl">Previous</span></button><span class="pgcount" id="pgcount"></span><button class="pbtn" id="pgnext" onclick="secStep(1)"><span class="lbl" id="pgnextlbl">Next</span><span class="arrow">&#9654;</span></button></nav></div></div>
+<p>This efficiency is particularly important for low-cost and resource-constrained edge AI platforms, where memory bandwidth and power are often more limited than compute capability.</p>
+</section>
+<section class="sec"><h2 id="4-porting-ztachip-to-other-fpgas-asics-and-socs">4. Porting ztachip to Other FPGAs, ASICs, and SoCs</h2>
+<p>ztachip is designed so that the architecture and its applications can be ported to other hardware platforms.</p>
+<p>The example provided with this repository is a reference design, implemented on the Arty A7 development kit from Digilent and based on the Xilinx Artix-7 FPGA. However, ztachip — both the software and the hardware stack — can be ported to any FPGA, ASIC or SoC platform by following the procedure described below.</p>
+</section>
+<section class="sec"><h3 id="41-porting-the-hardware-stack">4.1 Porting the Hardware Stack</h3>
+<ul>
+<li>Update <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/config.vhd">HW/src/config.vhd</a> to match your platform or FPGA capabilities, such as resource availability, memory block size and SDRAM bus width.</li>
+<li>Compile all files under <a href="https://github.com/ztachip/ztachip/blob/master/HW/src">HW/src</a>. They are generic VHDL code without any special primitives, so they are ready to be ported to any FPGA or ASIC.</li>
+<li>Have a version of the <a href="https://github.com/ztachip/ztachip/blob/master/HW/platform">wrapper library</a> for your FPGA or ASIC. There are 6 components that you need to map to your FPGA or ASIC library. They are mostly basic memory block primitives, so any FPGA or ASIC toolchain will have them. There is also a <a href="https://github.com/ztachip/ztachip/blob/master/HW/platform/simulation">wrapper version for simulation</a> that you can reference for the expected behaviour.</li>
+<li>Reference <a href="https://github.com/ztachip/ztachip/blob/master/HW/examples/GHRD/main.v">HW/examples/GHRD/main.v</a>. This is the top component of the reference design. Base the top component of your own design on this example.</li>
+</ul>
+</section>
+<section class="sec"><h3 id="42-porting-the-software-stack">4.2 Porting the Software Stack</h3>
+<ul>
+<li>Update <code>NUM_PCORE</code> in <a href="https://github.com/ztachip/ztachip/blob/master/SW/base/zta.h">SW/base/zta.h</a> to be 8 for the large version and 4 for the small version. This must be the same value as <code>pid_gen_max_c</code> configured in <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/config.vhd">HW/src/config.vhd</a>.</li>
+<li>Update the linker file <a href="https://github.com/ztachip/ztachip/blob/master/SW/linker.ld">SW/linker.ld</a> to match your SoC&#x27;s DDR memory size. The important parameters are <code>RAM</code>, <code>_heap_size</code> and <code>_stack_size</code>.</li>
+<li>Update the boot loader <a href="https://github.com/ztachip/ztachip/blob/master/SW/base/crt.S">SW/base/crt.S</a> if your SoC has any special boot-loading method. In the provided example, the boot loader is simple, since it expects code and data to be loaded by JTAG before execution begins.</li>
+<li>Your SoC may have different peripherals, with new drivers to be implemented. All peripheral drivers are implemented in <a href="https://github.com/ztachip/ztachip/blob/master/SW/src/soc.cpp">SW/src/soc.cpp</a>.</li>
+<li>Refer <a href="https://github.com/ztachip/ztachip/blob/master/HW/riscv/README.md">here</a> if you would like to use a different RISC-V implementation. ztachip uses <a href="https://github.com/SpinalHDL/VexRiscv">VexRiscv</a> by default.</li>
+</ul></section><nav class="pagerbar"><button class="pbtn" id="pgprev" onclick="secStep(-1)"><span class="arrow">&#9664;</span><span class="lbl" id="pgprevlbl">Previous</span></button><span class="pgcount" id="pgcount"></span><button class="pbtn" id="pgnext" onclick="secStep(1)"><span class="lbl" id="pgnextlbl">Next</span><span class="arrow">&#9654;</span></button></nav></div></div>
 <script>
 function navToggle() { document.body.classList.toggle('nav-hidden'); }
 // on a phone the panel starts hidden, so the document is what you see first
