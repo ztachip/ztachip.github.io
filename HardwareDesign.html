@@ -169,7 +169,7 @@ details > summary { cursor:pointer; }
 <p><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_source.vhd">dp_source</a> and <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_sink.vhd">dp_sink</a>. There can be up to 2 data operations executing at the same time. For example, data transfer from the <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a>&#x27;s internal memory to DDR external memory can occur at the same time as data transfer from the scratch-pad to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a>&#x27;s internal memory.</p>
 <ul>
 <li>Tensor operator execution is forwarded to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a> via interface signal task*</li>
-<li>Before tensor operator execution can be issued, all memory transfer with <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a>&#x27;s internal memory must be completed. Since there is a seperate <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a>&#x27;s internal memory for each hardware thread, for example, memory transfer to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a>&#x27;s internal memory belonging to thread#1 can still be running at the same time while <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a> is busy performing tensor operator execution but on thread#2.</li>
+<li>Before tensor operator execution can be issued, all memory transfer with <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a>&#x27;s internal memory must be completed. Since there is a separate <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a>&#x27;s internal memory for each hardware thread, for example, memory transfer to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a>&#x27;s internal memory belonging to thread#1 can still be running at the same time while <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a> is busy performing tensor operator execution but on thread#2.</li>
 </ul>
 <h2 id="3-ztachipfpu">3. ztachip.fpu</h2>
 <p><img src="media/Documentation_images_hw_fpu.png" alt="hw_fpu"></p>
@@ -177,8 +177,8 @@ details > summary { cursor:pointer; }
 <table>
 <tr><th>Name</th><th>Description</th></tr>
 <tr><td>bus*</td><td>AXI interface for RISCV to push FPU instructions to FPU.</td></tr>
-<tr><td>fpu_read*</td><td>Read interface to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/top/sram_core.vhd">sram_core</a>. FPU operates only from SRAM memory. Data input for FPU must first be transfered from DDR or PCORE memory space to SRAM space by DP instructions.</td></tr>
-<tr><td>fpu_write*</td><td>Write interface to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/top/sram_core.vhd">sram_core</a>. FPU results are written only to SRAM memory. Results must then be transfered to DDR or PCORE memory space from SRAM space by DP intructions.</td></tr>
+<tr><td>fpu_read*</td><td>Read interface to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/top/sram_core.vhd">sram_core</a>. FPU operates only from SRAM memory. Data input for FPU must first be transferred from DDR or PCORE memory space to SRAM space by DP instructions.</td></tr>
+<tr><td>fpu_write*</td><td>Write interface to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/top/sram_core.vhd">sram_core</a>. FPU results are written only to SRAM memory. Results must then be transferred to DDR or PCORE memory space from SRAM space by DP instructions.</td></tr>
 </table>
 <h3 id="32-subcomponents">3.2 Subcomponents</h3>
 <table>
@@ -187,7 +187,7 @@ details > summary { cursor:pointer; }
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/util/fifo.vhd">B_fifo_i</a></td><td>used to store B parameters associated with B+C*X*Y opcode. FPU executions are pipelined with all data input being prefetched and pipelined.</td></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/util/fifo.vhd">X_fifo_i</a></td><td>used to store X parameters associated with B+C*X*Y opcode. FPU executions are pipelined with all data input being prefetched and pipelined.</td></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/util/fifo.vhd">Y_fifo_i</a></td><td>used to store Y parameters associated with B+C*X*Y opcode. FPU executions are pipelined with all data input being prefetched and pipelined.</td></tr>
-<tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/falu_vector.vhd">falu_vector</a></td><td>Perform FPU operations in vector mode by nstantiating an array of falu_core.</td></tr>
+<tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/falu_vector.vhd">falu_vector</a></td><td>Perform FPU operations in vector mode by instantiating an array of falu_core.</td></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/falu_core.vhd">falu_core</a></td><td>Perform FPU operations for each vector elements</td></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/falu.vhd">falu</a></td><td>performs all falu_core functions except for the SUM opcode which is executed by falu2 instead.</td></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/falu.vhd">falu2</a></td><td>performs the SUM part after the MAC operations from falu. For example with the operation SUM(X*Y*C), the X*Y*C is performed by falu and results from falu are summed together by falu2</td></tr>
@@ -209,8 +209,8 @@ details > summary { cursor:pointer; }
 <p>Data fetching is streamed to FPU from SRAM. Data fetching are overlapped with execution, therefore adding no delay to FPU execution.</p>
 <p>FPU operates from SRAM memory space only</p>
 <ul>
-<li>FPU data input must first be transfered from PCORE or DDR space to SRAM space by DP instructions</li>
-<li>FPU results must be transfered to PCORE or DDR space from SRAM space by DP instructions</li>
+<li>FPU data input must first be transferred from PCORE or DDR space to SRAM space by DP instructions</li>
+<li>FPU results must be transferred to PCORE or DDR space from SRAM space by DP instructions</li>
 </ul>
 <p>For highest performance, FPU should be used under both HART context. There is 1 FPU hardware instance but it can operate under different HART context. One can use one HART context to transfer data between SRAM and DDR/PCORE while the other HART context is still busy executing FPU instructions. This way, all memory overhead are overlapped with FPU execution.</p>
 <h2 id="4-ztachipcore">4. ztachip.core</h2>

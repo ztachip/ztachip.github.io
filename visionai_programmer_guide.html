@@ -134,7 +134,7 @@ details > summary { cursor:pointer; }
 <p>To support these acceleration functions, a graph-based framework is introduced. Different vision and AI functions are connected into a graph of execution nodes.</p>
 <p>Users can use this graph framework to integrate their own custom acceleration functions with ztachip vision-ai stack.</p>
 <h2 id="2-graph-framework">2. GRAPH FRAMEWORK</h2>
-<p>Graph is a ztachip framework used to connect different processing nodes together. It is particular popular framework used by many other AI and vision frameworks such as OpenCV, TensorFLow, OpenVX, etc...</p>
+<p>Graph is a ztachip framework used to connect different processing nodes together. It is a particularly popular framework used by many other AI and vision frameworks such as OpenCV, TensorFLow, OpenVX, etc.</p>
 <p>Each ztachip acceleration functions are packaged as a graph node.</p>
 <p>The flow of execution is then specified by how the graph nodes are connected to form a graph.</p>
 <p>There can be multiple Graph objects representing different execution flow.</p>
@@ -180,7 +180,7 @@ details > summary { cursor:pointer; }
 <p>Parameters are like 1.2.1.2</p>
 <p>Output:</p>
 <ul>
-<li>ZtaStatusOk if sucessful</li>
+<li>ZtaStatusOk if successful</li>
 <li>ZtaStatusFail otherwise.</li>
 </ul>
 <h5 id="2214-ztastatus-clonetensor-other">2.2.1.4 ZtaStatus Clone(TENSOR *other)</h5>
@@ -316,7 +316,7 @@ details > summary { cursor:pointer; }
 <table>
 <tr><th>Name</th><th>Description</th></tr>
 <tr><td>queue</td><td>There may be multiple graphs running simultaneously.<br>Each graph has a unique queue id.<br>Graph node will use this queue id to generate a unique job-id which will then be passed to ztachip for task completion notification.</td></tr>
-<tr><td>stepMode</td><td>If false, then execute this node till completion.<br>If true, then partially execute this node. This function will be invoked again for the node to continue with the execution.<br>This is useful when a graph node may take a long execution time, and step mode allows execution of a slow graph to be pre-empted by other more critical graph.</td></tr>
+<tr><td>stepMode</td><td>If false, then execute this node until completion.<br>If true, then partially execute this node. This function will be invoked again for the node to continue with the execution.<br>This is useful when a graph node may take a long execution time, and step mode allows execution of a slow graph to be pre-empted by other more critical graph.</td></tr>
 </table>
 <p>Output:</p>
 <ul>
@@ -596,7 +596,7 @@ while(graph[0].IsRunning() || graph[1].IsRunning()) {
 <table>
 <tr><th>Name</th><th>Description</th></tr>
 <tr><td>input</td><td>Input tensor.</td></tr>
-<tr><td>output</td><td>Output tensor with width=input&#x27;s width, height=input&#x27;s height, dataType=int16.<br>Data elements are feature detection scores. zero for no detection.</td></tr>
+<tr><td>output</td><td>Output tensor with width=input&#x27;s width, height=input&#x27;s height, dataType=int16.<br>Data elements are feature detection scores. Zero for no detection.</td></tr>
 </table>
 <h4 id="342-ztastatus-createtensor-inputtensor-output">3.4.2 ZtaStatus Create(TENSOR <em>input,TENSOR </em>output)</h4>
 <p>Call to initialize graph node when default constructor was used.</p>

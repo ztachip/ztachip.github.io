@@ -128,7 +128,7 @@ details > summary { cursor:pointer; }
 <tr><td>input</td><td>input tensor to this GraphNode</td></tr>
 <tr><td>output</td><td>output tensor from this GraphNode</td></tr>
 <tr><td>color</td><td>color of the resulted output tensor<br>zta.MONO1: Single channel monochrome<br>zta.MONO3: 3-channel monochrome where R,G,B channels have same value.<br>zta.COLOR: 3-channel RGB color.</td></tr>
-<tr><td>format</td><td>Format of the resulted output tensor<br>zta.PLANAR: channels are seperated as RRR....GGG....BBB....<br>zta.INTERLEAVED: channels are seperated as RGBRGBRGB....</td></tr>
+<tr><td>format</td><td>Format of the resulted output tensor<br>zta.PLANAR: channels are separated as RRR....GGG....BBB....<br>zta.INTERLEAVED: channels are separated as RGBRGBRGB....</td></tr>
 <tr><td>row,col</td><td>Apply when output tensor is DisplayTensor. Specify where on the display to copy the tensor to. If not specified then [0,0] is assumed.</td></tr>
 </table>
 <h4 id="122-graphnodecannyinputoutput">1.2.2 GraphNodeCanny(input,output)</h4>
@@ -158,7 +158,7 @@ details > summary { cursor:pointer; }
 <tr><td>input</td><td>Input tensor. This node expects input to be color=zta.MONO1 and format=zta.PLANAR.</td></tr>
 </table>
 <h4 id="125-graphnodeopticalflowinputoutput">1.2.5 GraphNodeOpticalFlow(input,output)</h4>
-<p>This GraphNoode performs motion detection using OpticalFlow algo.</p>
+<p>This GraphNode performs motion detection using OpticalFlow algo.</p>
 <p>Parameters:</p>
 <table>
 <tr><th>Name</th><th>Description</th></tr>
@@ -202,7 +202,7 @@ details > summary { cursor:pointer; }
 <tr><td>timeout_in_ms</td><td>Time limit in milliseconds.</td></tr>
 </table>
 <h3 id="23-graphisbusy">2.3 Graph.IsBusy()</h3>
-<p>To check if graph is still busy running. Normally used in conjection with RunWithTimeout.</p>
+<p>To check if graph is still busy running. Normally used in conjunction with RunWithTimeout.</p>
 <h2 id="3-drawing-functions">3. Drawing functions</h2>
 <p>Drawing is done on a canvas work area defined by TensorDisplay and not directly to the display.</p>
 <h3 id="31-ztacanvasdrawtexttextrowcol">3.1 zta.CanvasDrawText(text,row,col)</h3>

@@ -196,9 +196,9 @@ details > summary { cursor:pointer; }
 </ul>
 </div><div class="main"><h1 id="ztachip-programmers-guide">ztachip Programmer&#x27;s Guide</h1>
 <h2 id="1-introduction">1. Introduction</h2>
-<p>Domain-Specific-Architecture (DSA) is a general trend in computing research in-order to keep up with the future computing demand fuelled by the exponential growth of AI.</p>
+<p>Domain-Specific-Architecture (DSA) is a general trend in computing research in order to keep up with the future computing demand fueled by the exponential growth of AI.</p>
 <p>With DSA, the goal is to define a domain of applications where a special computing architecture will be more efficient compared to a more general-purpose computing architecture.</p>
-<p>ztachip domain are applications that can be expressed as a sequential steps of tensor operations. There are 2 primary types of tensor operations defined:</p>
+<p>ztachip&#x27;s domain is applications that can be expressed as a sequence of tensor operations. There are 2 primary types of tensor operations defined:</p>
 <ul>
 <li>Tensor data operations: Involving tensor operations such as tensor data copy, tensor transpose, dimensions resize, data remapping...</li>
 <li>Tensor operator operations: Performing computational tasks on a set of tensors.</li>
@@ -207,8 +207,8 @@ details > summary { cursor:pointer; }
 <p>The goal for DSL is to provide a programming language that is:</p>
 <ul>
 <li>Easy to use and learn.</li>
-<li>The language hides the complexity of hardware implementation from software users.</li>
-<li>Flexible enough to cover as wide range of applications as possible.</li>
+<li>Able to hide the complexity of hardware implementation from software users.</li>
+<li>Flexible enough to cover as wide a range of applications as possible.</li>
 </ul>
 <p>ztachip&#x27;s DSL is composed of 2 elements:</p>
 <ul>
@@ -216,7 +216,7 @@ details > summary { cursor:pointer; }
 <li>pcore programs</li>
 </ul>
 <h3 id="11-tensor-programs">1.1 tensor programs</h3>
-<p>Tensor programs are codes that run on host processor such as RISCV. It generates and sends proprietary tensor instructions to ztachip&#x27;s master processor called tensor-core.</p>
+<p>Tensor programs are code that runs on a host processor such as RISCV. They generate and send proprietary tensor instructions to ztachip&#x27;s master processor called tensor-core.</p>
 <p>Tensor programs have suffix *.m</p>
 <p>Tensor programs are primarily C-programs but with some special extensions. There is a special ztachip compiler that converts these special extensions to tensor instructions before the program can then be compiled with standard RISCV C/C++ compiler.</p>
 <p>With tensor programs, programmers express the problems as a sequence of high-level tensor instructions. Computational tasks are presented as tensor operators that will be defined later by pcore programs.</p>
@@ -225,13 +225,13 @@ details > summary { cursor:pointer; }
 <h3 id="12-pcore-programs">1.2 pcore programs</h3>
 <p>pcore programs implement the tensor operators that can be invoked by tensor programs.</p>
 <p>pcore programs are executed on an array of ztachip&#x27;s proprietary VLIW processors called p-cores. VLIW stands for very-long-instruction-word where each instruction can perform many operations at the same time.</p>
-<p>pcore programs are files with suffix *.p pcore programs are multi-threaded with 16 threads. These threads are hardware-based threads without overhead and dispatched in a round-robin fashion. We call these threads to be p-threads.</p>
+<p>pcore programs are files with suffix *.p pcore programs are multi-threaded with 16 threads. These threads are hardware-based threads without overhead and dispatched in a round-robin fashion. We call these p-threads.</p>
 <p>Tensor operators are presented as operators of C++ object class. Related tensor operators are then grouped together under the same C++ object class. These object classes are single instance objects so they are statically allocated. Due to limited memory available, these objects are overlapped in memory allocation. Therefore, users must partition these objects in such a way that they are not in use at the same time.</p>
 <h3 id="13-compare-ztachip-dsl-with-traditional-programming">1.3 Compare ztachip DSL with traditional programming</h3>
 <p>With traditional programming, data and execution steps are often interleaved.</p>
 <p>Traditional architecture requires data to be loaded first from memory to on-chip registers before computational steps can take place. But this would create a lot of memory round trip delay and stall cycles especially when data is not readily available in cache.</p>
 <p>But with ztachip, computation and data transfer with external memory are decoupled from one another.</p>
-<p>With ztachip, data are loaded/saved between external memory and pcore&#x27;s internal memory in a streaming fashion with advanced data fetching and no round-trip delay. This results in huge gain in memory bandwidth usage efficiencies. Computational steps are also very efficient without any memory stall cycles since computation reference pcore&#x27;s internal memory only.</p>
+<p>With ztachip, data is loaded/saved between external memory and pcore&#x27;s internal memory in a streaming fashion with advanced data fetching and no round-trip delay. This results in huge gain in memory bandwidth usage efficiencies. Computational steps are also very efficient without any memory stall cycles since computation references pcore&#x27;s internal memory only.</p>
 <p>Also, computational steps being represented as tensor operators provide a natural way to express algorithm parallelism where many computational units can perform similar computation on many different elements of tensors.</p>
 <h2 id="2-tensor-programs">2. TENSOR PROGRAMS</h2>
 <p>Tensor programs are C-codes that are executed on host processor such as RISCV.</p>
@@ -241,7 +241,7 @@ details > summary { cursor:pointer; }
 <li>Dispatching tensor operator executions defined by p-core programs.</li>
 </ul>
 <p>Tensor programs are C programs with special embedded tensor syntax extensions. Tensor extensions are lines that begin with character &#x27;&gt;&#x27;.</p>
-<p>ztachip special compiler replaces these special extensions with appropriate tensor instruction binary that are then being pushed to tensor processor&#x27;s instruction queue.</p>
+<p>ztachip special compiler replaces these special extensions with appropriate tensor instruction binaries that are then pushed to tensor processor&#x27;s instruction queue.</p>
 <p>There can be up to 2 hardware-based threads running in the tensor core. We call these t-threads.</p>
 <p>t-threads are useful in interleaving memory operation cycle from one t-thread with tensor operator execution cycle from the other t-thread. This greatly improves memory bandwidth efficiencies.</p>
 <h3 id="21-tensor-data-object-definition">2.1 Tensor data object definition</h3>
@@ -344,7 +344,7 @@ details > summary { cursor:pointer; }
 
 // Then assign variable with a tensor definition.
 &gt; $coef_pcore := PCORE(8)[0:7].convolution::coef[0:1][0:7];</code></pre>
-<p>Whereever $coef_pcore being referenced, the expression representing the variable will be substituted in its place.</p>
+<p>Wherever $coef_pcore being referenced, the expression representing the variable will be substituted in its place.</p>
 <p>Tensor variables can also have an argument. The argument is specified when tensor variables are being referenced. &#x27;$&#x27; is tensor variable&#x27;s argument place holder.</p>
 <h4 id="221-tensor-variables---example-1">2.2.1 Tensor variables - example 1</h4>
 <p>If a tensor variable $coef_ddr is defined as</p>
@@ -563,7 +563,7 @@ PCORE[0].THREAD[0][7].myclass::myvar[0] &lt;= p[7];
 <p>Now boundary check of the last 2 dimensions of DDR tensor is disabled. Read/Write access to out-of-bound index is carried out as if the index is valid.</p>
 <h4 id="2317-tensor-transfer-with-overlay-dimension">2.3.17 Tensor transfer with overlay dimension</h4>
 <p>Tensor can be defined to have an overlapping dimension definition.</p>
-<p>This is useful in-order to add additional boundary checks on the tensor read/write access.</p>
+<p>This is useful in order to add additional boundary checks on the tensor read/write access.</p>
 <h5 id="23171-tensor-transfer-with-overlapped-dimension---example-1">2.3.17.1 Tensor transfer with overlapped dimension - Example 1</h5>
 <pre><code>DDR(p,1000(100,200))[:][:]</code></pre>
 <p>Tensor above is defined as dimension 100x200 but also constrained as 1-D dimension 1000.</p>
@@ -646,7 +646,7 @@ DTYPE(fmt) PCORE[0].THREAD[0:2].myclass::var[0:3] &lt;= DTYPE(fmt) DDR(p,100,2,2
 <p>Tensor core ensures that all memory operations to/from pcore memory space are completed before tensor operators can commence.</p>
 <p>Tensor operators are executed under one of the two t-threads with each t-thread having its own pcore memory space. This is an important concept since it allows tensor operator to be executed on t-thread A while t-thread B still busy with its memory operation.</p>
 <h4 id="241-tensor-operator-syntax">2.4.1 Tensor operator syntax</h4>
-<p>Example below invokes a tensor operator defined as covolution::exe in pcore program</p>
+<p>Example below invokes a tensor operator defined as convolution::exe in pcore program</p>
 <pre><code>&gt; EXE_LOCKSTEP(convolution::exe);</code></pre>
 <p>Example below invokes the tensor operator but the execution is limited only to 4 pcores.</p>
 <pre><code>&gt; EXE_LOCKSTEP(convolution::exe,4);</code></pre>
@@ -660,9 +660,9 @@ func=ztaBuildKernelFunc($convolution::exe,4,8);
 <h3 id="25-fpu-operators">2.5 FPU operators</h3>
 <p>ztachip has a dedicated unit to perform various floating point operators.</p>
 <p>FPU unit operates on data resides in SCRATCH space only. FPU data input must first be transferred from PCORE or DDR space to SCRATCH space.</p>
-<p>FPU results are written to SCRACH space only. FPU results must then be transferred to PCORE or DDR space from SCRATCH space.</p>
+<p>FPU results are written to SCRATCH space only. FPU results must then be transferred to PCORE or DDR space from SCRATCH space.</p>
 <p>In similar way as other MCORE operations, FPU operators are assigned to a HART context depending on when it is being issued.</p>
-<p>FPU waits for all data transfers to/from SCRACH space to be completed before FPU can begin with execution. FPU only waits for the completion of SCRACH data transfer with the same HART context as FPU HART context.</p>
+<p>FPU waits for all data transfers to/from SCRATCH space to be completed before FPU can begin with execution. FPU only waits for the completion of SCRATCH data transfer with the same HART context as FPU HART context.</p>
 <h4 id="251-fpu-operators-definitions">2.5.1 FPU operators definitions</h4>
 <h5 id="2511-general-syntax">2.5.1.1 General syntax</h5>
 <p>FPU operators are issued from mcore programs with the following general syntax</p>
@@ -808,7 +808,7 @@ void my_kernel()
 &gt;FPU.FMA(N=n,Y=y3,A=a3,X1=x1,X2=x2);
 &gt;PCORE(...) &lt;= DDR(...); // This instruction is executed even FPU still busy</code></pre>
 <h3 id="26-host-supporting-functions">2.6 HOST SUPPORTING FUNCTIONS</h3>
-<p>Functions described in following sections are functions running on host processors in-order to support ztachip execution framework.</p>
+<p>Functions described in the following sections run on the host processor in order to support the ztachip execution framework.</p>
 <h4 id="261-void-ztainit">2.6.1 void ztaInit()</h4>
 <p>This is the first function to be called by host processor.</p>
 <p>Performs necessary ztachip framework initialization.</p>
@@ -828,7 +828,7 @@ void my_kernel()
 <p>Return value:</p>
 <p>None</p>
 <h4 id="263-void-ztataskyield">2.6.3 void ztaTaskYield()</h4>
-<p>For thread spawned by ztaDualHardExecute to yield control to the other thread.</p>
+<p>For thread spawned by ztaDualHartExecute to yield control to the other thread.</p>
 <p>Parameters:</p>
 <p>None</p>
 <p>Return value:</p>
@@ -1422,7 +1422,7 @@ _kernel_ void example::add() {
 <table>
 <tr><th>Example</th><th>Source files</th></tr>
 <tr><td>Canny edge detection</td><td>ztachip/SW/apps/canny/kernels/canny.m<br>ztachip/SW/apps/canny/kernels/canny.p</td></tr>
-<tr><td>Colour space conversion</td><td>ztachip/SW/apps/color/kernels/color.m<br>ztachip/SW/apps/color/kernels/color.p</td></tr>
+<tr><td>Color space conversion</td><td>ztachip/SW/apps/color/kernels/color.m<br>ztachip/SW/apps/color/kernels/color.p</td></tr>
 <tr><td>Contrast equalizer</td><td>ztachip/SW/apps/equalize/kernels/equalize.m<br>ztachip/SW/apps/equalize/kernels/equalize.p</td></tr>
 <tr><td>Gaussian blurring</td><td>ztachip/SW/apps/gaussian/kernels/gaussian.m<br>ztachip/SW/apps/gaussian/kernels/gaussian.p</td></tr>
 <tr><td>Harris Corner detector</td><td>ztachip/SW/apps/harris/kernels/harris.m<br>ztachip/SW/apps/harris/kernels/harris.p</td></tr>

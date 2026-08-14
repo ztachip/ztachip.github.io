@@ -86,9 +86,9 @@ details > summary { cursor:pointer; }
 <p>However, SA is also very difficult to program. Users of SA often rely on prebuilt libraries provided by hardware vendors. Training/research AI workload that requires custom algorithm implementation is therefore not suitable for SA.</p>
 <p>SA is also not flexible enough to adapt to a wider range of applications. For example, most ASICs with SA still require a powerful CPU and GPU to perform other tasks such as vision preprocessing. For many edge AI applications involving vision, the vision preprocessing steps are often just as computing intensive as the AI steps.</p>
 <h2 id="3-dsa-with-ztachip">3. DSA with ztachip</h2>
-<p>ztachip is an opensourse DSA architecture. It is a novel architecture as far as we know.</p>
+<p>ztachip is an open-source DSA architecture. It is a novel architecture as far as we know.</p>
 <p>The primary objective for ztachip is to provide DSA that covers a wide range of applications and not just for AI. DSA programming with ztachip should also be intuitive and simple.</p>
-<p>ztachip targets applications that can be expressed as a sequence of tensor operations. Tensor operations include data operation and computing operation. Data operations involving tensors may also involve complex operations such as tensor transpose, tensor dimension resize, data remapping, etc...</p>
+<p>ztachip targets applications that can be expressed as a sequence of tensor operations. Tensor operations include data operation and computing operation. Data operations involving tensors may also involve complex operations such as tensor transpose, tensor dimension resize, data remapping, etc.</p>
 <p><strong>Typical sequence of a ztachip application</strong></p>
 <pre><code>TENSOR_A &lt;= DATA_TRANSFORMATION &lt;= TENSOR_B
 
@@ -97,7 +97,7 @@ TENSOR_OPERATOR(TENSOR_A)
 TENSOR_B &lt;= DATA_TRANSFORMATION &lt;= TENSOR_A
 :
 :</code></pre>
-<p>The reason for the above constraints is that we would like data plane operations to be decoupled from computing operations. Tensor data operations are used to moved data between external memory and internal memory. And tensor computing operations are performed strictly from internal memory only. This strategy provides many advantages to the hardware design including</p>
+<p>The reason for the above constraints is that we would like data plane operations to be decoupled from computing operations. Tensor data operations are used to move data between external memory and internal memory. And tensor computing operations are performed strictly from internal memory only. This strategy provides many advantages to the hardware design including</p>
 <ul>
 <li>Memory transfer to/from external memory is streaming with prefetching and without round trip delay</li>
 <li>Tensor data operations specify exactly the data required for later execution. This</li>
@@ -108,9 +108,9 @@ TENSOR_B &lt;= DATA_TRANSFORMATION &lt;= TENSOR_A
 </ul>
 <p>to specify algorithm parallelism. Many hardware threads can then be mapped to a large number of parallel tasks. For example with vector addition, each element-wise addition can be mapped to a thread.</p>
 <ul>
-<li>Tensor computing involves only with internal memory, greatly simplifying</li>
+<li>Tensor computing involves only internal memory, greatly simplifying</li>
 </ul>
-<p>the hardware design since there is no memory stall cycles to contend with.</p>
+<p>the hardware design since there are no memory stall cycles to contend with.</p>
 <h2 id="4-what-are-provided-with-ztachip">4. What are provided with ztachip</h2>
 <p>ztachip provides the following DSA components:</p>
 <ul>
