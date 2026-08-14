@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Getting Started: Running a Vision/AI Demo on Artix-7 FPGA</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23454f5f%22/%3E%3Crect%20x%3D%2222%22%20y%3D%222%22%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23454f5f%22/%3E%3Crect%20x%3D%2242%22%20y%3D%222%22%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23454f5f%22/%3E%3Crect%20x%3D%222%22%20y%3D%2222%22%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23454f5f%22/%3E%3Crect%20x%3D%2222%22%20y%3D%2222%22%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%232fd3c0%22/%3E%3Crect%20x%3D%2242%22%20y%3D%2222%22%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23454f5f%22/%3E%3Crect%20x%3D%222%22%20y%3D%2242%22%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23454f5f%22/%3E%3Crect%20x%3D%2222%22%20y%3D%2242%22%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23454f5f%22/%3E%3Crect%20x%3D%2242%22%20y%3D%2242%22%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%224%22%20fill%3D%22%23454f5f%22/%3E%3C/svg%3E">
+<style>
+:root { color-scheme: light; }
+body { margin:0; background:#ffffff; color:#24292f;
+       font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+       font-size:17px; line-height:1.65; }
+h1,h2,h3,h4,h5,h6 { line-height:1.3; margin:26px 0 10px 0; }
+h1 { font-size:30px; } h2 { font-size:25px; border-bottom:1px solid #d8dce0;
+     padding-bottom:6px; } h3 { font-size:20px; } h4 { font-size:18px; }
+h5,h6 { font-size:17px; }
+a { color:#0a58ca; }
+img { max-width:100%; }
+p { margin:10px 0; }
+ul { margin:8px 0 8px 0; padding-left:26px; }
+li { margin:3px 0; }
+hr { border:0; border-top:1px solid #d8dce0; margin:24px 0; }
+
+pre { background:#e4e6e8; padding:12px 14px; border:1px solid #d8dce0;
+      border-radius:6px; overflow-x:auto; }
+pre code { background:transparent; color:#1f2328; padding:0;
+           font-size:14px; line-height:1.55; }
+code { background:#e4e6e8; color:#1f2328; padding:1px 4px; border-radius:4px;
+       font-family:'Cascadia Code',Consolas,'Liberation Mono',monospace;
+       font-size:14px; }
+
+
+table { border-collapse:collapse; margin:8px 0 16px 0; }
+th, td { border:1px solid #c9ced4; padding:6px 10px; vertical-align:top; }
+th { background:#eef1f4; text-align:left; }
+
+details > summary { cursor:pointer; }
+
+.layout { display:flex; align-items:flex-start; gap:0; }
+.side { flex:0 0 auto; width:290px; min-width:150px; max-width:70%;
+        resize:horizontal; overflow:auto; height:100vh; box-sizing:border-box;
+        position:sticky; top:0; background:#000000; color:#e8eaed;
+        padding:56px 16px 26px 16px; font-size:14px; line-height:1.7; }
+.side a { color:#e8eaed; text-decoration:none; }
+.side a:hover { text-decoration:underline; }
+.side ul { list-style:none; margin:4px 0 4px 4px; padding-left:12px; }
+.side .plate { background:#d6e8ff; color:#0b2545; padding:9px 10px;
+        border-radius:6px; text-align:center; font-weight:bold;
+        margin:0 0 14px 0; line-height:1.35; }
+.main { flex:1 1 auto; min-width:0; padding:0 30px; max-width:940px; }
+.page { padding:0 40px; max-width:960px; margin:0 auto; }
+
+/* landing page */
+.hero { text-align:center; padding:38px 24px 30px 24px; margin:0 0 6px 0;
+        background:#0b2545; color:#ffffff; border-radius:12px; }
+.hero .mark { width:66px; height:66px; display:block; margin:0 auto 16px auto; }
+.hero h1 { margin:0 0 12px 0; font-size:36px; color:#ffffff;
+        border:0; letter-spacing:-0.5px; }
+.hero p { margin:0 auto; max-width:640px; font-size:17px; color:#c8d6e8;
+        line-height:1.55; }
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+        gap:16px; margin:26px 0 40px 0; }
+.card { display:block; text-decoration:none; background:#f6f8fa;
+        border:1px solid #d0d7de; border-radius:10px; padding:18px 20px;
+        transition:border-color .15s, box-shadow .15s, transform .15s; }
+.card:hover { border-color:#0a6abf; box-shadow:0 4px 14px rgba(10,37,69,.10);
+        transform:translateY(-2px); }
+.card .t { display:block; color:#0a4a8f; font-weight:700; font-size:17px;
+        margin-bottom:7px; }
+.card .d { display:block; color:#41484f; font-size:14px; line-height:1.55; }
+
+/* toolbar: show / hide the navigation panel, and return home */
+.navbar { position:fixed; top:10px; left:10px; z-index:40;
+        display:flex; align-items:flex-start; gap:8px; }
+.navbtn { display:inline-flex; align-items:center; justify-content:center;
+        width:36px; height:31px; padding:0; cursor:pointer;
+        background:#1f2937; color:#e8eaed; border:1px solid #3a4553;
+        border-radius:6px;
+        box-shadow:0 2px 0 #080d13, inset 0 1px 0 rgba(255,255,255,.10); }
+.navbtn:hover { background:#2b3a4d; }
+.navbtn .ico { width:17px; height:17px; fill:currentColor; display:block; }
+/* the contents button sits pressed in while the panel is open */
+body:not(.nav-hidden) .navtoggle { background:#0c131b; border-color:#26313f;
+        box-shadow:inset 0 2px 5px rgba(0,0,0,.7); transform:translateY(2px); }
+body.nav-hidden .side { display:none; }
+
+/* phones: the panel covers the screen, and closes once a section is chosen */
+@media (max-width:820px) {
+  .layout { display:block; }
+  .side { position:fixed; inset:0; width:100% !important; max-width:none;
+          height:100vh; resize:none; padding:60px 20px 30px 20px;
+          font-size:16px; z-index:30; }
+  .main { padding:52px 18px 0 18px; max-width:none; }
+  .page { padding:52px 18px 0 18px; }
+}
+</style>
+</head>
+<body>
+<div class="layout"><div class="side">
+<div class="plate">Getting Started: Running a Vision/AI Demo on Artix-7 FPGA</div>
+<b>Contents</b>
+<ul>
+<li><a href="#1-software-build-procedure">1. Software Build Procedure</a></li>
+<ul>
+<li><a href="#11-prerequisites-ubuntu">1.1 Prerequisites</a></li>
+<li><a href="#12-download-and-build-the-risc-v-toolchain">1.2 Download and Build the RISC-V Toolchain</a></li>
+<ul>
+<li><a href="#121-option-1-use-the-prebuilt-toolchain">1.2.1 Option 1: Use the Prebuilt Toolchain</a></li>
+<li><a href="#122-option-2-build-the-toolchain-from-source">1.2.2 Option 2: Build the Toolchain from Source</a></li>
+</ul>
+<li><a href="#13-download-ztachip">1.3 Download ztachip</a></li>
+<li><a href="#14-build-ztachip">1.4 Build ztachip</a></li>
+<li><a href="#15-micropython-integration-recommended">1.5 MicroPython Integration</a></li>
+</ul>
+<li><a href="#2-fpga-build-procedure">2. FPGA Build Procedure</a></li>
+<li><a href="#3-running-the-demos">3. Running the Demos</a></li>
+<ul>
+<li><a href="#31-preparing-the-hardware">3.1 Preparing the Hardware</a></li>
+<li><a href="#32-open-the-serial-port">3.2 Open the Serial Port</a></li>
+<li><a href="#33-download-and-build-openocd">3.3 Download and Build OpenOCD</a></li>
+<li><a href="#34-launch-openocd">3.4 Launch OpenOCD</a></li>
+<li><a href="#35-demo-preparation">3.5 Demo Preparation</a></li>
+<li><a href="#36-upload-the-software-image-with-gdb">3.6 Upload the Software Image with GDB</a></li>
+<ul>
+<li><a href="#361-bare-metal-mode">3.6.1 Bare-Metal Mode</a></li>
+<li><a href="#362-micropython-mode-recommended">3.6.2 MicroPython Mode</a></li>
+</ul>
+<li><a href="#37-start-the-image-transfer">3.7 Start the Image Transfer</a></li>
+<li><a href="#38-run-the-program">3.8 Run the Program</a></li>
+</ul>
+</ul>
+</div><div class="main"><div class="navbar"><button class="navbtn navtoggle" onclick="navToggle()" title="Show or hide the contents" aria-label="Contents"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="2" rx="1"/><rect x="1" y="5" width="14" height="2" rx="1"/><rect x="1" y="9" width="14" height="2" rx="1"/><rect x="1" y="13" width="14" height="2" rx="1"/></svg></button><a class="navbtn" href="index.html" title="Home" aria-label="Home"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 0.7 7.6h1.9V14.6h4V10.4h2.8v4.2h4V7.6h1.9z"/></svg></a></div><h1 id="getting-started-running-a-visionai-demo-on-artix-7-fpga">Getting Started: Running a Vision/AI Demo on Artix-7 FPGA</h1>
+<p>This guide walks through everything needed to see ztachip running: building the software, building the FPGA image, and loading and running the vision and AI demos on a Digilent Arty A7 board.</p>
+<h2 id="1-software-build-procedure">1. Software Build Procedure</h2>
+<h3 id="11-prerequisites-ubuntu">1.1 Prerequisites (Ubuntu)</h3>
+<p>Install the required Ubuntu packages:</p>
+<pre><code>sudo apt-get install autoconf automake autotools-dev curl python3 \
+    libmpc-dev libmpfr-dev libgmp-dev gawk build-essential \
+    bison flex texinfo gperf libtool patchutils bc \
+    zlib1g-dev libexpat-dev python3-pip
+
+pip3 install numpy</code></pre>
+<h3 id="12-download-and-build-the-risc-v-toolchain">1.2 Download and Build the RISC-V Toolchain</h3>
+<h4 id="121-option-1-use-the-prebuilt-toolchain">1.2.1 Option 1: Use the Prebuilt Toolchain</h4>
+<p>Download the prebuilt RISC-V <a href="https://github.com/ztachip/ztachip/releases/download/AI_agents/riscv.tar.gz">toolchain</a>.</p>
+<p>Then extract it into <code>/opt</code>:</p>
+<pre><code>sudo tar -xzvf riscv.tar.gz -C /</code></pre>
+<p>The toolchain will be installed under:</p>
+<pre><code>/opt/riscv</code></pre>
+<h4 id="122-option-2-build-the-toolchain-from-source">1.2.2 Option 2: Build the Toolchain from Source</h4>
+<p>If you prefer to build the RISC-V GNU toolchain yourself:</p>
+<pre><code>export PATH=/opt/riscv/bin:$PATH
+
+git clone https://github.com/riscv/riscv-gnu-toolchain
+cd riscv-gnu-toolchain
+
+./configure --prefix=/opt/riscv --with-arch=rv32im --with-abi=ilp32
+
+sudo make</code></pre>
+<h3 id="13-download-ztachip">1.3 Download ztachip</h3>
+<p>Clone the ztachip repository:</p>
+<pre><code>git clone https://github.com/ztachip/ztachip.git</code></pre>
+<h3 id="14-build-ztachip">1.4 Build ztachip</h3>
+<p>Add the RISC-V toolchain to your path and build the ztachip compiler, file system, kernels, and software image:</p>
+<pre><code>export PATH=/opt/riscv/bin:$PATH
+
+cd ztachip
+
+cd SW/compiler
+make clean all
+
+cd ../fs
+python3 bin2c.py
+
+cd ..
+make clean all -f makefile.kernels
+make clean all</code></pre>
+<h3 id="15-micropython-integration-recommended">1.5 MicroPython Integration (Recommended)</h3>
+<p>ztachip can run under MicroPython, providing a Python programming interface for accessing ztachip functionality.</p>
+<p>See the <a href="MicropythonUserGuide.html">MicroPython Programmer&#x27;s Guide</a> for more information.</p>
+<p>To build ztachip with MicroPython:</p>
+<pre><code>git clone https://github.com/micropython/micropython.git
+
+cd micropython/ports
+
+cp -avr &lt;ztachip installation folder&gt;/micropython/ztachip_port .
+
+cd ztachip_port
+
+export PATH=/opt/riscv/bin:$PATH
+export ZTACHIP=&lt;ztachip installation folder&gt;
+
+make clean
+make</code></pre>
+<h2 id="2-fpga-build-procedure">2. FPGA Build Procedure</h2>
+<p>The reference FPGA implementation uses Xilinx Vivado.</p>
+<p>1. Download the free <strong>Xilinx Vivado WebPACK</strong> edition. 2. Create the Vivado project, build the FPGA image, and program it into flash by following the <a href="https://github.com/ztachip/ztachip/blob/master/Documentation/Vivado.md">FPGA Build Procedure</a>.</p>
+<h2 id="3-running-the-demos">3. Running the Demos</h2>
+<h3 id="31-preparing-the-hardware">3.1 Preparing the Hardware</h3>
+<p>The reference design requires the following hardware components:</p>
+<ul>
+<li><a href="https://digilent.com/shop/arty-a7-artix-7-fpga-development-board/">Digilent Arty A7-100T development board</a></li>
+<li><a href="https://digilent.com/shop/pmod-vga-video-graphics-array/">Digilent Pmod VGA module</a></li>
+<li><a href="https://www.aliexpress.com/item/1005009373256992.html">Camera module</a></li>
+</ul>
+<p>Attach the VGA and camera modules to the Arty A7 board as shown below.</p>
+<p><img src="media/Documentation_images_arty_board.bmp" alt="Arty A7 Board"></p>
+<p>Connect the camera module to the Arty A7 board as shown below.</p>
+<p><img src="media/Documentation_images_camera_and_arty_connect.bmp" alt="Camera connected to Arty A7"></p>
+<h3 id="32-open-the-serial-port">3.2 Open the Serial Port</h3>
+<p>When running the ztachip MicroPython image, connect to the serial port provided through the Arty A7 USB interface.</p>
+<p>Serial-port flow control must be disabled.</p>
+<p>For example:</p>
+<pre><code>sudo minicom -w -D /dev/ttyUSB1</code></pre>
+<p>&gt; <strong>Note:</strong> After connecting to the serial port for the first time, reset the board by pressing the button next to the USB port. Wait for the green LED to turn on. The USB serial interface must be the first device to connect to USB before ztachip.</p>
+<h3 id="33-download-and-build-openocd">3.3 Download and Build OpenOCD</h3>
+<p>OpenOCD provides the JTAG connection used by the GDB debugger.</p>
+<p>In this example, the program is loaded onto the board using <strong>GDB + JTAG</strong>.</p>
+<p>Install the required packages:</p>
+<pre><code>sudo apt-get install libtool automake libusb-1.0.0-dev \
+    texinfo libusb-dev libyaml-dev pkg-config</code></pre>
+<p>Download and build OpenOCD:</p>
+<pre><code>git clone https://github.com/SpinalHDL/openocd_riscv
+
+cd openocd_riscv
+
+./bootstrap
+./configure --enable-ftdi --enable-dummy
+
+make</code></pre>
+<p>Copy the ztachip OpenOCD configuration files into the OpenOCD directory:</p>
+<pre><code>cp &lt;ztachip installation folder&gt;/tools/openocd/soc_init.cfg .
+cp &lt;ztachip installation folder&gt;/tools/openocd/usb_connect.cfg .
+cp &lt;ztachip installation folder&gt;/tools/openocd/xilinx-xc7.cfg .
+cp &lt;ztachip installation folder&gt;/tools/openocd/jtagspi.cfg .
+cp &lt;ztachip installation folder&gt;/tools/openocd/cpu0.yaml .</code></pre>
+<h3 id="34-launch-openocd">3.4 Launch OpenOCD</h3>
+<p>Make sure the <strong>green LED below the reset button near the USB connector is on</strong>. This indicates that the FPGA has been configured correctly.</p>
+<p>Then launch OpenOCD to provide the JTAG connection for GDB:</p>
+<pre><code>cd &lt;openocd_riscv installation folder&gt;
+
+sudo src/openocd \
+    -f usb_connect.cfg \
+    -c &#x27;set MURAX_CPU0_YAML cpu0.yaml&#x27; \
+    -f soc_init.cfg</code></pre>
+<p>Keep OpenOCD running while using GDB.</p>
+<h3 id="35-demo-preparation">3.5 Demo Preparation</h3>
+<p>The demo requires LLM model files to be available.</p>
+<p>A <strong>TFTP server</strong> must be running on the PC Ethernet interface connected to the Arty A7 board.</p>
+<p>Configure the PC Ethernet interface with the following IP address:</p>
+<pre><code>10.10.10.10</code></pre>
+<p>Copy the following two model files into the TFTP server&#x27;s download directory:</p>
+<ul>
+<li><a href="https://github.com/ztachip/ztachip/releases/download/AI_agents/SMOLLM2.ZUF">SMOLLM2.ZUF</a></li>
+<li><a href="https://github.com/ztachip/ztachip/releases/download/AI_agents/SMOLFC.ZUF">SMOLFC.ZUF</a></li>
+</ul>
+<p>These files contain quantized versions of the LLM models.</p>
+<p>See the <a href="https://github.com/ztachip/ztachip/blob/master/Documentation/QuantizeProcedure.md">Model Quantization Procedure</a> for instructions on creating the quantized models.</p>
+<h3 id="36-upload-the-software-image-with-gdb">3.6 Upload the Software Image with GDB</h3>
+<h4 id="361-bare-metal-mode">3.6.1 Bare-Metal Mode</h4>
+<p>To run ztachip without MicroPython integration, open another terminal and start GDB with the standalone ztachip software image:</p>
+<pre><code>export PATH=/opt/riscv/bin:$PATH
+
+cd &lt;ztachip installation folder&gt;/SW/src
+
+riscv32-unknown-elf-gdb ../build/ztachip.elf</code></pre>
+<h4 id="362-micropython-mode-recommended">3.6.2 MicroPython Mode (Recommended)</h4>
+<p>To run ztachip with MicroPython integration, open another terminal and start GDB with the MicroPython firmware image:</p>
+<pre><code>export PATH=/opt/riscv/bin:$PATH
+
+cd &lt;MicroPython installation folder&gt;/ports/ztachip_port
+
+riscv32-unknown-elf-gdb ./build/firmware.elf</code></pre>
+<h3 id="37-start-the-image-transfer">3.7 Start the Image Transfer</h3>
+<p>From the GDB prompt, enter:</p>
+<pre><code>set pagination off
+target remote localhost:3333
+set remotetimeout 60
+set arch riscv:rv32
+monitor reset halt
+load</code></pre>
+<h3 id="38-run-the-program">3.8 Run the Program</h3>
+<p>After the program has been successfully loaded, run it from the GDB prompt:</p>
+<pre><code>continue</code></pre>
+<p>If running in bare-metal mode, press any button to move between different vision/LLM demos.</p>
+<p>If running in MicroPython mode, at the serial console, hit CTRL+E, then paste one of the Python programs from this <a href="https://github.com/ztachip/ztachip/blob/master/micropython/examples">folder</a> and hit CTRL+D to run. Then hit any button to stop and return to the Python console.</p>
+<p>A demonstration showing how to run the demo is available in this <a href="https://www.youtube.com/watch?v=ng0nCEYE6fc&amp;t=499s">video</a>.</p></div></div>
+<script>
+function navToggle() { document.body.classList.toggle('nav-hidden'); }
+// on a phone the panel starts hidden, so the document is what you see first
+if (window.matchMedia('(max-width:820px)').matches) {
+    document.body.classList.add('nav-hidden');
+}
+// choosing a section on a phone closes the panel again
+document.addEventListener('click', function (e) {
+    var link = e.target.closest && e.target.closest('.side a');
+    if (link && window.matchMedia('(max-width:820px)').matches) {
+        document.body.classList.add('nav-hidden');
+    }
+});
+</script>
+
+</body>
+</html>
