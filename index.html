@@ -39,7 +39,7 @@ details > summary { cursor:pointer; }
 .side { flex:0 0 auto; width:290px; min-width:150px; max-width:70%;
         resize:horizontal; overflow:auto; height:100vh; box-sizing:border-box;
         position:sticky; top:0; background:#000000; color:#e8eaed;
-        padding:14px 16px 26px 16px; font-size:14px; line-height:1.7; }
+        padding:56px 16px 26px 16px; font-size:14px; line-height:1.7; }
 .side a { color:#e8eaed; text-decoration:none; }
 .side a:hover { text-decoration:underline; }
 .side ul { list-style:none; margin:4px 0 4px 4px; padding-left:12px; }
@@ -50,22 +50,56 @@ details > summary { cursor:pointer; }
         background:#1f2937; color:#e8eaed; border:1px solid #3a4553;
         border-radius:5px; font-size:12px; }
 .main { flex:1 1 auto; min-width:0; padding:0 30px; max-width:940px; }
-/* pages without a navigation panel still need breathing room */
-.page { padding:0 40px; max-width:940px; }
+.page { padding:0 40px; max-width:960px; margin:0 auto; }
+
+/* landing page */
+.hero { text-align:center; padding:44px 24px 30px 24px; margin:0 0 6px 0;
+        background:#0b2545; color:#ffffff; border-radius:12px; }
+.hero h1 { margin:0 0 12px 0; font-size:36px; color:#ffffff;
+        border:0; letter-spacing:-0.5px; }
+.hero p { margin:0 auto; max-width:640px; font-size:17px; color:#c8d6e8;
+        line-height:1.55; }
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+        gap:16px; margin:26px 0 40px 0; }
+.card { display:block; text-decoration:none; background:#f6f8fa;
+        border:1px solid #d0d7de; border-radius:10px; padding:18px 20px;
+        transition:border-color .15s, box-shadow .15s, transform .15s; }
+.card:hover { border-color:#0a6abf; box-shadow:0 4px 14px rgba(10,37,69,.10);
+        transform:translateY(-2px); }
+.card .t { display:block; color:#0a4a8f; font-weight:700; font-size:17px;
+        margin-bottom:7px; }
+.card .d { display:block; color:#41484f; font-size:14px; line-height:1.55; }
+
+/* show / hide the navigation panel */
+.navbtn { position:fixed; top:10px; left:10px; z-index:40; cursor:pointer;
+        background:#1f2937; color:#e8eaed; border:1px solid #3a4553;
+        border-radius:6px; padding:7px 12px; font-size:13px;
+        font-family:inherit; }
+.navbtn:hover { background:#2b3a4d; }
+body.nav-hidden .side { display:none; }
+.navbtn .lbl-show { display:none; }
+body.nav-hidden .navbtn .lbl-show { display:inline; }
+body.nav-hidden .navbtn .lbl-hide { display:none; }
+
+/* phones: the panel covers the screen, and closes once a section is chosen */
+@media (max-width:820px) {
+  .layout { display:block; }
+  .side { position:fixed; inset:0; width:100% !important; max-width:none;
+          height:100vh; resize:none; padding:60px 20px 30px 20px;
+          font-size:16px; z-index:30; }
+  .main { padding:52px 18px 0 18px; max-width:none; }
+  .page { padding:52px 18px 0 18px; }
+}
 </style>
 </head>
 <body>
-<div class="page"><h1 id="ztachip-documentation">ztachip Documentation</h1>
-<p>A multicore, data-aware, embedded RISC-V accelerator for edge vision and AI inference. Fully open source — hardware and software — under the Apache 2.0 license.</p>
-<h3 id="technical-overview"><a href="Overview.html">Technical Overview</a></h3>
-<p>What ztachip is, the problem it solves and what it achieves. Explains why a domain-specific architecture is needed for edge AI, what the project provides, and how it compares on performance and power.</p>
-<h3 id="hardware-architecture"><a href="HardwareDesign.html">Hardware Architecture</a></h3>
-<p>How the hardware is put together, component by component: the tensor processor that coordinates everything, the engines that move tensor data to and from memory, the floating point unit, and the array of VLIW cores that do the arithmetic. Each component links to its RTL source.</p>
-<h3 id="programmers-guide"><a href="ztachip_programmer_guide.html">Programmer&#x27;s Guide</a></h3>
-<p>How to program ztachip directly, in its own tensor language. Covers describing data as tensors, moving them between memories, and running operators on them, plus the pcore programs that define those operators, with complete worked examples.</p>
-<h3 id="visionai-stack-programmers-guide"><a href="visionai_programmer_guide.html">VisionAI Stack Programmer&#x27;s Guide</a></h3>
-<p>How to build vision and AI applications by connecting ready-made processing nodes into a graph. The nodes cover edge detection, colour conversion, resizing, optical flow, TensorFlow models and transformer models for LLM and VLM inference, and custom nodes can be added alongside them.</p>
-<h3 id="micropython-programmers-guide"><a href="MicropythonUserGuide.html">MicroPython Programmer&#x27;s Guide</a></h3>
-<p>How to build those same applications from Python, using the same graph of nodes and tensors. The simplest way to use ztachip: a few lines of Python drive the accelerator at full speed, with no hardware knowledge required, just Python skills.</p></div>
+<div class="page"><div class="hero"><h1 id="ztachip-documentation">ztachip Documentation</h1><p>A multicore, data-aware, embedded RISC-V accelerator for edge vision and AI inference. Fully open source — hardware and software — under the Apache 2.0 license.</p></div>
+<div class="cards">
+<a class="card" href="Overview.html"><span class="t">Technical Overview &#8594;</span><span class="d">What ztachip is, the problem it solves and what it achieves. Explains why a domain-specific architecture is needed for edge AI, what the project provides, and how it compares on performance and power.</span></a>
+<a class="card" href="HardwareDesign.html"><span class="t">Hardware Architecture &#8594;</span><span class="d">How the hardware is put together, component by component: the tensor processor that coordinates everything, the engines that move tensor data to and from memory, the floating point unit, and the array of VLIW cores that do the arithmetic. Each component links to its RTL source.</span></a>
+<a class="card" href="ztachip_programmer_guide.html"><span class="t">Programmer&#x27;s Guide &#8594;</span><span class="d">How to program ztachip directly, in its own tensor language. Covers describing data as tensors, moving them between memories, and running operators on them, plus the pcore programs that define those operators, with complete worked examples.</span></a>
+<a class="card" href="visionai_programmer_guide.html"><span class="t">VisionAI Stack Programmer&#x27;s Guide &#8594;</span><span class="d">How to build vision and AI applications by connecting ready-made processing nodes into a graph. The nodes cover edge detection, colour conversion, resizing, optical flow, TensorFlow models and transformer models for LLM and VLM inference, and custom nodes can be added alongside them.</span></a>
+<a class="card" href="MicropythonUserGuide.html"><span class="t">MicroPython Programmer&#x27;s Guide &#8594;</span><span class="d">How to build those same applications from Python, using the same graph of nodes and tensors. The simplest way to use ztachip: a few lines of Python drive the accelerator at full speed, with no hardware knowledge required, just Python skills.</span></a>
+</div></div>
 </body>
 </html>
