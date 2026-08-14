@@ -142,6 +142,12 @@ body.nav-hidden .side { display:none; }
 <li><a href="#15-micropython-integration-recommended">1.5 MicroPython Integration</a></li>
 </ul>
 <li><a href="#2-fpga-build-procedure">2. FPGA Build Procedure</a></li>
+<ul>
+<li><a href="#21-installing-vivado-webpack-edition">2.1 Installing Vivado WebPACK Edition</a></li>
+<li><a href="#22-create-the-project-file">2.2 Create the Project File</a></li>
+<li><a href="#23-build-and-flash-the-fpga-image">2.3 Build and Flash the FPGA Image</a></li>
+<li><a href="#24-support-for-open-source-toolchains">2.4 Support for Open-Source Toolchains</a></li>
+</ul>
 <li><a href="#3-running-the-demos">3. Running the Demos</a></li>
 <ul>
 <li><a href="#31-preparing-the-hardware">3.1 Preparing the Hardware</a></li>
@@ -227,8 +233,49 @@ make clean
 make</code></pre>
 </section>
 <section class="sec"><h2 id="2-fpga-build-procedure">2. FPGA Build Procedure</h2>
-<p>The reference FPGA implementation uses Xilinx Vivado.</p>
-<p>1. Download the free <strong>Xilinx Vivado WebPACK</strong> edition. 2. Create the Vivado project, build the FPGA image, and program it into flash by following the <a href="https://github.com/ztachip/ztachip/blob/master/Documentation/Vivado.md">FPGA Build Procedure</a>.</p>
+<p>The reference FPGA implementation uses Xilinx Vivado. The steps below create the Vivado project, build the FPGA image, and program it into the board&#x27;s flash.</p>
+</section>
+<section class="sec"><h3 id="21-installing-vivado-webpack-edition">2.1 Installing Vivado WebPACK Edition</h3>
+<p>Vivado WebPACK edition is a free IDE for the Artix-7 FPGA family.</p>
+<p><a href="https://www.xilinx.com/support/download.html">Installing Vivado WebPACK edition</a></p>
+</section>
+<section class="sec"><h3 id="22-create-the-project-file">2.2 Create the Project File</h3>
+<p>Launch Vivado.</p>
+<p>On the TCL console command line, issue the following commands:</p>
+<pre><code>cd &lt;ztachip installation folder&gt;/HW/examples/GHRD
+set argv linux # For Linux Only
+source create_project.tcl</code></pre>
+<p>A project file <code>ztachip.xpr</code> should be created after <code>create_project.tcl</code> has finished executing.</p>
+</section>
+<section class="sec"><h3 id="23-build-and-flash-the-fpga-image">2.3 Build and Flash the FPGA Image</h3>
+<p>Open the Vivado project file <code>ztachip/HW/examples/GHRD/ztachip.xpr</code>.</p>
+<p>Then start with the synthesis step as shown below.</p>
+<p><img src="media/Documentation_images_vivado_step1.bmp" alt="vivado step1"></p>
+<p>After the synthesis step has been completed, Vivado will prompt you to continue with the implementation step. Choose the option and click OK.</p>
+<p><img src="media/Documentation_images_vivado_step2.bmp" alt="vivado step2"></p>
+<p>After the implementation step has been completed, Vivado will prompt you to continue with the bitstream generation step. Choose the option and click OK.</p>
+<p><img src="media/Documentation_images_vivado_step3.bmp" alt="vivado step3"></p>
+<p>After the bitstream generation step has been completed, Vivado will prompt you to open the Hardware Manager. Choose the option and click OK.</p>
+<p><img src="media/Documentation_images_vivado_step4.bmp" alt="vivado step4"></p>
+<p>Make sure your board is connected to the PC with the USB cable provided in the Arty development package.</p>
+<p>From the Hardware Manager, connect to the target as shown below.</p>
+<p><img src="media/Documentation_images_vivado_step5.bmp" alt="vivado step5"></p>
+<p>On the left panel, click on the &quot;Add Configuration Memory Device&quot; menu option, then choose to create the flash device as shown below.</p>
+<p><img src="media/Documentation_images_vivado_step5_1.bmp" alt="vivado step5_1"></p>
+<p>Then program the board as shown below. The image to be flashed is <code>ztachip/HW/examples/GHRD/ztachip.runs/impl_1/main.bin</code>.</p>
+<p>If the file is not there, verify that the <code>-bin</code> option is selected under Project Settings/Bitstream, then rerun the bitstream generation step.</p>
+<p><img src="media/Documentation_images_vivado_step7.bmp" alt="vivado step7"></p>
+<p>That&#x27;s it. Your board&#x27;s FPGA will be programmed with the new image automatically after a power reboot.</p>
+</section>
+<section class="sec"><h3 id="24-support-for-open-source-toolchains">2.4 Support for Open-Source Toolchains</h3>
+<p>Open-source toolchains normally support only Verilog.</p>
+<p>You can convert the ztachip RTL to Verilog using GHDL.</p>
+<p>Install <a href="https://github.com/ghdl/ghdl">GHDL</a>.</p>
+<p>Then convert the RTL code from VHDL to Verilog with the command below.</p>
+<pre><code>cd &lt;ztachip folder&gt;/tools/ghdl
+./convert.sh</code></pre>
+<p>All VHDL code will be converted and combined into a single file, <code>tools/ghdl/soc.v</code>.</p>
+<p>As an example of an all-Verilog project, create the Vivado project using <a href="https://github.com/ztachip/ztachip/blob/master/HW/examples/GHRD/create_project2.tcl">create_project2.tcl</a> instead.</p>
 </section>
 <section class="sec"><h2 id="3-running-the-demos">3. Running the Demos</h2>
 <h3 id="31-preparing-the-hardware">3.1 Preparing the Hardware</h3>
