@@ -88,6 +88,25 @@ body.nav-hidden .side { display:none; }
 .navbtn.off { opacity:.38; cursor:default; box-shadow:none; }
 .navbtn.off:hover { background:#1f2937; }
 
+/* one section at a time, with a pager below it */
+.sec { display:none; }
+.sec.on { display:block; }
+.pagerbar { display:flex; align-items:center; justify-content:space-between;
+        gap:12px; margin:38px 0 44px 0; padding-top:16px;
+        border-top:1px solid #d8dee4; }
+.pbtn { display:inline-flex; align-items:center; gap:8px; max-width:42%;
+        padding:9px 14px; cursor:pointer; font-family:inherit; font-size:14px;
+        color:#0a4a8f; background:#f6f8fa; border:1px solid #d0d7de;
+        border-radius:7px; text-align:left; }
+.pbtn:hover { background:#eaf2fb; border-color:#0a6abf; }
+.pbtn.off { opacity:.4; cursor:default; }
+.pbtn.off:hover { background:#f6f8fa; border-color:#d0d7de; }
+.pbtn .lbl { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.pbtn .arrow { flex:0 0 auto; color:#57606a; }
+.pgcount { flex:0 0 auto; color:#57606a; font-size:13px; white-space:nowrap; }
+/* the section being read, marked in the contents panel */
+.side a.here { color:#7fc4ff; font-weight:bold; }
+
 /* phones: the panel covers the screen, and closes once a section is chosen */
 @media (max-width:820px) {
   .layout { display:block; }
@@ -96,10 +115,12 @@ body.nav-hidden .side { display:none; }
           font-size:16px; z-index:30; }
   .main { padding:52px 18px 0 18px; max-width:none; }
   .page { padding:52px 18px 0 18px; }
-  /* the arrows would scroll the document behind the contents overlay */
+  /* the arrows would act on the document behind the contents overlay */
   body:not(.nav-hidden) .navbar .gap,
   body:not(.nav-hidden) #secprev,
   body:not(.nav-hidden) #secnext { display:none; }
+  .pgcount { display:none; }
+  .pbtn { max-width:48%; }
 }
 </style>
 </head>
@@ -137,7 +158,7 @@ body.nav-hidden .side { display:none; }
 <li><a href="#38-run-the-program">3.8 Run the Program</a></li>
 </ul>
 </ul>
-</div><div class="main"><div class="navbar"><button class="navbtn navtoggle" onclick="navToggle()" title="Show or hide the contents" aria-label="Contents"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="2" rx="1"/><rect x="1" y="5" width="14" height="2" rx="1"/><rect x="1" y="9" width="14" height="2" rx="1"/><rect x="1" y="13" width="14" height="2" rx="1"/></svg></button><a class="navbtn" href="index.html" title="Home" aria-label="Home"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 0.7 7.6h1.9V14.6h4V10.4h2.8v4.2h4V7.6h1.9z"/></svg></a><span class="gap"></span><button class="navbtn" id="secprev" onclick="secStep(-1)" title="Previous section" aria-label="Previous section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.4 14.1 9.5 12.7 10.9 8 6.2 3.3 10.9 1.9 9.5z"/></svg></button><button class="navbtn" id="secnext" onclick="secStep(1)" title="Next section" aria-label="Next section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 12.6 1.9 6.5 3.3 5.1 8 9.8 12.7 5.1 14.1 6.5z"/></svg></button></div><h1 id="getting-started-running-a-visionai-demo-on-artix-7-fpga">Getting Started: Running a Vision/AI Demo on Artix-7 FPGA</h1>
+</div><div class="main"><div class="navbar"><button class="navbtn navtoggle" onclick="navToggle()" title="Show or hide the contents" aria-label="Contents"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="2" rx="1"/><rect x="1" y="5" width="14" height="2" rx="1"/><rect x="1" y="9" width="14" height="2" rx="1"/><rect x="1" y="13" width="14" height="2" rx="1"/></svg></button><a class="navbtn" href="index.html" title="Home" aria-label="Home"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 0.7 7.6h1.9V14.6h4V10.4h2.8v4.2h4V7.6h1.9z"/></svg></a><span class="gap"></span><button class="navbtn" id="secprev" onclick="secStep(-1)" title="Previous section" aria-label="Previous section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.4 14.1 9.5 12.7 10.9 8 6.2 3.3 10.9 1.9 9.5z"/></svg></button><button class="navbtn" id="secnext" onclick="secStep(1)" title="Next section" aria-label="Next section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 12.6 1.9 6.5 3.3 5.1 8 9.8 12.7 5.1 14.1 6.5z"/></svg></button></div><section class="sec on"><h1 id="getting-started-running-a-visionai-demo-on-artix-7-fpga">Getting Started: Running a Vision/AI Demo on Artix-7 FPGA</h1>
 <p>This guide walks through everything needed to see ztachip running: building the software, building the FPGA image, and loading and running the vision and AI demos on a Digilent Arty A7 board.</p>
 <h2 id="1-software-build-procedure">1. Software Build Procedure</h2>
 <h3 id="11-prerequisites-ubuntu">1.1 Prerequisites (Ubuntu)</h3>
@@ -148,7 +169,8 @@ body.nav-hidden .side { display:none; }
     zlib1g-dev libexpat-dev python3-pip
 
 pip3 install numpy</code></pre>
-<h3 id="12-download-and-build-the-risc-v-toolchain">1.2 Download and Build the RISC-V Toolchain</h3>
+</section>
+<section class="sec"><h3 id="12-download-and-build-the-risc-v-toolchain">1.2 Download and Build the RISC-V Toolchain</h3>
 <h4 id="121-option-1-use-the-prebuilt-toolchain">1.2.1 Option 1: Use the Prebuilt Toolchain</h4>
 <p>Download the prebuilt RISC-V <a href="https://github.com/ztachip/ztachip/releases/download/AI_agents/riscv.tar.gz">toolchain</a>.</p>
 <p>Then extract it into <code>/opt</code>:</p>
@@ -165,10 +187,12 @@ cd riscv-gnu-toolchain
 ./configure --prefix=/opt/riscv --with-arch=rv32im --with-abi=ilp32
 
 sudo make</code></pre>
-<h3 id="13-download-ztachip">1.3 Download ztachip</h3>
+</section>
+<section class="sec"><h3 id="13-download-ztachip">1.3 Download ztachip</h3>
 <p>Clone the ztachip repository:</p>
 <pre><code>git clone https://github.com/ztachip/ztachip.git</code></pre>
-<h3 id="14-build-ztachip">1.4 Build ztachip</h3>
+</section>
+<section class="sec"><h3 id="14-build-ztachip">1.4 Build ztachip</h3>
 <p>Add the RISC-V toolchain to your path and build the ztachip compiler, file system, kernels, and software image:</p>
 <pre><code>export PATH=/opt/riscv/bin:$PATH
 
@@ -183,7 +207,8 @@ python3 bin2c.py
 cd ..
 make clean all -f makefile.kernels
 make clean all</code></pre>
-<h3 id="15-micropython-integration-recommended">1.5 MicroPython Integration (Recommended)</h3>
+</section>
+<section class="sec"><h3 id="15-micropython-integration-recommended">1.5 MicroPython Integration (Recommended)</h3>
 <p>ztachip can run under MicroPython, providing a Python programming interface for accessing ztachip functionality.</p>
 <p>See the <a href="MicropythonUserGuide.html">MicroPython Programmer&#x27;s Guide</a> for more information.</p>
 <p>To build ztachip with MicroPython:</p>
@@ -200,10 +225,12 @@ export ZTACHIP=&lt;ztachip installation folder&gt;
 
 make clean
 make</code></pre>
-<h2 id="2-fpga-build-procedure">2. FPGA Build Procedure</h2>
+</section>
+<section class="sec"><h2 id="2-fpga-build-procedure">2. FPGA Build Procedure</h2>
 <p>The reference FPGA implementation uses Xilinx Vivado.</p>
 <p>1. Download the free <strong>Xilinx Vivado WebPACK</strong> edition. 2. Create the Vivado project, build the FPGA image, and program it into flash by following the <a href="https://github.com/ztachip/ztachip/blob/master/Documentation/Vivado.md">FPGA Build Procedure</a>.</p>
-<h2 id="3-running-the-demos">3. Running the Demos</h2>
+</section>
+<section class="sec"><h2 id="3-running-the-demos">3. Running the Demos</h2>
 <h3 id="31-preparing-the-hardware">3.1 Preparing the Hardware</h3>
 <p>The reference design requires the following hardware components:</p>
 <ul>
@@ -215,13 +242,15 @@ make</code></pre>
 <p><img src="media/Documentation_images_arty_board.bmp" alt="Arty A7 Board"></p>
 <p>Connect the camera module to the Arty A7 board as shown below.</p>
 <p><img src="media/Documentation_images_camera_and_arty_connect.bmp" alt="Camera connected to Arty A7"></p>
-<h3 id="32-open-the-serial-port">3.2 Open the Serial Port</h3>
+</section>
+<section class="sec"><h3 id="32-open-the-serial-port">3.2 Open the Serial Port</h3>
 <p>When running the ztachip MicroPython image, connect to the serial port provided through the Arty A7 USB interface.</p>
 <p>Serial-port flow control must be disabled.</p>
 <p>For example:</p>
 <pre><code>sudo minicom -w -D /dev/ttyUSB1</code></pre>
 <p>&gt; <strong>Note:</strong> After connecting to the serial port for the first time, reset the board by pressing the button next to the USB port. Wait for the green LED to turn on. The USB serial interface must be the first device to connect to USB before ztachip.</p>
-<h3 id="33-download-and-build-openocd">3.3 Download and Build OpenOCD</h3>
+</section>
+<section class="sec"><h3 id="33-download-and-build-openocd">3.3 Download and Build OpenOCD</h3>
 <p>OpenOCD provides the JTAG connection used by the GDB debugger.</p>
 <p>In this example, the program is loaded onto the board using <strong>GDB + JTAG</strong>.</p>
 <p>Install the required packages:</p>
@@ -242,7 +271,8 @@ cp &lt;ztachip installation folder&gt;/tools/openocd/usb_connect.cfg .
 cp &lt;ztachip installation folder&gt;/tools/openocd/xilinx-xc7.cfg .
 cp &lt;ztachip installation folder&gt;/tools/openocd/jtagspi.cfg .
 cp &lt;ztachip installation folder&gt;/tools/openocd/cpu0.yaml .</code></pre>
-<h3 id="34-launch-openocd">3.4 Launch OpenOCD</h3>
+</section>
+<section class="sec"><h3 id="34-launch-openocd">3.4 Launch OpenOCD</h3>
 <p>Make sure the <strong>green LED below the reset button near the USB connector is on</strong>. This indicates that the FPGA has been configured correctly.</p>
 <p>Then launch OpenOCD to provide the JTAG connection for GDB:</p>
 <pre><code>cd &lt;openocd_riscv installation folder&gt;
@@ -252,7 +282,8 @@ sudo src/openocd \
     -c &#x27;set MURAX_CPU0_YAML cpu0.yaml&#x27; \
     -f soc_init.cfg</code></pre>
 <p>Keep OpenOCD running while using GDB.</p>
-<h3 id="35-demo-preparation">3.5 Demo Preparation</h3>
+</section>
+<section class="sec"><h3 id="35-demo-preparation">3.5 Demo Preparation</h3>
 <p>The demo requires LLM model files to be available.</p>
 <p>A <strong>TFTP server</strong> must be running on the PC Ethernet interface connected to the Arty A7 board.</p>
 <p>Configure the PC Ethernet interface with the following IP address:</p>
@@ -264,7 +295,8 @@ sudo src/openocd \
 </ul>
 <p>These files contain quantized versions of the LLM models.</p>
 <p>See the <a href="https://github.com/ztachip/ztachip/blob/master/Documentation/QuantizeProcedure.md">Model Quantization Procedure</a> for instructions on creating the quantized models.</p>
-<h3 id="36-upload-the-software-image-with-gdb">3.6 Upload the Software Image with GDB</h3>
+</section>
+<section class="sec"><h3 id="36-upload-the-software-image-with-gdb">3.6 Upload the Software Image with GDB</h3>
 <h4 id="361-bare-metal-mode">3.6.1 Bare-Metal Mode</h4>
 <p>To run ztachip without MicroPython integration, open another terminal and start GDB with the standalone ztachip software image:</p>
 <pre><code>export PATH=/opt/riscv/bin:$PATH
@@ -279,7 +311,8 @@ riscv32-unknown-elf-gdb ../build/ztachip.elf</code></pre>
 cd &lt;MicroPython installation folder&gt;/ports/ztachip_port
 
 riscv32-unknown-elf-gdb ./build/firmware.elf</code></pre>
-<h3 id="37-start-the-image-transfer">3.7 Start the Image Transfer</h3>
+</section>
+<section class="sec"><h3 id="37-start-the-image-transfer">3.7 Start the Image Transfer</h3>
 <p>From the GDB prompt, enter:</p>
 <pre><code>set pagination off
 target remote localhost:3333
@@ -287,12 +320,13 @@ set remotetimeout 60
 set arch riscv:rv32
 monitor reset halt
 load</code></pre>
-<h3 id="38-run-the-program">3.8 Run the Program</h3>
+</section>
+<section class="sec"><h3 id="38-run-the-program">3.8 Run the Program</h3>
 <p>After the program has been successfully loaded, run it from the GDB prompt:</p>
 <pre><code>continue</code></pre>
 <p>If running in bare-metal mode, press any button to move between different vision/LLM demos.</p>
 <p>If running in MicroPython mode, at the serial console, hit CTRL+E, then paste one of the Python programs from this <a href="https://github.com/ztachip/ztachip/blob/master/micropython/examples">folder</a> and hit CTRL+D to run. Then hit any button to stop and return to the Python console.</p>
-<p>A demonstration showing how to run the demo is available in this <a href="https://www.youtube.com/watch?v=ng0nCEYE6fc&amp;t=499s">video</a>.</p></div></div>
+<p>A demonstration showing how to run the demo is available in this <a href="https://www.youtube.com/watch?v=ng0nCEYE6fc&amp;t=499s">video</a>.</p></section><nav class="pagerbar"><button class="pbtn" id="pgprev" onclick="secStep(-1)"><span class="arrow">&#9664;</span><span class="lbl" id="pgprevlbl">Previous</span></button><span class="pgcount" id="pgcount"></span><button class="pbtn" id="pgnext" onclick="secStep(1)"><span class="lbl" id="pgnextlbl">Next</span><span class="arrow">&#9654;</span></button></nav></div></div>
 <script>
 function navToggle() { document.body.classList.toggle('nav-hidden'); }
 // on a phone the panel starts hidden, so the document is what you see first
@@ -310,69 +344,87 @@ document.addEventListener('click', function (e) {
 
 <script>
 (function () {
-    var heads = [].slice.call(document.querySelectorAll(
-                    '.main h2[id], .main h3[id], .main h4[id]')),
-        prev = document.getElementById('secprev'),
-        next = document.getElementById('secnext'),
-        OFF = 12,      // gap left above a heading once it has been jumped to
-        CUR = 40;      // a heading this near the top counts as the one being read
-    if (!heads.length || !prev || !next) { return; }
+    var secs = [].slice.call(document.querySelectorAll('.main .sec')),
+        up = document.getElementById('secprev'),
+        down = document.getElementById('secnext'),
+        bprev = document.getElementById('pgprev'),
+        bnext = document.getElementById('pgnext'),
+        plabel = document.getElementById('pgprevlbl'),
+        nlabel = document.getElementById('pgnextlbl'),
+        count = document.getElementById('pgcount'),
+        page = {},                       // heading id -> page holding it
+        cur = 0;
+    if (secs.length < 2) { return; }
+    secs.forEach(function (s, i) {
+        [].slice.call(s.querySelectorAll('[id]')).forEach(function (el) {
+            page[el.id] = i;
+        });
+    });
 
-    function top(el) {
-        return el.getBoundingClientRect().top + window.pageYOffset;
+    function heading(s) {
+        return s.querySelector('h2, h3') || s.querySelector('h1, h4');
     }
-    // index of the section being read, or -1 while above the first heading
-    function here() {
-        var y = window.pageYOffset + CUR, at = -1;
-        for (var i = 0; i < heads.length; i++) {
-            if (top(heads[i]) <= y) { at = i; }
-        }
-        return at;
+    function label(s) {
+        var h = heading(s);
+        return h ? h.textContent.replace(/\s+/g, ' ').trim() : '';
     }
-    function label(el) {
-        return el.textContent.replace(/\s+/g, ' ').trim();
-    }
-    function go(y, hash) {
-        window.scrollTo(0, y);
-        if (hash) {
-            try { history.replaceState(null, '', hash); } catch (e) { /* file:// */ }
-        }
+    function show(i, hash) {
+        if (i < 0 || i >= secs.length) { return; }
+        secs[cur].classList.remove('on');
+        cur = i;
+        secs[cur].classList.add('on');
+        window.scrollTo(0, 0);
+        if (hash !== false) { stamp(heading(secs[cur])); }
         mark();
     }
-    function step(dir) {
-        var i = here(), j;
-        if (i < 0) {                       // above the first heading
-            if (dir > 0) { go(top(heads[0]) - OFF, '#' + heads[0].id); }
-            return;
+    function stamp(el) {
+        if (el && el.id) {
+            try { history.replaceState(null, '', '#' + el.id); } catch (e) { }
         }
-        // part-way down a section, Previous returns to that section's heading
-        if (dir < 0 && window.pageYOffset + OFF - top(heads[i]) > CUR - OFF) {
-            go(top(heads[i]) - OFF, '#' + heads[i].id);
-            return;
-        }
-        j = i + dir;
-        if (j < 0) { go(0, ''); return; }   // back past the first: page top
-        if (j >= heads.length) { return; }
-        go(top(heads[j]) - OFF, '#' + heads[j].id);
     }
-    // dim an arrow when there is nowhere to go, and name the target section
+    // label the pager with its destinations, and dim it at either end
     function mark() {
-        var i = here();
-        prev.classList.toggle('off', window.pageYOffset < 8);
-        next.classList.toggle('off', i >= heads.length - 1);
-        prev.title = i > 0 ? 'Previous section: ' + label(heads[i - 1])
-                           : 'Back to the top';
-        next.title = i < heads.length - 1
-                     ? 'Next section: ' + label(heads[i + 1]) : 'Next section';
+        var back = cur > 0, on = cur < secs.length - 1;
+        [up, bprev].forEach(function (b) { b.classList.toggle('off', !back); });
+        [down, bnext].forEach(function (b) { b.classList.toggle('off', !on); });
+        up.title = back ? 'Previous: ' + label(secs[cur - 1]) : 'Previous section';
+        down.title = on ? 'Next: ' + label(secs[cur + 1]) : 'Next section';
+        plabel.textContent = back ? label(secs[cur - 1]) : 'Previous';
+        nlabel.textContent = on ? label(secs[cur + 1]) : 'Next';
+        count.textContent = (cur + 1) + ' of ' + secs.length;
+        var was = document.querySelectorAll('.side a.here');
+        for (var k = 0; k < was.length; k++) { was[k].classList.remove('here'); }
+        var h = heading(secs[cur]),
+            link = h && document.querySelector('.side a[href="#' + h.id + '"]');
+        if (link) {
+            link.classList.add('here');
+            if (link.scrollIntoView) { link.scrollIntoView({block: 'nearest'}); }
+        }
     }
-    window.secStep = step;
-    var pending = false;
-    window.addEventListener('scroll', function () {
-        if (pending) { return; }
-        pending = true;
-        window.requestAnimationFrame(function () { pending = false; mark(); });
+    window.secStep = function (d) { show(cur + d); };
+
+    // a link to a heading opens the page holding it, then scrolls to it
+    document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href^="#"]');
+        if (!a) { return; }
+        var id = a.getAttribute('href').slice(1), i = page[id];
+        if (i === undefined) { return; }
+        e.preventDefault();
+        if (i !== cur) { show(i, false); }
+        var el = document.getElementById(id);
+        if (el && el !== heading(secs[i])) { el.scrollIntoView(); }
+        stamp(el);
     });
-    mark();
+    // arriving with #section in the address bar opens that page
+    function fromHash() {
+        var id = decodeURIComponent(location.hash.slice(1)), i = page[id];
+        if (i === undefined) { mark(); return; }
+        show(i, false);
+        var el = document.getElementById(id);
+        if (el && el !== heading(secs[i])) { el.scrollIntoView(); }
+    }
+    window.addEventListener('hashchange', fromHash);
+    fromHash();
 })();
 </script>
 

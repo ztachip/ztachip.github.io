@@ -88,6 +88,25 @@ body.nav-hidden .side { display:none; }
 .navbtn.off { opacity:.38; cursor:default; box-shadow:none; }
 .navbtn.off:hover { background:#1f2937; }
 
+/* one section at a time, with a pager below it */
+.sec { display:none; }
+.sec.on { display:block; }
+.pagerbar { display:flex; align-items:center; justify-content:space-between;
+        gap:12px; margin:38px 0 44px 0; padding-top:16px;
+        border-top:1px solid #d8dee4; }
+.pbtn { display:inline-flex; align-items:center; gap:8px; max-width:42%;
+        padding:9px 14px; cursor:pointer; font-family:inherit; font-size:14px;
+        color:#0a4a8f; background:#f6f8fa; border:1px solid #d0d7de;
+        border-radius:7px; text-align:left; }
+.pbtn:hover { background:#eaf2fb; border-color:#0a6abf; }
+.pbtn.off { opacity:.4; cursor:default; }
+.pbtn.off:hover { background:#f6f8fa; border-color:#d0d7de; }
+.pbtn .lbl { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.pbtn .arrow { flex:0 0 auto; color:#57606a; }
+.pgcount { flex:0 0 auto; color:#57606a; font-size:13px; white-space:nowrap; }
+/* the section being read, marked in the contents panel */
+.side a.here { color:#7fc4ff; font-weight:bold; }
+
 /* phones: the panel covers the screen, and closes once a section is chosen */
 @media (max-width:820px) {
   .layout { display:block; }
@@ -96,10 +115,12 @@ body.nav-hidden .side { display:none; }
           font-size:16px; z-index:30; }
   .main { padding:52px 18px 0 18px; max-width:none; }
   .page { padding:52px 18px 0 18px; }
-  /* the arrows would scroll the document behind the contents overlay */
+  /* the arrows would act on the document behind the contents overlay */
   body:not(.nav-hidden) .navbar .gap,
   body:not(.nav-hidden) #secprev,
   body:not(.nav-hidden) #secnext { display:none; }
+  .pgcount { display:none; }
+  .pbtn { max-width:48%; }
 }
 </style>
 </head>
@@ -148,7 +169,7 @@ body.nav-hidden .side { display:none; }
 <li><a href="#102-functions">10.2 Functions</a></li>
 </ul>
 </ul>
-</div><div class="main"><div class="navbar"><button class="navbtn navtoggle" onclick="navToggle()" title="Show or hide the contents" aria-label="Contents"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="2" rx="1"/><rect x="1" y="5" width="14" height="2" rx="1"/><rect x="1" y="9" width="14" height="2" rx="1"/><rect x="1" y="13" width="14" height="2" rx="1"/></svg></button><a class="navbtn" href="index.html" title="Home" aria-label="Home"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 0.7 7.6h1.9V14.6h4V10.4h2.8v4.2h4V7.6h1.9z"/></svg></a><span class="gap"></span><button class="navbtn" id="secprev" onclick="secStep(-1)" title="Previous section" aria-label="Previous section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.4 14.1 9.5 12.7 10.9 8 6.2 3.3 10.9 1.9 9.5z"/></svg></button><button class="navbtn" id="secnext" onclick="secStep(1)" title="Next section" aria-label="Next section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 12.6 1.9 6.5 3.3 5.1 8 9.8 12.7 5.1 14.1 6.5z"/></svg></button></div><h1 id="ztachip-hardware-architecture">ztachip Hardware Architecture</h1>
+</div><div class="main"><div class="navbar"><button class="navbtn navtoggle" onclick="navToggle()" title="Show or hide the contents" aria-label="Contents"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="2" rx="1"/><rect x="1" y="5" width="14" height="2" rx="1"/><rect x="1" y="9" width="14" height="2" rx="1"/><rect x="1" y="13" width="14" height="2" rx="1"/></svg></button><a class="navbtn" href="index.html" title="Home" aria-label="Home"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 0.7 7.6h1.9V14.6h4V10.4h2.8v4.2h4V7.6h1.9z"/></svg></a><span class="gap"></span><button class="navbtn" id="secprev" onclick="secStep(-1)" title="Previous section" aria-label="Previous section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.4 14.1 9.5 12.7 10.9 8 6.2 3.3 10.9 1.9 9.5z"/></svg></button><button class="navbtn" id="secnext" onclick="secStep(1)" title="Next section" aria-label="Next section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 12.6 1.9 6.5 3.3 5.1 8 9.8 12.7 5.1 14.1 6.5z"/></svg></button></div><section class="sec on"><h1 id="ztachip-hardware-architecture">ztachip Hardware Architecture</h1>
 <h2 id="1-ztachip-top">1. ztachip (top)</h2>
 <p><img src="media/Documentation_images_hw_ztachip.png" alt="hw_ztachip"></p>
 <h3 id="11-interfaces">1.1 Interfaces</h3>
@@ -157,7 +178,8 @@ body.nav-hidden .side { display:none; }
 <tr><td>axilite_*</td><td>AXILite bus for RISCV to push tensor instructions to ztachip</td></tr>
 <tr><td>axi_*</td><td>AXI bus for ztachip to initiate DMA memory transfer to/from external memory</td></tr>
 </table>
-<h3 id="12-subcomponents">1.2 Subcomponents</h3>
+</section>
+<section class="sec"><h3 id="12-subcomponents">1.2 Subcomponents</h3>
 <table>
 <tr><th>Name</th><th>Description</th></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/top/axilite.vhd">axilite</a></td><td>bridge to connect dp_core with RISCV via axiLite bus protocol.</td></tr>
@@ -168,7 +190,8 @@ body.nav-hidden .side { display:none; }
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_core.vhd">dp_core</a></td><td>This is the central tensor processor unit that coordinates all activities within ztachip including memory transfer and launching execution on the VLIW processor array.</td></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/fpu.vhd">fpu</a></td><td>Handling tensor floating point arithmetics (FLOAT32/BFLOAT) and aggregate arithmetics such as MAX,SUM,DOT-PRODUCT-SUM.</td></tr>
 </table>
-<h3 id="13-functions">1.3 Functions</h3>
+</section>
+<section class="sec"><h3 id="13-functions">1.3 Functions</h3>
 <p>This is the top-level component of ztachip.</p>
 <p>The central tensor processor unit is <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_core.vhd">dp_core</a></p>
 <p><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_core.vhd">dp_core</a> receives tensor instructions from RISCV via axilite_* interface.</p>
@@ -181,7 +204,8 @@ body.nav-hidden .side { display:none; }
 <li>Dispatching tensor operator execution requests to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a> which then in turn dispatch the execution to an array of VLIW processors.</li>
 <li>Dispatching tensor floating point and aggregate arithmetic executions to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/fpu.vhd">fpu</a></li>
 </ul>
-<h2 id="2-ztachipdp_core">2. ztachip.dp_core</h2>
+</section>
+<section class="sec"><h2 id="2-ztachipdp_core">2. ztachip.dp_core</h2>
 <p><img src="media/Documentation_images_hw_dp_core.png" alt="hw_dp_core"></p>
 <h3 id="21-interfaces">2.1 Interfaces</h3>
 <table>
@@ -195,7 +219,8 @@ body.nav-hidden .side { display:none; }
 <tr><td>writemaster2*</td><td>bus to send DMA data transfer to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/top/sram_core.vhd">sram_core</a>&#x27;s scratch-pad memory.</td></tr>
 <tr><td>writemaster3*</td><td>bus to send DMA data transfer to external DDR memory through <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/top/ddr_tx.vhd">ddr_tx</a></td></tr>
 </table>
-<h3 id="22-subcomponents">2.2 Subcomponents</h3>
+</section>
+<section class="sec"><h3 id="22-subcomponents">2.2 Subcomponents</h3>
 <table>
 <tr><th>Name</th><th>Description</th></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_fetch.vhd">dp_fetch</a></td><td>This component receives tensor instructions from RISCV and then dispatch them at the right time. Tensor data operations are dispatched to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_gen_core.vhd">dp_gen_core</a>. Tensor operator execution is dispatched to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a> via task* interface signals.</td></tr>
@@ -203,7 +228,8 @@ body.nav-hidden .side { display:none; }
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_source.vhd">dp_source</a></td><td>This component is responsible for generating the DMA transfer read requests to the source of the tensor data operations. It then forwards the received data to the appropriate <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_sink.vhd">dp_sink</a> components which are then responsible for the DMA transfer of the received data to the destination point.</td></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_sink.vhd">dp_sink</a></td><td>This component is responsible for generating DMA transfer write request to the destination point of the tensor data operations. It receives the data and addresses information for the transfer from the appropriate <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_source.vhd">dp_source</a> above.</td></tr>
 </table>
-<h3 id="23-functions">2.3 Functions</h3>
+</section>
+<section class="sec"><h3 id="23-functions">2.3 Functions</h3>
 <p>This component is the main tensor processor of ztachip. It performs the following functions:</p>
 <ul>
 <li><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_fetch.vhd">dp_fetch</a> receives tensor instructions from RISCV. Each tensor instruction are associated</li>
@@ -219,7 +245,8 @@ body.nav-hidden .side { display:none; }
 <li>Tensor operator execution is forwarded to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a> via interface signal task*</li>
 <li>Before tensor operator execution can be issued, all memory transfer with <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a>&#x27;s internal memory must be completed. Since there is a separate <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a>&#x27;s internal memory for each hardware thread, for example, memory transfer to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a>&#x27;s internal memory belonging to thread#1 can still be running at the same time while <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/core.vhd">core</a> is busy performing tensor operator execution but on thread#2.</li>
 </ul>
-<h2 id="3-ztachipfpu">3. ztachip.fpu</h2>
+</section>
+<section class="sec"><h2 id="3-ztachipfpu">3. ztachip.fpu</h2>
 <p><img src="media/Documentation_images_hw_fpu.png" alt="hw_fpu"></p>
 <h3 id="31-interfaces">3.1 Interfaces</h3>
 <table>
@@ -228,7 +255,8 @@ body.nav-hidden .side { display:none; }
 <tr><td>fpu_read*</td><td>Read interface to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/top/sram_core.vhd">sram_core</a>. FPU operates only from SRAM memory. Data input for FPU must first be transferred from DDR or PCORE memory space to SRAM space by DP instructions.</td></tr>
 <tr><td>fpu_write*</td><td>Write interface to <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/top/sram_core.vhd">sram_core</a>. FPU results are written only to SRAM memory. Results must then be transferred to DDR or PCORE memory space from SRAM space by DP instructions.</td></tr>
 </table>
-<h3 id="32-subcomponents">3.2 Subcomponents</h3>
+</section>
+<section class="sec"><h3 id="32-subcomponents">3.2 Subcomponents</h3>
 <table>
 <tr><th>Name</th><th>Description</th></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/util/fifo.vhd">cmd_fifo</a></td><td>holds FPU instructions issued from RISCV. Each FPU instruction is associated with a HART context. There are 2 cmd_fifo for each of the HART context.</td></tr>
@@ -240,7 +268,8 @@ body.nav-hidden .side { display:none; }
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/falu.vhd">falu</a></td><td>performs all falu_core functions except for the SUM opcode which is executed by falu2 instead.</td></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/fpu/falu.vhd">falu2</a></td><td>performs the SUM part after the MAC operations from falu. For example with the operation SUM(X*Y*C), the X*Y*C is performed by falu and results from falu are summed together by falu2</td></tr>
 </table>
-<h3 id="33-functions">3.3 Functions</h3>
+</section>
+<section class="sec"><h3 id="33-functions">3.3 Functions</h3>
 <p>FPU supports floating point arithmetic with different precision below</p>
 <ul>
 <li>FP32: Many transformer intermediate calculations should stay in FP32</li>
@@ -261,7 +290,8 @@ body.nav-hidden .side { display:none; }
 <li>FPU results must be transferred to PCORE or DDR space from SRAM space by DP instructions</li>
 </ul>
 <p>For highest performance, FPU should be used under both HART context. There is 1 FPU hardware instance but it can operate under different HART context. One can use one HART context to transfer data between SRAM and DDR/PCORE while the other HART context is still busy executing FPU instructions. This way, all memory overhead are overlapped with FPU execution.</p>
-<h2 id="4-ztachipcore">4. ztachip.core</h2>
+</section>
+<section class="sec"><h2 id="4-ztachipcore">4. ztachip.core</h2>
 <p><img src="media/Documentation_images_hw_core.png" alt="hw_core"></p>
 <h3 id="41-interfaces">4.1 Interfaces</h3>
 <table>
@@ -270,7 +300,8 @@ body.nav-hidden .side { display:none; }
 <tr><td>dp_read*</td><td>bus to send DMA data transfer from its internal memory</td></tr>
 <tr><td>task*</td><td>bus to receive tensor operator execution commands from <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/dp/dp_core.vhd">dp_core</a></td></tr>
 </table>
-<h3 id="42-subcomponents">4.2 Subcomponents</h3>
+</section>
+<section class="sec"><h3 id="42-subcomponents">4.2 Subcomponents</h3>
 <table>
 <tr><th>Name</th><th>Description</th></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/stream.vhd">stream</a></td><td>this is a stream processor that performs data mapping between input and output. One stream processor is used to perform data mapping before data is written to core&#x27;s internal memory And a second stream processor performs data mapping on data as it is just retrieved from core&#x27;s internal memory.</td></tr>
@@ -280,7 +311,8 @@ body.nav-hidden .side { display:none; }
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/instr_fetch.vhd">instr.instr_fetch</a></td><td>This component performs thread scheduling of execution. pcore are multi-threaded processors with 16 hardware threads executing in a round-robin fashion. VLIW instructions are complex and require a very deep pipeline, hardware multi-threading is a commonly used technique to hide the impact of instruction latency. Performance of 1 VLIW instruction per clock per pcore can then be achieved.</td></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/rom.vhd">instr.rom</a></td><td>Holding VLIW instruction code. All VLIW cores are sharing the same instruction code. Since VLIW processors are all running in lock-step, only 1 instruction is fetched for all the VLIW processors at every clock.</td></tr>
 </table>
-<h3 id="43-functions">4.3 Functions</h3>
+</section>
+<section class="sec"><h3 id="43-functions">4.3 Functions</h3>
 <ul>
 <li>This component is responsible for all tensor operator execution tasks.</li>
 <li>It is composed of an array of <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/pcore.vhd">pcores</a>. And each pcore is a VLIW vector processor.</li>
@@ -288,7 +320,8 @@ body.nav-hidden .side { display:none; }
 <li>The component <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/instr.vhd">instr</a> is controlling the execution of all pcore&#x27;s VLIW processors.</li>
 </ul>
 <p>VLIW processors are very lightweight processors that are mostly just ALU with memory running in lock-step mode with each other.</p>
-<h2 id="5-ztachipcorestream">5. ztachip.core.stream</h2>
+</section>
+<section class="sec"><h2 id="5-ztachipcorestream">5. ztachip.core.stream</h2>
 <p><img src="media/Documentation_images_hw_stream.png" alt="hw_stream"></p>
 <p>This module provides an arbitrary data mapping between input value and output.</p>
 <p><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/stream.vhd">stream</a> performs data mapping on data just before it is written to pcore&#x27;s memory space.</p>
@@ -298,7 +331,8 @@ body.nav-hidden .side { display:none; }
 <p>Effectively, the formula above provides a multi-point linear-interpolation between input and output.</p>
 <p>stream provides up to 4 different data-mapping functions at the same time. The parameter stream_id_in selects which data mapping to be performed.</p>
 <p>stream is very commonly used in AI applications to perform activation functions as data being written back to memory.</p>
-<h2 id="6-ztachipcorepcore">6. ztachip.core.pcore</h2>
+</section>
+<section class="sec"><h2 id="6-ztachipcorepcore">6. ztachip.core.pcore</h2>
 <p><img src="media/Documentation_images_hw_pcore.png" alt="hw_pcore"></p>
 <h3 id="61-interfaces">6.1 Interfaces</h3>
 <table>
@@ -307,7 +341,8 @@ body.nav-hidden .side { display:none; }
 <tr><td>dp_write*</td><td>bus to send DMA data transfer to pcore&#x27;s internal memory</td></tr>
 <tr><td>instruction*</td><td>bus to receive VLIW instructions to be executed.</td></tr>
 </table>
-<h3 id="62-subcomponents">6.2 Subcomponents</h3>
+</section>
+<section class="sec"><h3 id="62-subcomponents">6.2 Subcomponents</h3>
 <table>
 <tr><th>Name</th><th>Description</th></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/alu/alu.vhd">alu</a></td><td>This is the unit that performs the bulk of arithmetic vector calculation. There are 8 ALUs for each of the 8 elements in a vector word.</td></tr>
@@ -319,7 +354,8 @@ body.nav-hidden .side { display:none; }
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/ialu/ialu.vhd">ialu</a></td><td>VLIW may also contain integer arithmetic operation for tasks such as loop counter, array indexing calculation, address calculation. This component is responsible for such calculation.</td></tr>
 <tr><td><a href="https://github.com/ztachip/ztachip/blob/master/HW/src/ialu/iregister_file.vhd">iregister_file</a></td><td>Register banks holding integer values used by ialu.</td></tr>
 </table>
-<h3 id="63-functions">6.3 Functions</h3>
+</section>
+<section class="sec"><h3 id="63-functions">6.3 Functions</h3>
 <p>This component performs tensor operator execution.</p>
 <p>There are many instances of pcore running in parallel.</p>
 <p>pcore has a VLIW architecture.</p>
@@ -338,7 +374,8 @@ body.nav-hidden .side { display:none; }
 <p>Since all the functions above are simultaneously performed in one single VLIW instruction, the instruction pipeline is as long as 14 clocks. However, with hardware multi-threading execution, each stage of the execution pipeline is occupied by different threads. Therefore we have an effective execution rate of one VLIW instruction per clock per pcore.</p>
 <p>For example, the code below is compiled into one single VLIW instruction. All data operations and arithmetic calculation together take just one clock of execution and also without any memory stall cycles. This same code using traditional RISCV instructions would take up to 10 RISCV instructions that may also incur memory stall cycles in addition.</p>
 <pre><code>z[i++] = x[i+2]+y[i+3];</code></pre>
-<h2 id="7-ztachipcorepcoreregister_bank">7. ztachip.core.pcore.register_bank</h2>
+</section>
+<section class="sec"><h2 id="7-ztachipcorepcoreregister_bank">7. ztachip.core.pcore.register_bank</h2>
 <p>This component implements pcore internal memory</p>
 <p>pcore&#x27;s internal memory is partitioned into 2 pages with each page assigned to one of the two tensor processor&#x27;s threads. This is an important concept for ztachip since it allows for one thread to access its internal memory while the other thread is performing tensor operator execution using the other internal memory&#x27;s page. This allows for a memory operation to be overlapped with tensor operator execution.</p>
 <p>It is important to note that tensor operator execution operates only on internal memory without any reference to external memory. This is an important concept since with ztachip, data operations are decoupled from execution operations by having separate tensor instructions for data operations and execution operations. Reference <a href="Overview.html">here</a> for further explanation of this concept.</p>
@@ -377,7 +414,8 @@ body.nav-hidden .side { display:none; }
 +-------------------------+
 + Shared           word#0 |
 +-------------------------+</code></pre>
-<h2 id="8-ztachipcorepcoreinstr_decoder2">8. ztachip.core.pcore.instr_decoder2</h2>
+</section>
+<section class="sec"><h2 id="8-ztachipcorepcoreinstr_decoder2">8. ztachip.core.pcore.instr_decoder2</h2>
 <p>This is the main component that decodes the computing components of VLIW instructions</p>
 <p>There are 3 main operations to each VLIW instruction:</p>
 <ul>
@@ -427,7 +465,8 @@ CTRL
 00RR  Access shared memory+index   MEM[addr+IREG[RR]]
 01RR  Access private memory+index  MEM[addr+IREG[RR]]
 </code></pre>
-<h2 id="9-ztachipcorepcoreialu">9. ztachip.core.pcore.ialu</h2>
+</section>
+<section class="sec"><h2 id="9-ztachipcorepcoreialu">9. ztachip.core.pcore.ialu</h2>
 <p>This component is responsible for the scalar integer calculation of VLIW instruction described above.</p>
 <p>ialu operates using the following registers</p>
 <ul>
@@ -459,7 +498,8 @@ p[i]=10;</code></pre>
 // being updated after the vector calculation
 VMASK=3;
 z=x+2; // Only the first 2 elements of z are written back to memory.</code></pre>
-<h2 id="10-ztachipcorepcorealu">10. ztachip.core.pcore.alu</h2>
+</section>
+<section class="sec"><h2 id="10-ztachipcorepcorealu">10. ztachip.core.pcore.alu</h2>
 <p><img src="media/Documentation_images_hw_alu.png" alt="hw_alu"></p>
 <h3 id="101-interfaces">10.1 Interfaces</h3>
 <table>
@@ -472,7 +512,8 @@ z=x+2; // Only the first 2 elements of z are written back to memory.</code></pre
 <tr><td>y3_out</td><td>Results after being clipped to 12 bit. Value is properly clipped if exceeding range. This is then be stored in <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/register_file.vhd">register_file</a>.</td></tr>
 <tr><td>y2_out</td><td>Result of comparator against y_out value. The comparator tests y_out for various boolean conditions. This is then be stored in <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/xregister_file.vhd">xregister_file</a>.</td></tr>
 </table>
-<h3 id="102-functions">10.2 Functions</h3>
+</section>
+<section class="sec"><h3 id="102-functions">10.2 Functions</h3>
 <p>ALU has a fairly simple set of operations. We want the ALU to be as simple as possible to reduce resource requirements. They are meant to perform linear arithmetic operations occurring normally during AI and vision processing tasks.</p>
 <p>Other non-linear operations are taken care of by <a href="https://github.com/ztachip/ztachip/blob/master/HW/src/pcore/stream.vhd">stream</a>.</p>
 <p>ALU and stream together were shown to be able to cover a wide range of AI and vision processing.</p>
@@ -500,7 +541,7 @@ z=x+2; // Only the first 2 elements of z are written back to memory.</code></pre
   ACCUMULATOR_SHL  : y_out=(xreg_in &lt;&lt; x_scalar_in)
   ACCUMULATOR_SHR  : y_out=(xreg_in &gt;&gt; x_scalar_in)
   INT12 SHR        : y_out=(x1_in &gt;&gt; x_scalar_in)
-  INT12 SHL        : y_out=(x1_in &lt;&lt; x_scalar_in)</code></pre></div></div>
+  INT12 SHL        : y_out=(x1_in &lt;&lt; x_scalar_in)</code></pre></section><nav class="pagerbar"><button class="pbtn" id="pgprev" onclick="secStep(-1)"><span class="arrow">&#9664;</span><span class="lbl" id="pgprevlbl">Previous</span></button><span class="pgcount" id="pgcount"></span><button class="pbtn" id="pgnext" onclick="secStep(1)"><span class="lbl" id="pgnextlbl">Next</span><span class="arrow">&#9654;</span></button></nav></div></div>
 <script>
 function navToggle() { document.body.classList.toggle('nav-hidden'); }
 // on a phone the panel starts hidden, so the document is what you see first
@@ -518,69 +559,87 @@ document.addEventListener('click', function (e) {
 
 <script>
 (function () {
-    var heads = [].slice.call(document.querySelectorAll(
-                    '.main h2[id], .main h3[id], .main h4[id]')),
-        prev = document.getElementById('secprev'),
-        next = document.getElementById('secnext'),
-        OFF = 12,      // gap left above a heading once it has been jumped to
-        CUR = 40;      // a heading this near the top counts as the one being read
-    if (!heads.length || !prev || !next) { return; }
+    var secs = [].slice.call(document.querySelectorAll('.main .sec')),
+        up = document.getElementById('secprev'),
+        down = document.getElementById('secnext'),
+        bprev = document.getElementById('pgprev'),
+        bnext = document.getElementById('pgnext'),
+        plabel = document.getElementById('pgprevlbl'),
+        nlabel = document.getElementById('pgnextlbl'),
+        count = document.getElementById('pgcount'),
+        page = {},                       // heading id -> page holding it
+        cur = 0;
+    if (secs.length < 2) { return; }
+    secs.forEach(function (s, i) {
+        [].slice.call(s.querySelectorAll('[id]')).forEach(function (el) {
+            page[el.id] = i;
+        });
+    });
 
-    function top(el) {
-        return el.getBoundingClientRect().top + window.pageYOffset;
+    function heading(s) {
+        return s.querySelector('h2, h3') || s.querySelector('h1, h4');
     }
-    // index of the section being read, or -1 while above the first heading
-    function here() {
-        var y = window.pageYOffset + CUR, at = -1;
-        for (var i = 0; i < heads.length; i++) {
-            if (top(heads[i]) <= y) { at = i; }
-        }
-        return at;
+    function label(s) {
+        var h = heading(s);
+        return h ? h.textContent.replace(/\s+/g, ' ').trim() : '';
     }
-    function label(el) {
-        return el.textContent.replace(/\s+/g, ' ').trim();
-    }
-    function go(y, hash) {
-        window.scrollTo(0, y);
-        if (hash) {
-            try { history.replaceState(null, '', hash); } catch (e) { /* file:// */ }
-        }
+    function show(i, hash) {
+        if (i < 0 || i >= secs.length) { return; }
+        secs[cur].classList.remove('on');
+        cur = i;
+        secs[cur].classList.add('on');
+        window.scrollTo(0, 0);
+        if (hash !== false) { stamp(heading(secs[cur])); }
         mark();
     }
-    function step(dir) {
-        var i = here(), j;
-        if (i < 0) {                       // above the first heading
-            if (dir > 0) { go(top(heads[0]) - OFF, '#' + heads[0].id); }
-            return;
+    function stamp(el) {
+        if (el && el.id) {
+            try { history.replaceState(null, '', '#' + el.id); } catch (e) { }
         }
-        // part-way down a section, Previous returns to that section's heading
-        if (dir < 0 && window.pageYOffset + OFF - top(heads[i]) > CUR - OFF) {
-            go(top(heads[i]) - OFF, '#' + heads[i].id);
-            return;
-        }
-        j = i + dir;
-        if (j < 0) { go(0, ''); return; }   // back past the first: page top
-        if (j >= heads.length) { return; }
-        go(top(heads[j]) - OFF, '#' + heads[j].id);
     }
-    // dim an arrow when there is nowhere to go, and name the target section
+    // label the pager with its destinations, and dim it at either end
     function mark() {
-        var i = here();
-        prev.classList.toggle('off', window.pageYOffset < 8);
-        next.classList.toggle('off', i >= heads.length - 1);
-        prev.title = i > 0 ? 'Previous section: ' + label(heads[i - 1])
-                           : 'Back to the top';
-        next.title = i < heads.length - 1
-                     ? 'Next section: ' + label(heads[i + 1]) : 'Next section';
+        var back = cur > 0, on = cur < secs.length - 1;
+        [up, bprev].forEach(function (b) { b.classList.toggle('off', !back); });
+        [down, bnext].forEach(function (b) { b.classList.toggle('off', !on); });
+        up.title = back ? 'Previous: ' + label(secs[cur - 1]) : 'Previous section';
+        down.title = on ? 'Next: ' + label(secs[cur + 1]) : 'Next section';
+        plabel.textContent = back ? label(secs[cur - 1]) : 'Previous';
+        nlabel.textContent = on ? label(secs[cur + 1]) : 'Next';
+        count.textContent = (cur + 1) + ' of ' + secs.length;
+        var was = document.querySelectorAll('.side a.here');
+        for (var k = 0; k < was.length; k++) { was[k].classList.remove('here'); }
+        var h = heading(secs[cur]),
+            link = h && document.querySelector('.side a[href="#' + h.id + '"]');
+        if (link) {
+            link.classList.add('here');
+            if (link.scrollIntoView) { link.scrollIntoView({block: 'nearest'}); }
+        }
     }
-    window.secStep = step;
-    var pending = false;
-    window.addEventListener('scroll', function () {
-        if (pending) { return; }
-        pending = true;
-        window.requestAnimationFrame(function () { pending = false; mark(); });
+    window.secStep = function (d) { show(cur + d); };
+
+    // a link to a heading opens the page holding it, then scrolls to it
+    document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href^="#"]');
+        if (!a) { return; }
+        var id = a.getAttribute('href').slice(1), i = page[id];
+        if (i === undefined) { return; }
+        e.preventDefault();
+        if (i !== cur) { show(i, false); }
+        var el = document.getElementById(id);
+        if (el && el !== heading(secs[i])) { el.scrollIntoView(); }
+        stamp(el);
     });
-    mark();
+    // arriving with #section in the address bar opens that page
+    function fromHash() {
+        var id = decodeURIComponent(location.hash.slice(1)), i = page[id];
+        if (i === undefined) { mark(); return; }
+        show(i, false);
+        var el = document.getElementById(id);
+        if (el && el !== heading(secs[i])) { el.scrollIntoView(); }
+    }
+    window.addEventListener('hashchange', fromHash);
+    fromHash();
 })();
 </script>
 

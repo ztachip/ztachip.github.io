@@ -88,6 +88,25 @@ body.nav-hidden .side { display:none; }
 .navbtn.off { opacity:.38; cursor:default; box-shadow:none; }
 .navbtn.off:hover { background:#1f2937; }
 
+/* one section at a time, with a pager below it */
+.sec { display:none; }
+.sec.on { display:block; }
+.pagerbar { display:flex; align-items:center; justify-content:space-between;
+        gap:12px; margin:38px 0 44px 0; padding-top:16px;
+        border-top:1px solid #d8dee4; }
+.pbtn { display:inline-flex; align-items:center; gap:8px; max-width:42%;
+        padding:9px 14px; cursor:pointer; font-family:inherit; font-size:14px;
+        color:#0a4a8f; background:#f6f8fa; border:1px solid #d0d7de;
+        border-radius:7px; text-align:left; }
+.pbtn:hover { background:#eaf2fb; border-color:#0a6abf; }
+.pbtn.off { opacity:.4; cursor:default; }
+.pbtn.off:hover { background:#f6f8fa; border-color:#d0d7de; }
+.pbtn .lbl { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.pbtn .arrow { flex:0 0 auto; color:#57606a; }
+.pgcount { flex:0 0 auto; color:#57606a; font-size:13px; white-space:nowrap; }
+/* the section being read, marked in the contents panel */
+.side a.here { color:#7fc4ff; font-weight:bold; }
+
 /* phones: the panel covers the screen, and closes once a section is chosen */
 @media (max-width:820px) {
   .layout { display:block; }
@@ -96,10 +115,12 @@ body.nav-hidden .side { display:none; }
           font-size:16px; z-index:30; }
   .main { padding:52px 18px 0 18px; max-width:none; }
   .page { padding:52px 18px 0 18px; }
-  /* the arrows would scroll the document behind the contents overlay */
+  /* the arrows would act on the document behind the contents overlay */
   body:not(.nav-hidden) .navbar .gap,
   body:not(.nav-hidden) #secprev,
   body:not(.nav-hidden) #secnext { display:none; }
+  .pgcount { display:none; }
+  .pbtn { max-width:48%; }
 }
 </style>
 </head>
@@ -176,12 +197,13 @@ body.nav-hidden .side { display:none; }
 </ul>
 </ul>
 </ul>
-</div><div class="main"><div class="navbar"><button class="navbtn navtoggle" onclick="navToggle()" title="Show or hide the contents" aria-label="Contents"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="2" rx="1"/><rect x="1" y="5" width="14" height="2" rx="1"/><rect x="1" y="9" width="14" height="2" rx="1"/><rect x="1" y="13" width="14" height="2" rx="1"/></svg></button><a class="navbtn" href="index.html" title="Home" aria-label="Home"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 0.7 7.6h1.9V14.6h4V10.4h2.8v4.2h4V7.6h1.9z"/></svg></a><span class="gap"></span><button class="navbtn" id="secprev" onclick="secStep(-1)" title="Previous section" aria-label="Previous section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.4 14.1 9.5 12.7 10.9 8 6.2 3.3 10.9 1.9 9.5z"/></svg></button><button class="navbtn" id="secnext" onclick="secStep(1)" title="Next section" aria-label="Next section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 12.6 1.9 6.5 3.3 5.1 8 9.8 12.7 5.1 14.1 6.5z"/></svg></button></div><h1 id="ztachip-vision-ai-stack-programmer-guide">ztachip Vision-AI Stack Programmer Guide</h1>
+</div><div class="main"><div class="navbar"><button class="navbtn navtoggle" onclick="navToggle()" title="Show or hide the contents" aria-label="Contents"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="2" rx="1"/><rect x="1" y="5" width="14" height="2" rx="1"/><rect x="1" y="9" width="14" height="2" rx="1"/><rect x="1" y="13" width="14" height="2" rx="1"/></svg></button><a class="navbtn" href="index.html" title="Home" aria-label="Home"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 0.7 7.6h1.9V14.6h4V10.4h2.8v4.2h4V7.6h1.9z"/></svg></a><span class="gap"></span><button class="navbtn" id="secprev" onclick="secStep(-1)" title="Previous section" aria-label="Previous section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.4 14.1 9.5 12.7 10.9 8 6.2 3.3 10.9 1.9 9.5z"/></svg></button><button class="navbtn" id="secnext" onclick="secStep(1)" title="Next section" aria-label="Next section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 12.6 1.9 6.5 3.3 5.1 8 9.8 12.7 5.1 14.1 6.5z"/></svg></button></div><section class="sec on"><h1 id="ztachip-vision-ai-stack-programmer-guide">ztachip Vision-AI Stack Programmer Guide</h1>
 <h2 id="1-introduction">1. INTRODUCTION</h2>
 <p>ztachip provides many pre-built acceleration functions for vision and AI applications.</p>
 <p>To support these acceleration functions, a graph-based framework is introduced. Different vision and AI functions are connected into a graph of execution nodes.</p>
 <p>Users can use this graph framework to integrate their own custom acceleration functions with ztachip vision-ai stack.</p>
-<h2 id="2-graph-framework">2. GRAPH FRAMEWORK</h2>
+</section>
+<section class="sec"><h2 id="2-graph-framework">2. GRAPH FRAMEWORK</h2>
 <p>Graph is a ztachip framework used to connect different processing nodes together. It is a particularly popular framework used by many other AI and vision frameworks such as OpenCV, TensorFLow, OpenVX, etc.</p>
 <p>Each ztachip acceleration functions are packaged as a graph node.</p>
 <p>The flow of execution is then specified by how the graph nodes are connected to form a graph.</p>
@@ -203,10 +225,12 @@ body.nav-hidden .side { display:none; }
 <li>Objects that represent the graph.</li>
 </ul>
 </ul>
-<h3 id="21-graph-structure">2.1 Graph structure</h3>
+</section>
+<section class="sec"><h3 id="21-graph-structure">2.1 Graph structure</h3>
 <p>Diagram below illustrates how the main objects of a Graph are interconnected.</p>
 <p><img src="media/Documentation_assets_visionai-graph-objects.svg" alt="Main objects of a Graph"></p>
-<h3 id="22-tensor">2.2 TENSOR</h3>
+</section>
+<section class="sec"><h3 id="22-tensor">2.2 TENSOR</h3>
 <p>TENSOR class encapsulates tensor data objects.</p>
 <p>Data exchange between graph nodes are TENSOR objects.</p>
 <h4 id="221-class-interface">2.2.1 Class Interface</h4>
@@ -342,7 +366,8 @@ body.nav-hidden .side { display:none; }
 <tr><td>TensorObjTypeMonochromeSingleChannel</td><td>Monochrome image but only with 1 byte per pixel representing the intensity</td></tr>
 <tr><td>TensorObjTypeUnknown</td><td>Unknown data object type</td></tr>
 </table>
-<h3 id="23-graphnode-class">2.3 GraphNode Class</h3>
+</section>
+<section class="sec"><h3 id="23-graphnode-class">2.3 GraphNode Class</h3>
 <p>This is a class template with virtual functions to be implemented by a derived class.</p>
 <p>Objects with GraphNode as base class are the execution units of a graph.</p>
 <p>ztachip acceleration functions implemented by corresponding tensor programs and pcore programs are encapsulated within a derived class of GraphNode.</p>
@@ -425,7 +450,8 @@ ZtaStatus MyGraphNode ::Execute(int queue,stepMode) {
                     m_in-&gt;GetBufLen());
    return ZtaStatusOk;
 }</code></pre>
-<h3 id="24-graph">2.4 Graph</h3>
+</section>
+<section class="sec"><h3 id="24-graph">2.4 Graph</h3>
 <p>Object of this class implements a flow of execution of multiple steps with each step are performed by a graph node.</p>
 <p>Graph object owns all the graph nodes and coordinates the execution of these nodes.</p>
 <p>There can be multiple instances of Graph objects with each instance performing a separate task.</p>
@@ -555,7 +581,8 @@ while(graph[0].IsRunning() || graph[1].IsRunning()) {
       graph[1].RunSingleStep();
 }
 // Done. Result are now in tensor_output[0] and tensor_output[1]</code></pre>
-<h2 id="3-vision-stack">3. VISION STACK</h2>
+</section>
+<section class="sec"><h2 id="3-vision-stack">3. VISION STACK</h2>
 <p>ztachip has a library of graph nodes that perform many common vision processing tasks.</p>
 <p>These vision processing functions are very efficient and fast since they are implemented based on tensor programming as described in [1].</p>
 <p>This vision library is used under the graph framework as described in chapter 1.</p>
@@ -569,7 +596,8 @@ while(graph[0].IsRunning() || graph[1].IsRunning()) {
 <li>Motion detection with Optical-flow algorithm</li>
 <li>Image resizes</li>
 </ul>
-<h3 id="31-graphnodecanny">3.1 GraphNodeCanny</h3>
+</section>
+<section class="sec"><h3 id="31-graphnodecanny">3.1 GraphNodeCanny</h3>
 <p>GraphNodeCanny is graph node implementing edge detection algorithm based on canny edge detector algorithm.</p>
 <h4 id="311-graphnodecannytensor-inputtensor-output">3.1.1 GraphNodeCanny(TENSOR <em>input,TENSOR </em>output)</h4>
 <p>Constructor for this graph node.</p>
@@ -594,7 +622,8 @@ while(graph[0].IsRunning() || graph[1].IsRunning()) {
 <p>None</p>
 <h4 id="314-void-getthresholdint-_lothresholdint-_hithreshold">3.1.4 void GetThreshold(int <em>_loThreshold,int </em>_hiThreshold)</h4>
 <p>Return current edge detection threshold</p>
-<h3 id="32-graphnodecolorandreshape">3.2 GraphNodeColorAndReshape</h3>
+</section>
+<section class="sec"><h3 id="32-graphnodecolorandreshape">3.2 GraphNodeColorAndReshape</h3>
 <p>This graph node performs color space conversion and tensor reshaping.</p>
 <h4 id="321-graphnodecolorandreshape-tensor-input-tensor-output-tensorobjtype-_dstcolorspace-tensorformat-_dstformat-int-clip_x0-int-clip_y0-int-clip_w0-int-clip_h0-int-dst_x0-int-dst_y0-int-dst_w0-int-dst_h0">3.2.1 GraphNodeColorAndReshape( TENSOR <em>input, TENSOR </em>output, TensorObjType _dstColorSpace, TensorFormat _dstFormat, int clip_x=0, int clip_y=0, int clip_w=0, int clip_h=0, int dst_x=0, int dst_y=0, int dst_w=0, int dst_h=0)</h4>
 <p>Constructor for this graph node.</p>
@@ -619,7 +648,8 @@ while(graph[0].IsRunning() || graph[1].IsRunning()) {
 <h4 id="322-create-tensor-input-tensor-output-tensorobjtype-_dstcolorspace-tensorformat-_dstformat-int-clip_x0-int-clip_y0-int-clip_w0-int-clip_h0-int-dst_x0-int-dst_y0-int-dst_w0-int-dst_h0">3.2.2 Create( TENSOR <em>input, TENSOR </em>output, TensorObjType _dstColorSpace, TensorFormat _dstFormat, int clip_x=0, int clip_y=0, int clip_w=0, int clip_h=0, int dst_x=0, int dst_y=0, int dst_w=0, int dst_h=0)</h4>
 <p>Call to initialize graph node when default constructor was used.</p>
 <p>Parameters are like 2.2.1</p>
-<h3 id="33-graphnodegaussian">3.3 GraphNodeGaussian</h3>
+</section>
+<section class="sec"><h3 id="33-graphnodegaussian">3.3 GraphNodeGaussian</h3>
 <p>This graph node performs image blurring using a Gaussian filter.</p>
 <h4 id="331-graphnodegaussiantensor-inputtensor-output">3.3.1 GraphNodeGaussian(TENSOR <em>input,TENSOR </em>output)</h4>
 <p>Constructor for this graph node.</p>
@@ -636,7 +666,8 @@ while(graph[0].IsRunning() || graph[1].IsRunning()) {
 <p>Set sigma value of the gaussian filter.</p>
 <h4 id="334-float-getsigma">3.3.4 float GetSigma()</h4>
 <p>Return current sigma value of the the gaussian filter.</p>
-<h3 id="34-graphnodeharris">3.4 GraphNodeHarris</h3>
+</section>
+<section class="sec"><h3 id="34-graphnodeharris">3.4 GraphNodeHarris</h3>
 <p>This graph node performs Harris-Corner feature detection on an image.</p>
 <h4 id="341-graphnodeharristensor-inputtensor-output">3.4.1 GraphNodeHarris(TENSOR <em>input,TENSOR </em>output)</h4>
 <p>Constructor for this graph node.</p>
@@ -649,7 +680,8 @@ while(graph[0].IsRunning() || graph[1].IsRunning()) {
 <h4 id="342-ztastatus-createtensor-inputtensor-output">3.4.2 ZtaStatus Create(TENSOR <em>input,TENSOR </em>output)</h4>
 <p>Call to initialize graph node when default constructor was used.</p>
 <p>Parameters are like 2.4.1</p>
-<h3 id="35-graphnodeopticalflow">3.5 GraphNodeOpticalFlow</h3>
+</section>
+<section class="sec"><h3 id="35-graphnodeopticalflow">3.5 GraphNodeOpticalFlow</h3>
 <p>This graph node performs optical flow algorithm for motion detection on two images captured consecutively in time.</p>
 <h4 id="351-graphnodeopticalflowtensor-input1-tensor-x_gradient-tensor-y_gradient-tensor-t_gradient-tensor-x_vect-tensor-y_vect-tensor-display">3.5.1 GraphNodeOpticalFlow(TENSOR <em>input1, TENSOR </em>x_gradient, TENSOR <em>y_gradient, TENSOR </em>t_gradient, TENSOR <em>x_vect, TENSOR </em>y_vect, TENSOR *display)</h4>
 <p>Constructor for this graph node.</p>
@@ -667,7 +699,8 @@ while(graph[0].IsRunning() || graph[1].IsRunning()) {
 <h4 id="352-ztastatus-createtensor-input1-tensor-x_gradient-tensor-y_gradient-tensor-t_gradient-tensor-x_vect-tensor-y_vect-tensor-display">3.5.2 ZtaStatus Create(TENSOR <em>input1, TENSOR </em>x_gradient, TENSOR <em>y_gradient, TENSOR </em>t_gradient, TENSOR <em>x_vect, TENSOR </em>y_vect, TENSOR *display)</h4>
 <p>Call to initialize graph node when default constructor was used.</p>
 <p>Parameters are like 2.5.1</p>
-<h3 id="36-graphnoderesize">3.6 GraphNodeResize</h3>
+</section>
+<section class="sec"><h3 id="36-graphnoderesize">3.6 GraphNodeResize</h3>
 <p>This graph node performs image resize</p>
 <h4 id="361-graphnoderesizetensor-inputtensor-outputint-wint-h">3.6.1 GraphNodeResize(TENSOR <em>input,TENSOR </em>output,int w,int h)</h4>
 <p>Resize image</p>
@@ -681,7 +714,8 @@ while(graph[0].IsRunning() || graph[1].IsRunning()) {
 <h4 id="362-ztastatus-createtensor-inputtensor-outputint-wint-h">3.6.2 ZtaStatus Create(TENSOR <em>input,TENSOR </em>output,int w,int h)</h4>
 <p>Call to initialize graph node when default constructor was used.</p>
 <p>Parameters are like 2.6.1</p>
-<h2 id="4-ai-stack">4. AI STACK</h2>
+</section>
+<section class="sec"><h2 id="4-ai-stack">4. AI STACK</h2>
 <p>ztachip provides acceleration functions for the execution of Google&#x27;s TensorFlowLite model.</p>
 <p>AI stack is implemented as graph node.</p>
 <p>The following Neural Network Layers are supported</p>
@@ -697,7 +731,8 @@ while(graph[0].IsRunning() || graph[1].IsRunning()) {
 <li>Reshape</li>
 <li>Relu</li>
 </ul>
-<h3 id="41-tflitenn">4.1 TfliteNn</h3>
+</section>
+<section class="sec"><h3 id="41-tflitenn">4.1 TfliteNn</h3>
 <p>This is a graph node that would execute a TensorFlowLite model.</p>
 <p>It executes an AI model using the original TensorFlowLite trained model binary that we can be downloaded from Google website. No model retraining is required.</p>
 <h4 id="411-ztastatus-createconst-char-fnametensor-_input-int-numoutput">4.1.1 ZtaStatus Create(const char <em>fname,TENSOR </em>_input, int numOutput,...)</h4>
@@ -717,7 +752,7 @@ while(graph[0].IsRunning() || graph[1].IsRunning()) {
 <h4 id="412-ztastatus-loadconst-char-fnametensor-_input-int-numoutput">4.1.2 ZtaStatus Load(const char <em>fname,TENSOR </em>_input, int numOutput,...)</h4>
 <p>Same as 2.7.1</p>
 <h4 id="413-ztastatus-unload">4.1.3 ZtaStatus Unload()</h4>
-<p>Unload and close the current TensorFlowLite model.</p></div></div>
+<p>Unload and close the current TensorFlowLite model.</p></section><nav class="pagerbar"><button class="pbtn" id="pgprev" onclick="secStep(-1)"><span class="arrow">&#9664;</span><span class="lbl" id="pgprevlbl">Previous</span></button><span class="pgcount" id="pgcount"></span><button class="pbtn" id="pgnext" onclick="secStep(1)"><span class="lbl" id="pgnextlbl">Next</span><span class="arrow">&#9654;</span></button></nav></div></div>
 <script>
 function navToggle() { document.body.classList.toggle('nav-hidden'); }
 // on a phone the panel starts hidden, so the document is what you see first
@@ -735,69 +770,87 @@ document.addEventListener('click', function (e) {
 
 <script>
 (function () {
-    var heads = [].slice.call(document.querySelectorAll(
-                    '.main h2[id], .main h3[id], .main h4[id]')),
-        prev = document.getElementById('secprev'),
-        next = document.getElementById('secnext'),
-        OFF = 12,      // gap left above a heading once it has been jumped to
-        CUR = 40;      // a heading this near the top counts as the one being read
-    if (!heads.length || !prev || !next) { return; }
+    var secs = [].slice.call(document.querySelectorAll('.main .sec')),
+        up = document.getElementById('secprev'),
+        down = document.getElementById('secnext'),
+        bprev = document.getElementById('pgprev'),
+        bnext = document.getElementById('pgnext'),
+        plabel = document.getElementById('pgprevlbl'),
+        nlabel = document.getElementById('pgnextlbl'),
+        count = document.getElementById('pgcount'),
+        page = {},                       // heading id -> page holding it
+        cur = 0;
+    if (secs.length < 2) { return; }
+    secs.forEach(function (s, i) {
+        [].slice.call(s.querySelectorAll('[id]')).forEach(function (el) {
+            page[el.id] = i;
+        });
+    });
 
-    function top(el) {
-        return el.getBoundingClientRect().top + window.pageYOffset;
+    function heading(s) {
+        return s.querySelector('h2, h3') || s.querySelector('h1, h4');
     }
-    // index of the section being read, or -1 while above the first heading
-    function here() {
-        var y = window.pageYOffset + CUR, at = -1;
-        for (var i = 0; i < heads.length; i++) {
-            if (top(heads[i]) <= y) { at = i; }
-        }
-        return at;
+    function label(s) {
+        var h = heading(s);
+        return h ? h.textContent.replace(/\s+/g, ' ').trim() : '';
     }
-    function label(el) {
-        return el.textContent.replace(/\s+/g, ' ').trim();
-    }
-    function go(y, hash) {
-        window.scrollTo(0, y);
-        if (hash) {
-            try { history.replaceState(null, '', hash); } catch (e) { /* file:// */ }
-        }
+    function show(i, hash) {
+        if (i < 0 || i >= secs.length) { return; }
+        secs[cur].classList.remove('on');
+        cur = i;
+        secs[cur].classList.add('on');
+        window.scrollTo(0, 0);
+        if (hash !== false) { stamp(heading(secs[cur])); }
         mark();
     }
-    function step(dir) {
-        var i = here(), j;
-        if (i < 0) {                       // above the first heading
-            if (dir > 0) { go(top(heads[0]) - OFF, '#' + heads[0].id); }
-            return;
+    function stamp(el) {
+        if (el && el.id) {
+            try { history.replaceState(null, '', '#' + el.id); } catch (e) { }
         }
-        // part-way down a section, Previous returns to that section's heading
-        if (dir < 0 && window.pageYOffset + OFF - top(heads[i]) > CUR - OFF) {
-            go(top(heads[i]) - OFF, '#' + heads[i].id);
-            return;
-        }
-        j = i + dir;
-        if (j < 0) { go(0, ''); return; }   // back past the first: page top
-        if (j >= heads.length) { return; }
-        go(top(heads[j]) - OFF, '#' + heads[j].id);
     }
-    // dim an arrow when there is nowhere to go, and name the target section
+    // label the pager with its destinations, and dim it at either end
     function mark() {
-        var i = here();
-        prev.classList.toggle('off', window.pageYOffset < 8);
-        next.classList.toggle('off', i >= heads.length - 1);
-        prev.title = i > 0 ? 'Previous section: ' + label(heads[i - 1])
-                           : 'Back to the top';
-        next.title = i < heads.length - 1
-                     ? 'Next section: ' + label(heads[i + 1]) : 'Next section';
+        var back = cur > 0, on = cur < secs.length - 1;
+        [up, bprev].forEach(function (b) { b.classList.toggle('off', !back); });
+        [down, bnext].forEach(function (b) { b.classList.toggle('off', !on); });
+        up.title = back ? 'Previous: ' + label(secs[cur - 1]) : 'Previous section';
+        down.title = on ? 'Next: ' + label(secs[cur + 1]) : 'Next section';
+        plabel.textContent = back ? label(secs[cur - 1]) : 'Previous';
+        nlabel.textContent = on ? label(secs[cur + 1]) : 'Next';
+        count.textContent = (cur + 1) + ' of ' + secs.length;
+        var was = document.querySelectorAll('.side a.here');
+        for (var k = 0; k < was.length; k++) { was[k].classList.remove('here'); }
+        var h = heading(secs[cur]),
+            link = h && document.querySelector('.side a[href="#' + h.id + '"]');
+        if (link) {
+            link.classList.add('here');
+            if (link.scrollIntoView) { link.scrollIntoView({block: 'nearest'}); }
+        }
     }
-    window.secStep = step;
-    var pending = false;
-    window.addEventListener('scroll', function () {
-        if (pending) { return; }
-        pending = true;
-        window.requestAnimationFrame(function () { pending = false; mark(); });
+    window.secStep = function (d) { show(cur + d); };
+
+    // a link to a heading opens the page holding it, then scrolls to it
+    document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href^="#"]');
+        if (!a) { return; }
+        var id = a.getAttribute('href').slice(1), i = page[id];
+        if (i === undefined) { return; }
+        e.preventDefault();
+        if (i !== cur) { show(i, false); }
+        var el = document.getElementById(id);
+        if (el && el !== heading(secs[i])) { el.scrollIntoView(); }
+        stamp(el);
     });
-    mark();
+    // arriving with #section in the address bar opens that page
+    function fromHash() {
+        var id = decodeURIComponent(location.hash.slice(1)), i = page[id];
+        if (i === undefined) { mark(); return; }
+        show(i, false);
+        var el = document.getElementById(id);
+        if (el && el !== heading(secs[i])) { el.scrollIntoView(); }
+    }
+    window.addEventListener('hashchange', fromHash);
+    fromHash();
 })();
 </script>
 

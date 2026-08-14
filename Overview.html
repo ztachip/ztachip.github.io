@@ -88,6 +88,25 @@ body.nav-hidden .side { display:none; }
 .navbtn.off { opacity:.38; cursor:default; box-shadow:none; }
 .navbtn.off:hover { background:#1f2937; }
 
+/* one section at a time, with a pager below it */
+.sec { display:none; }
+.sec.on { display:block; }
+.pagerbar { display:flex; align-items:center; justify-content:space-between;
+        gap:12px; margin:38px 0 44px 0; padding-top:16px;
+        border-top:1px solid #d8dee4; }
+.pbtn { display:inline-flex; align-items:center; gap:8px; max-width:42%;
+        padding:9px 14px; cursor:pointer; font-family:inherit; font-size:14px;
+        color:#0a4a8f; background:#f6f8fa; border:1px solid #d0d7de;
+        border-radius:7px; text-align:left; }
+.pbtn:hover { background:#eaf2fb; border-color:#0a6abf; }
+.pbtn.off { opacity:.4; cursor:default; }
+.pbtn.off:hover { background:#f6f8fa; border-color:#d0d7de; }
+.pbtn .lbl { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.pbtn .arrow { flex:0 0 auto; color:#57606a; }
+.pgcount { flex:0 0 auto; color:#57606a; font-size:13px; white-space:nowrap; }
+/* the section being read, marked in the contents panel */
+.side a.here { color:#7fc4ff; font-weight:bold; }
+
 /* phones: the panel covers the screen, and closes once a section is chosen */
 @media (max-width:820px) {
   .layout { display:block; }
@@ -96,10 +115,12 @@ body.nav-hidden .side { display:none; }
           font-size:16px; z-index:30; }
   .main { padding:52px 18px 0 18px; max-width:none; }
   .page { padding:52px 18px 0 18px; }
-  /* the arrows would scroll the document behind the contents overlay */
+  /* the arrows would act on the document behind the contents overlay */
   body:not(.nav-hidden) .navbar .gap,
   body:not(.nav-hidden) #secprev,
   body:not(.nav-hidden) #secnext { display:none; }
+  .pgcount { display:none; }
+  .pbtn { max-width:48%; }
 }
 </style>
 </head>
@@ -119,13 +140,14 @@ body.nav-hidden .side { display:none; }
 </ul>
 <li><a href="#6-future-developments">6. Future developments</a></li>
 </ul>
-</div><div class="main"><div class="navbar"><button class="navbtn navtoggle" onclick="navToggle()" title="Show or hide the contents" aria-label="Contents"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="2" rx="1"/><rect x="1" y="5" width="14" height="2" rx="1"/><rect x="1" y="9" width="14" height="2" rx="1"/><rect x="1" y="13" width="14" height="2" rx="1"/></svg></button><a class="navbtn" href="index.html" title="Home" aria-label="Home"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 0.7 7.6h1.9V14.6h4V10.4h2.8v4.2h4V7.6h1.9z"/></svg></a><span class="gap"></span><button class="navbtn" id="secprev" onclick="secStep(-1)" title="Previous section" aria-label="Previous section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.4 14.1 9.5 12.7 10.9 8 6.2 3.3 10.9 1.9 9.5z"/></svg></button><button class="navbtn" id="secnext" onclick="secStep(1)" title="Next section" aria-label="Next section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 12.6 1.9 6.5 3.3 5.1 8 9.8 12.7 5.1 14.1 6.5z"/></svg></button></div><h1 id="ztachip-technical-overview">ztachip Technical Overview</h1>
+</div><div class="main"><div class="navbar"><button class="navbtn navtoggle" onclick="navToggle()" title="Show or hide the contents" aria-label="Contents"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="2" rx="1"/><rect x="1" y="5" width="14" height="2" rx="1"/><rect x="1" y="9" width="14" height="2" rx="1"/><rect x="1" y="13" width="14" height="2" rx="1"/></svg></button><a class="navbtn" href="index.html" title="Home" aria-label="Home"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 0.7 7.6h1.9V14.6h4V10.4h2.8v4.2h4V7.6h1.9z"/></svg></a><span class="gap"></span><button class="navbtn" id="secprev" onclick="secStep(-1)" title="Previous section" aria-label="Previous section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.4 14.1 9.5 12.7 10.9 8 6.2 3.3 10.9 1.9 9.5z"/></svg></button><button class="navbtn" id="secnext" onclick="secStep(1)" title="Next section" aria-label="Next section"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 12.6 1.9 6.5 3.3 5.1 8 9.8 12.7 5.1 14.1 6.5z"/></svg></button></div><section class="sec on"><h1 id="ztachip-technical-overview">ztachip Technical Overview</h1>
 <h2 id="1-abstract">1. Abstract</h2>
 <p>The recent explosion in AI creates an almost limitless demand for computing power. AI workload is especially challenging since it is demanding in both computing power and memory bandwidth.</p>
 <p>In addition, AI deployed at the edge also demands very low power.</p>
 <p>It is generally agreed in the computing community that the way forward is that we need a special architecture for this kind of workload. This is formally known as Domain-Specific-Architecture (DSA).</p>
 <p>ztachip is one such DSA particularly optimized for vision and AI workload.</p>
-<h2 id="2-challenges">2. Challenges</h2>
+</section>
+<section class="sec"><h2 id="2-challenges">2. Challenges</h2>
 <p>DSA also presents many challenges including</p>
 <p>1. DSA is designed for a special set of applications in exchange for higher efficiencies. However, we would like the DSA domain to be as diverse as possible while still benefiting from a more efficient hardware implementation.</p>
 <p>2. DSA implies both a special hardware and software architecture for a particular domain of applications. How can we present DSA concepts without requiring users to have cross-disciplined knowledge? It will be difficult to find software engineers that are also knowledgeable in hardware design.</p>
@@ -133,7 +155,8 @@ body.nav-hidden .side { display:none; }
 <p><img src="media/Documentation_images_systolic.bmp" alt="systolic"></p>
 <p>However, SA is also very difficult to program. Users of SA often rely on prebuilt libraries provided by hardware vendors. Training/research AI workload that requires custom algorithm implementation is therefore not suitable for SA.</p>
 <p>SA is also not flexible enough to adapt to a wider range of applications. For example, most ASICs with SA still require a powerful CPU and GPU to perform other tasks such as vision preprocessing. For many edge AI applications involving vision, the vision preprocessing steps are often just as computing intensive as the AI steps.</p>
-<h2 id="3-dsa-with-ztachip">3. DSA with ztachip</h2>
+</section>
+<section class="sec"><h2 id="3-dsa-with-ztachip">3. DSA with ztachip</h2>
 <p>ztachip is an open-source DSA architecture. It is a novel architecture as far as we know.</p>
 <p>The primary objective for ztachip is to provide DSA that covers a wide range of applications and not just for AI. DSA programming with ztachip should also be intuitive and simple.</p>
 <p>ztachip targets applications that can be expressed as a sequence of tensor operations. Tensor operations include data operation and computing operation. Data operations involving tensors may also involve complex operations such as tensor transpose, tensor dimension resize, data remapping, etc.</p>
@@ -159,7 +182,8 @@ TENSOR_B &lt;= DATA_TRANSFORMATION &lt;= TENSOR_A
 <li>Tensor computing involves only internal memory, greatly simplifying</li>
 </ul>
 <p>the hardware design since there are no memory stall cycles to contend with.</p>
-<h2 id="4-what-are-provided-with-ztachip">4. What are provided with ztachip</h2>
+</section>
+<section class="sec"><h2 id="4-what-are-provided-with-ztachip">4. What are provided with ztachip</h2>
 <p>ztachip provides the following DSA components:</p>
 <ul>
 <li>Hardware stack with all the RTL source codes that can be ported to different</li>
@@ -174,9 +198,11 @@ TENSOR_B &lt;= DATA_TRANSFORMATION &lt;= TENSOR_A
 </ul>
 <p>for TensorFlow without retraining is also provided.</p>
 <p><img src="media/Documentation_images_dsa_component.bmp" alt="dsa_component"></p>
-<h2 id="5-results">5. Results</h2>
+</section>
+<section class="sec"><h2 id="5-results">5. Results</h2>
 <p>The 2 metrics of interest are domain coverage and performance.</p>
-<h3 id="51-domain-coverage">5.1 Domain coverage</h3>
+</section>
+<section class="sec"><h3 id="51-domain-coverage">5.1 Domain coverage</h3>
 <p>For domain coverage, ztachip&#x27;s DSL has been proven on a wide range of applications, from transformer models through to vision preprocessing and classic AI tasks.</p>
 <ul>
 <li>Transformer models for LLM (Large Language Model) and VLM (Vision Language Model) inference.</li>
@@ -190,16 +216,18 @@ TENSOR_B &lt;= DATA_TRANSFORMATION &lt;= TENSOR_A
 <li>Optical flow algorithm to detect motion</li>
 <li>Image resizing</li>
 </ul>
-<h3 id="52-performance-and-power-consumption">5.2 Performance and power consumption</h3>
+</section>
+<section class="sec"><h3 id="52-performance-and-power-consumption">5.2 Performance and power consumption</h3>
 <p>Performance is also very promising. Using the popular Mobinet-SSD AI model as a reference point, ztachip achieves a performance of 10fps at a 20GOPS of hardware computing resource.</p>
 <p>Compared with Nvidia Jetson Nano, it has a performance of 40fps but with a computing hardware resource at 500GOPS.</p>
 <p>Therefore ztachip has a 6x better computing resource utilization than Nvidia in this case, resulting in much lower power consumption.</p>
 <p>Memory requirements for ztachip are also much lower due to the efficient use of memory.</p>
-<h2 id="6-future-developments">6. Future developments</h2>
+</section>
+<section class="sec"><h2 id="6-future-developments">6. Future developments</h2>
 <p>ztachip current implementation operates on vector data types (8 x 8/12/16-bit).</p>
 <p>The logical next step is for native support of matrix data types (8 x 8 x 8/12/16-bit).</p>
 <p>ALU (Arithmetic Logical Units) sub-system is extended from a 8 unit wide vector of ALU units to a 8x8 matrix of ALU units. This will provide an 8x improvement in computing density when bus width is limited to 8 data elements. An improvement of 32x from current implementation is possible when bus width is extended to 16 data elements.</p>
-<p>To provide an intuitive programming syntax to support matrix data types.</p></div></div>
+<p>To provide an intuitive programming syntax to support matrix data types.</p></section><nav class="pagerbar"><button class="pbtn" id="pgprev" onclick="secStep(-1)"><span class="arrow">&#9664;</span><span class="lbl" id="pgprevlbl">Previous</span></button><span class="pgcount" id="pgcount"></span><button class="pbtn" id="pgnext" onclick="secStep(1)"><span class="lbl" id="pgnextlbl">Next</span><span class="arrow">&#9654;</span></button></nav></div></div>
 <script>
 function navToggle() { document.body.classList.toggle('nav-hidden'); }
 // on a phone the panel starts hidden, so the document is what you see first
@@ -217,69 +245,87 @@ document.addEventListener('click', function (e) {
 
 <script>
 (function () {
-    var heads = [].slice.call(document.querySelectorAll(
-                    '.main h2[id], .main h3[id], .main h4[id]')),
-        prev = document.getElementById('secprev'),
-        next = document.getElementById('secnext'),
-        OFF = 12,      // gap left above a heading once it has been jumped to
-        CUR = 40;      // a heading this near the top counts as the one being read
-    if (!heads.length || !prev || !next) { return; }
+    var secs = [].slice.call(document.querySelectorAll('.main .sec')),
+        up = document.getElementById('secprev'),
+        down = document.getElementById('secnext'),
+        bprev = document.getElementById('pgprev'),
+        bnext = document.getElementById('pgnext'),
+        plabel = document.getElementById('pgprevlbl'),
+        nlabel = document.getElementById('pgnextlbl'),
+        count = document.getElementById('pgcount'),
+        page = {},                       // heading id -> page holding it
+        cur = 0;
+    if (secs.length < 2) { return; }
+    secs.forEach(function (s, i) {
+        [].slice.call(s.querySelectorAll('[id]')).forEach(function (el) {
+            page[el.id] = i;
+        });
+    });
 
-    function top(el) {
-        return el.getBoundingClientRect().top + window.pageYOffset;
+    function heading(s) {
+        return s.querySelector('h2, h3') || s.querySelector('h1, h4');
     }
-    // index of the section being read, or -1 while above the first heading
-    function here() {
-        var y = window.pageYOffset + CUR, at = -1;
-        for (var i = 0; i < heads.length; i++) {
-            if (top(heads[i]) <= y) { at = i; }
-        }
-        return at;
+    function label(s) {
+        var h = heading(s);
+        return h ? h.textContent.replace(/\s+/g, ' ').trim() : '';
     }
-    function label(el) {
-        return el.textContent.replace(/\s+/g, ' ').trim();
-    }
-    function go(y, hash) {
-        window.scrollTo(0, y);
-        if (hash) {
-            try { history.replaceState(null, '', hash); } catch (e) { /* file:// */ }
-        }
+    function show(i, hash) {
+        if (i < 0 || i >= secs.length) { return; }
+        secs[cur].classList.remove('on');
+        cur = i;
+        secs[cur].classList.add('on');
+        window.scrollTo(0, 0);
+        if (hash !== false) { stamp(heading(secs[cur])); }
         mark();
     }
-    function step(dir) {
-        var i = here(), j;
-        if (i < 0) {                       // above the first heading
-            if (dir > 0) { go(top(heads[0]) - OFF, '#' + heads[0].id); }
-            return;
+    function stamp(el) {
+        if (el && el.id) {
+            try { history.replaceState(null, '', '#' + el.id); } catch (e) { }
         }
-        // part-way down a section, Previous returns to that section's heading
-        if (dir < 0 && window.pageYOffset + OFF - top(heads[i]) > CUR - OFF) {
-            go(top(heads[i]) - OFF, '#' + heads[i].id);
-            return;
-        }
-        j = i + dir;
-        if (j < 0) { go(0, ''); return; }   // back past the first: page top
-        if (j >= heads.length) { return; }
-        go(top(heads[j]) - OFF, '#' + heads[j].id);
     }
-    // dim an arrow when there is nowhere to go, and name the target section
+    // label the pager with its destinations, and dim it at either end
     function mark() {
-        var i = here();
-        prev.classList.toggle('off', window.pageYOffset < 8);
-        next.classList.toggle('off', i >= heads.length - 1);
-        prev.title = i > 0 ? 'Previous section: ' + label(heads[i - 1])
-                           : 'Back to the top';
-        next.title = i < heads.length - 1
-                     ? 'Next section: ' + label(heads[i + 1]) : 'Next section';
+        var back = cur > 0, on = cur < secs.length - 1;
+        [up, bprev].forEach(function (b) { b.classList.toggle('off', !back); });
+        [down, bnext].forEach(function (b) { b.classList.toggle('off', !on); });
+        up.title = back ? 'Previous: ' + label(secs[cur - 1]) : 'Previous section';
+        down.title = on ? 'Next: ' + label(secs[cur + 1]) : 'Next section';
+        plabel.textContent = back ? label(secs[cur - 1]) : 'Previous';
+        nlabel.textContent = on ? label(secs[cur + 1]) : 'Next';
+        count.textContent = (cur + 1) + ' of ' + secs.length;
+        var was = document.querySelectorAll('.side a.here');
+        for (var k = 0; k < was.length; k++) { was[k].classList.remove('here'); }
+        var h = heading(secs[cur]),
+            link = h && document.querySelector('.side a[href="#' + h.id + '"]');
+        if (link) {
+            link.classList.add('here');
+            if (link.scrollIntoView) { link.scrollIntoView({block: 'nearest'}); }
+        }
     }
-    window.secStep = step;
-    var pending = false;
-    window.addEventListener('scroll', function () {
-        if (pending) { return; }
-        pending = true;
-        window.requestAnimationFrame(function () { pending = false; mark(); });
+    window.secStep = function (d) { show(cur + d); };
+
+    // a link to a heading opens the page holding it, then scrolls to it
+    document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href^="#"]');
+        if (!a) { return; }
+        var id = a.getAttribute('href').slice(1), i = page[id];
+        if (i === undefined) { return; }
+        e.preventDefault();
+        if (i !== cur) { show(i, false); }
+        var el = document.getElementById(id);
+        if (el && el !== heading(secs[i])) { el.scrollIntoView(); }
+        stamp(el);
     });
-    mark();
+    // arriving with #section in the address bar opens that page
+    function fromHash() {
+        var id = decodeURIComponent(location.hash.slice(1)), i = page[id];
+        if (i === undefined) { mark(); return; }
+        show(i, false);
+        var el = document.getElementById(id);
+        if (el && el !== heading(secs[i])) { el.scrollIntoView(); }
+    }
+    window.addEventListener('hashchange', fromHash);
+    fromHash();
 })();
 </script>
 
